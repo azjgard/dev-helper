@@ -17,11 +17,18 @@
 	    ],
 	    "js" : ["content.js"],
 	    "run_at" : "document_idle"
+	},
+	{
+	    "matches": [ "<all_urls>" ],
+	    "js" : ["content/xmlPage.js"]
 	}
     ],
 
     "background" : {
-	"scripts" : ["background.js"]
+	"scripts" : [
+	    "background.js",
+	    "background/newPage.js"
+	]
     },
 
     "permissions" : [

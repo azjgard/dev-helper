@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>XML Preview</title>
+  </head>
+  <body>
+
+    <div id="container">
+      <h1>{{ title }}</h1>
+      <div class="slide" v-for="slide in slides">
+	<p v-for="(value, key) in slide">
+	  {{ key }} : {{ value }}
+	</p>
+      </div>
+    </div>
+
+    <script src="/node_modules/vue/dist/vue.js"></script>
+    <script src="/page/main.js"></script>
+  </body>
+</html>
