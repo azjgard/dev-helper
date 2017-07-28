@@ -1,3 +1,30 @@
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+// This file has a series of connected functions that grab old-slide page text. It consists of several functions that call each other in this order:
+
+// - mainDoc
+// - bottomDoc
+// - nButton
+// - displayDoc
+// - mainTextCont 
+// - finish (if there is no html text on page, this function is skipped)
+// - getNarration
+// - getSlideId
+// - sendSlideData
+
+// Most of these functions are searching for an element on a page, and if they don't find it, they will recursively call themselves until they find the element.
+
+
+// TODO/ISSUES:
+// - There is not a good algorithm built out to seperate groups of words (search "\r\n" for more info)
+// - Event listeners aren't consistently recognizing when a page is switched. 
+// - No information is being stored to determine if a user has been to a page already
+// - 
+// - 
+// - 
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
 var stop_scrape = false;
 var rerun = true;
 var slideId;
@@ -167,7 +194,10 @@ function evaluateSlide() {
     console.log("displayBodyText", displayBodyText);
     console.log("narrationTxt", narrationTxt);
     if(displayBodyText === undefined){
-      displayBodyText = null;
+      displayBodyText = ["No text found in document"];
+    }
+    else {
+      displayBodyText = displayBodyText.split(/\r\n|\n/g);
     }
 
     var request = {
