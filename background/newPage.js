@@ -25,11 +25,21 @@ const createXmlPage = xmlPageIsOpen => new Promise((resolve, reject) => {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     var msg = request.message;
-
+    console.log(request);
     if (msg == 'new-html-page') {
+      console.log('adding html page');
       addSlideToHtmlPage(request.data);
     }
+    if (msg == 'scrape-html') {
+      scrapeHtml()
+        .then(addSlideToHtmlPage);
+    }
+    if (msg == 'grab-narration') {
+      grabNarration()
+        .then(addSlideToHtmlPage);
+    }
   });
+
 
 function addSlideToHtmlPage(slideObject) {
   queryTabs({})
