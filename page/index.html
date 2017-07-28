@@ -2,14 +2,39 @@
   <head>
     <title>XML Preview</title>
   </head>
+  <link rel="stylesheet" href="/page/style.css" type="text/css" />
   <body>
 
     <div id="container">
+
       <h1>{{ title }}</h1>
       <div class="slide" v-for="slide in slides">
-	<p v-for="(value, key) in slide">
-	  {{ key }} : {{ value }}
-	</p>
+	<h2>Slide {{ slide.slideNumber }}</h2>
+	<span class="utility-dialog"></span>
+
+	<button
+	   class="copy-all"
+	   @click="copyAll">
+	  Copy All Page Text
+	</button>
+
+	<h3>Page Text</h3>
+	<div class="text-nodes">
+	  <span
+	     v-for="value in slide.pageText"
+	     @click="copyText"
+	     contenteditable>
+	    {{ value }}
+	  </span>
+	</div>
+
+	<h3>CC Text</h3>
+	<span
+	   @click="copyText"
+	   contenteditable>
+	  {{ slide.narrationText }}
+	</span>
+
       </div>
     </div>
 
