@@ -39,6 +39,7 @@ var app = new Vue({
 	      .textContent
 	      .replace(/\s{2,}/g, ' ')
 	      .trim();
+
 	if (formattedText !== '') {
 	  copyString += formattedText;
 	  if (i < textNodes.length - 1) {
@@ -86,14 +87,15 @@ chrome.runtime.onMessage.addListener(
 	}
       }
 
+      // remove empty strings if there are any
+      if (typeof data.pageText === "object") {
+	data.pageText = data.pageText
+	  .filter(value => value.match(/\w/g));
+      }
+
       // add slide if it doesn't already exist
       if (!slideAlreadyExists) {
-	addSlide(data);
+	app._data.slides.push(data);
       }
     }
 });
-
-function addSlide(slide) {
-  app._data.slides.push(slide);
-}
-
