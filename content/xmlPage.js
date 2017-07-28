@@ -1,34 +1,34 @@
 // THIS IS STRICTLY FOR TESTING
 // Button for sending requests to background
-var btn = document.createElement('button');
-btn.style.width = "100px";
-btn.style.height = "100px";
-btn.innerHTML = "Send Message";
-btn.style.position = "fixed";
-btn.style.left = "0";
-btn.style.top = "0";
-btn.id = "sendMessage";
+// var btn = document.createElement('button');
+// btn.style.width = "100px";
+// btn.style.height = "100px";
+// btn.innerHTML = "Send Message";
+// btn.style.position = "fixed";
+// btn.style.left = "0";
+// btn.style.top = "0";
+// btn.id = "sendMessage";
 
-// test data to send to the page
-const testData = {
-  primaryKey: "ddsdfi2u34fnsjnkdfjnsdfzxxx@@@",
-  hey: "guy",
-  what: "is",
-  your: "name"
-};
+// // test data to send to the page
+// const testData = {
+//   primaryKey: "ddsdfi2u34fnsjnkdfjnsdfzxxx@@@",
+//   hey: "guy",
+//   what: "is",
+//   your: "name"
+// };
 
 
-getElement('body', 0, 5000, test);
+// getElement('body', 0, 5000, test);
 
-function test() {
-  document.body.appendChild(btn);
-  document.getElementById('sendMessage').addEventListener('click', function() {
-    chrome.runtime.sendMessage({
-      message: 'new-html-page',
-      data: testData
-    });
-  });
-}
+// function test() {
+//   document.body.appendChild(btn);
+//   document.getElementById('sendMessage').addEventListener('click', function() {
+//     chrome.runtime.sendMessage({
+//       message: 'new-html-page',
+//       data: testData
+//     });
+//   });
+// }
 
 function getElement(querySelector, currentTimeout, maxTimeout, cb) {
   // try to get the element
