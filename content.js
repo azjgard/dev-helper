@@ -31,7 +31,6 @@ var displayBodyText;
 
 changeHandler();
 function changeHandler() {
-  console.log('change handler');
   setTimeout(() => {
     evaluateSlide();
   }, 1000);
@@ -51,7 +50,6 @@ function evaluateSlide() {
 
   // get main iframe
   function mainDoc(){
-    console.log("mainDoc");
     if(document.getElementById('_RLOCD')){
       // the root iframe
       mainDocument = document.getElementById('_RLOCD');
@@ -68,7 +66,6 @@ function evaluateSlide() {
   
   // get navigation bar from bottom
   function bottomDoc(){
-    console.log("bottomDoc");
     if(mainDocument.contentDocument.getElementById('FaceBottom')){
       // the bottom frame with nav elements
       bottomDocument = mainDocument.contentDocument.getElementById('FaceBottom');
@@ -85,7 +82,6 @@ function evaluateSlide() {
 
   // get next button on bottom bar
   function nButton(){
-    console.log("nButton");
     // the next ow in the bottom frame
     nextButton = bottomDocument.contentDocument.getElementById('nextbutton');
     if(nextButton){
@@ -102,7 +98,6 @@ function evaluateSlide() {
 
   // get main display <frame> within main <iframe>
   function displayDoc(){
-    console.log("displayDoc");
     if(mainDocument.contentDocument.getElementById('display')){
       // the center frame with main course elements
       displayDocument = mainDocument.contentDocument.getElementById('display');
@@ -119,11 +114,13 @@ function evaluateSlide() {
 
   // get array of all text on the page
   function mainTextCont(){
-    console.log("mainTextCont");
     //if xml text was found, stop scraping html page
     if(stop_scrape){
       nextButton.addEventListener('click', changeHandler);
       getNarration();
+
+      // reset the variable
+      stop_scrape = false;
     }
     else {
       // the container that may or may not have text in it
@@ -149,7 +146,6 @@ function evaluateSlide() {
         mainDoc();
       }
       else {
-        console.log("finish");
         // the body of the center frame
         displayBody = displayDocument.contentDocument.body;
         displayBodyText = displayBody.innerText.trim();
@@ -161,7 +157,6 @@ function evaluateSlide() {
         }
         else {
           displayBodyText = null;
-          console.log('No inner text found.');
           getNarration();
           nextButton.addEventListener('click', changeHandler);
         }
@@ -187,9 +182,6 @@ function evaluateSlide() {
 
   function getSlideId(){
     slideId = displayDocument.contentDocument.getElementsByTagName('embed')[0].src;
-    console.log("slideId", slideId);
-    console.log("displayBodyText", displayBodyText);
-    console.log("narrationTxt", narrationTxt);
     if(displayBodyText === undefined || !displayBodyText){
       displayBodyText = ["No text found in document"];
     }
