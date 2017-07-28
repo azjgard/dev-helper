@@ -1,14 +1,6 @@
 // url to the html page that displays XML
 const htmlPageURL = chrome.runtime.getURL('/page/index.html');
 
-// test data to send to the page
-const testData = {
-  primaryKey: "ddsdfi2u34fnsjnkdfjnsdfzxxx@@@",
-  hey: "guy",
-  what: "is",
-  your: "name"
-};
-
 // promisified chrome.tabs.query
 const queryTabs = options => new Promise((resolve, reject) => chrome.tabs.query(options, resolve));
 const getTabByUrlPattern = (tabs, url) => new Promise((resolve, reject) => resolve(tabs.filter(tab => tab.url.includes(url))));
@@ -35,10 +27,14 @@ chrome.runtime.onMessage.addListener(
     var msg = request.message;
 
     if (msg == 'new-html-page') {
-      queryTabs({})
-	.then(tabs => getTabByUrlPattern(tabs, htmlPageURL)) // try and get the tab the htmlPage is open at
-	.then(tabArray => new Promise((resolve, reject) => resolve(tabArray.length === 0 ? false : true))) // check if we found it
-	.then(createXmlPage) // try and create it if necessary
-	.then(Tab => setTimeout(() => chrome.tabs.sendMessage(Tab.id, { message: 'display-xml', data : testData }), 500));
+      addSlideToHtmlPage(request.data);
     }
   });
+
+function addSlideToHtmlPage(slideObject) {
+  queryTabs({})
+    .then(tabs => getTabByUrlPattern(tabs, htmlPageURL)) // try and get the tab the htmlPage is open at
+    .then(tabArray => new Promise((resolve, reject) => resolve(tabArray.length === 0 ? false : true))) // check if we found it
+    .then(createXmlPage) // try and create it if necessary
+    .then(Tab => setTimeout(() => chrome.tabs.sendMessage(Tab.id, { message: 'display-xml', data : slideObject }), 500));
+}
