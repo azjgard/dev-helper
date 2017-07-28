@@ -19,9 +19,6 @@
 // - There is not a good algorithm built out to seperate groups of words (search "\r\n" for more info)
 // - Event listeners aren't consistently recognizing when a page is switched. 
 // - No information is being stored to determine if a user has been to a page already
-// - 
-// - 
-// - 
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 
@@ -193,7 +190,7 @@ function evaluateSlide() {
     console.log("slideId", slideId);
     console.log("displayBodyText", displayBodyText);
     console.log("narrationTxt", narrationTxt);
-    if(displayBodyText === undefined){
+    if(displayBodyText === undefined || !displayBodyText){
       displayBodyText = ["No text found in document"];
     }
     else {
