@@ -3,7 +3,7 @@
 // is currently doing. Search 'TODO'
 
 var stop_scrape = false;
-var htmlPageText = null;
+var xmlText = null;
 var addedNextListener = false;
 
 execSlide();
@@ -68,12 +68,13 @@ function getElByExpr(expression, config) {
 	elements,
 	resolve), waitTime);
     }
-    else if (el === null) throw new Error("Could not find element from expression: " + expression); 
+    else if (el === null || el.length === 0) throw new Error("Could not find element from expression: " + expression); 
     else resolve(el); 
   }
 }
 
 function getPageInformation(elements) {
+
   return new Promise((resolve, reject) => {
     let actions = [
       getMainText(elements),
@@ -89,6 +90,7 @@ function getPageInformation(elements) {
 	elements.nextButton.addEventListener('click', execSlide);
 	addedNextListener = true;
       }
+
 
       if (narrationText.includes('Click the next active link')) {
 	for (var i = 0; i < textContainer.length; i++) {
@@ -113,7 +115,12 @@ function getMainText(elements) {
       .getElementsByClassName('regularcontenttext');
 
     if (stop_scrape) {
-      resolve(htmlPageText);
+      if(elements.mainTextContainer.length > 0){
+        resolve(elements.mainTextContainer[0].innerText);
+      }
+      else {
+        resolve(null);
+      }
     }
     else {
       if (elements.mainTextContainer.length > 0) {
@@ -181,10 +188,7 @@ function storeNarrationTextInElement() {
 	      .GetNarrationText();
 
 	if (old_slide_narration_scraped === "") { throw new Error("No text");           }
-	else {
-	  console.log(old_slide_narration_scraped);
-	  resolve(old_slide_narration_scraped);
-	}
+	else                                    { resolve(old_slide_narration_scraped); }
       }
       catch (err) { setTimeout(() => recurse(resolve), 1000); }
     }
@@ -202,13 +206,15 @@ function getSlideID(elements) {
 
     getElByExpr(expr, config)
       .then(embed => {
-	resolve(embed[0].src);
+        // Once slide ID is found, give the page scraper 1 more second
+        // to find text on page, then send whatever is found
+        setTimeout(() => {stop_scrape = true; resolve(embed[0].src); console.log(xmlText);}, 3000);
       });
   });
 }
 
 function sendRequest(pageInformation) {
-  let pageText      = pageInformation[0];
+  let htmlText      = pageInformation[0];
   let narrationText = pageInformation[1];
   let slideID       = pageInformation[2];
 
@@ -216,21 +222,29 @@ function sendRequest(pageInformation) {
     message : 'new-html-page',
     data    : {
       slideId       : slideID,
-      narrationText : narrationText
+      narrationText : narrationText,
+      xmlText       : xmlText
     }
   };
 
-  if (pageText === null) {
-    request.data.pageText = null;
-  }
-  else {
-    let textArray = pageText.split('\n')
-	  .filter(text => text.match(/\w/g))
-	  .map   (text => text.trim());
-    request.data.pageText = textArray;
+  if(xmlText === ''){
+    request.data.xmlText = null;
   }
 
+  if (htmlText === null) {
+    request.data.htmlText = null;
+  }
+  else {
+    let textArray = htmlText.split('\n')
+	  .filter(text => text.match(/\w/g))
+	  .map   (text => text.trim());
+    request.data.htmlText = textArray;
+  }
+  console.log(request.data);
+
   chrome.runtime.sendMessage(request);
+  stop_scrape = false;
+  xmlText = null;
 }
 
 //
@@ -262,7 +276,7 @@ chrome.runtime.onMessage.addListener(
     var data = request.data;
 
     if (msg == 'stop-scrape') {
-      stop_scrape = true;
-      htmlPageText = data;
+      xmlText = data;
+      console.log("xmlText", xmlText);
     }
   });
