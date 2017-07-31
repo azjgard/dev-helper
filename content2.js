@@ -68,8 +68,7 @@ function getElByExpr(expression, config) {
         elements,
         resolve), waitTime);
     }
-    else if (el === null)
-      throw new Error("Could not find element from expression: " + expression); 
+    else if (el === null) throw new Error("Could not find element from expression: " + expression); 
     else resolve(el); 
   }
 }
@@ -81,9 +80,24 @@ function getPageInformation(elements) {
       getNarration(),
       getSlideID(elements)
     ];
+
     Promise.all(actions).then(pageInformation => {
-      // TODO: add event listeners to the nextbutton/page
-      // before resolving
+      let narrationText = pageInformation[1];
+      let textContainer = elements.mainTextContainer;
+
+      if (!addedNextListener){
+	elements.nextButton.addEventListener('click', execSlide);
+	addedNextListener = true;
+      }
+
+      if (narrationText.includes('Click the next active link')) {
+	for (var i = 0; i < textContainer.length; i++) {
+	  if (textContainer[i].tagName === 'A') {
+	    textContainer[i].addEventListener('click', execSlide);
+	  }
+	}
+      }
+
       resolve(pageInformation);
     });
   });
@@ -98,18 +112,18 @@ function getMainText(elements) {
     }
     else {
       elements.mainTextContainer = elements
-        .displayDocument
-        .contentDocument
-        .getElementsByClassName('regularcontenttext');
+	.displayDocument
+	.contentDocument
+	.getElementsByClassName('regularcontenttext');
 
       if (elements.mainTextContainer.length > 0) {
-        setTimeout(() => {
-          elements.mainTextContainer = eval(elements.mainTextContainer);
-          resolve(elements.mainTextContainer[0].innerText);
-        }, 500);
+	setTimeout(() => {
+	  elements.mainTextContainer = eval(elements.mainTextContainer);
+	  resolve(elements.mainTextContainer[0].innerText);
+	}, 500);
       }
       else {
-        setTimeout(() => recurse(resolve), 1000);
+	setTimeout(() => recurse(resolve), 1000);
       }
     }
   }
@@ -122,10 +136,9 @@ function getNarration() {
     function recurse(resolve) {
       let narrationEl   = document.querySelector('#old_slide_narration_text');
       let narrationText = narrationEl && narrationEl.value;
-      console.log(narrationText);
 
       if (narrationText === null) { setTimeout(() => recurse(resolve), 1000); }
-      else                        { console.log('resolve'); resolve(narrationText);                   }
+      else                        { resolve(narrationText);                   }
     }
 
     recurse(resolve);
@@ -136,12 +149,18 @@ function getNarration() {
 function storeNarrationTextInElement() {
   getNarrationText()
     .then(text => {
-      var input   = document.createElement('input');
-      input.id    = "old_slide_narration_text";
-      input.value = text;
-      input.setAttribute('type', 'hidden');
-
-      document.body.appendChild(input);
+      // if the element doesn't exist, create it
+      if (!document.querySelector('#old_slide_narration_text')) {
+	var input   = document.createElement('input');
+	input.id    = "old_slide_narration_text";
+	input.value = text;
+	input.setAttribute('type', 'hidden');
+	document.body.appendChild(input);
+      }
+      // otherwise, just set its value
+      else {
+	document.querySelector('#old_slide_narration_text').value = text;
+      }
     });
 
   function getNarrationText() {
@@ -149,16 +168,16 @@ function storeNarrationTextInElement() {
     
     function recurse(resolve) {
       try {
-        var old_slide_narration_scraped =
-              document
-              .querySelector('#_RLOCD')
-              .contentDocument
-              .querySelector('#display')
-              .contentWindow
-              .GetNarrationText();
+	var old_slide_narration_scraped =
+	      document
+	      .querySelector('#_RLOCD')
+	      .contentDocument
+	      .querySelector('#display')
+	      .contentWindow
+	      .GetNarrationText();
 
-        if (old_slide_narration_scraped === "") { throw new Error("No text");           }
-        else                                    { resolve(old_slide_narration_scraped); }
+	if (old_slide_narration_scraped === "") { throw new Error("No text");           }
+	else                                    { resolve(old_slide_narration_scraped); }
       }
       catch (err) { setTimeout(() => recurse(resolve), 1000); }
     }
@@ -176,7 +195,7 @@ function getSlideID(elements) {
 
     getElByExpr(expr, config)
       .then(embed => {
-        resolve(embed[0].src);
+	resolve(embed[0].src);
       });
   });
 }
@@ -199,36 +218,12 @@ function sendRequest(pageInformation) {
   }
   else {
     let textArray = pageText.split('\n')
-          .filter(text => text.match(/\w/g))
-          .map   (text => text.trim());
+	  .filter(text => text.match(/\w/g))
+	  .map   (text => text.trim());
     request.data.pageText = textArray;
   }
 
-  let narrContainer = document.querySelector('#old_slide_narration_text');
-  if(narrationText === 'Click the next active link to continue.<br/>'){
-    var textContainer = config.elements.mainTextContainer; //get config some other way
-    for(var i = 0; i < textContainer.length; i++) {
-      if(textContainer[i].tagName === 'A'){
-        console.log('intro page');
-        textContainer[i].addEventListener('click', event => { alert('bob'); execSlide(); });
-      }
-    }
-    if(narrContainer){
-      narrContainer.remove();
-    }
-  }
-  else{
-    console.log('other page');
-    if(!addedNextListener){
-      config.elements.nextButton.addEventListener('click', event => execSlide()); //get config some other way
-      addedNextListener = true;
-    }
-    chrome.runtime.sendMessage(request);
-    if(narrContainer){
-      narrContainer.remove();
-    }
-  }
-
+  chrome.runtime.sendMessage(request);
 }
 
 //
