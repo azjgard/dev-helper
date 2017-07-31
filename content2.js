@@ -137,8 +137,12 @@ function getNarration() {
       let narrationEl   = document.querySelector('#old_slide_narration_text');
       let narrationText = narrationEl && narrationEl.value;
 
-      if (narrationText === null) { setTimeout(() => recurse(resolve), 1000); }
-      else                        { resolve(narrationText);                   }
+      if (narrationText === null ||
+	  narrationText.length === 0) { setTimeout(() => recurse(resolve), 1000); }
+      else {
+	narrationText.value = '';
+	resolve(narrationText);
+      }
     }
 
     recurse(resolve);
