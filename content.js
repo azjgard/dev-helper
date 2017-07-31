@@ -201,7 +201,8 @@ function evaluateSlide() {
   }
 
   function sendSlideData(request){
-    chrome.runtime.sendMessage(request);
+    // UNCOMMENT ME
+    // chrome.runtime.sendMessage(request);
     request = {};
   }
 }

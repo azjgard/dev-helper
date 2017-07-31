@@ -15,7 +15,7 @@
 	    "matches": [
 		"*://avondale-iol/*"
 	    ],
-	    "js" : ["content.js"],
+	    "js" : ["content.js", "content2.js"],
 	    "run_at" : "document_idle"
 	},
 	{
