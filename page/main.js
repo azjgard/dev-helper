@@ -7,11 +7,8 @@ var app = new Vue({
   },
   methods: {
     copyText: function(event) {
-      // Select all of the text
       document.execCommand('selectAll', false, null);
-      // Copy all of the text
       document.execCommand('copy');
-      // Reset the selection
       window.getSelection().empty();
     },
 
@@ -88,10 +85,14 @@ chrome.runtime.onMessage.addListener(
       }
 
       // remove empty strings if there are any
-      if (data.pageText !== null && typeof data.pageText === "object") {
-	data.pageText = data.pageText
-	  .filter(value => value.match(/\w/g));
-      }
+      // if (data.pageText !== null && typeof data.pageText === "object") {
+      // 	data.pageText = data.pageText
+      // 	  .filter(value => value.match(/\w/g));
+      // }
+
+      data.xmlText  = cleanTextObject(data.xmlText);
+      data.htmlText = cleanTextObject(data.htmlText);
+      data.narrationText = cleanNarrationText(data.narrationText);
 
       // add slide if it doesn't already exist
       if (!slideAlreadyExists) {
@@ -99,3 +100,15 @@ chrome.runtime.onMessage.addListener(
       }
     }
 });
+
+function cleanTextObject(obj) {
+  let newObj = null;
+  if (obj !== null && typeof obj === "object") {
+    newObj = obj.filter(value => value.match(/\w/g));
+  }
+  return newObj;
+}
+
+function cleanNarrationText(str) {
+  return str.includes('<br/><br/>') ? str.split('<br/><br/>') : [str];
+}
