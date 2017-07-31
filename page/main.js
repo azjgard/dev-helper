@@ -88,7 +88,7 @@ chrome.runtime.onMessage.addListener(
       }
 
       // remove empty strings if there are any
-      if (typeof data.pageText === "object") {
+      if (data.pageText !== null && typeof data.pageText === "object") {
 	data.pageText = data.pageText
 	  .filter(value => value.match(/\w/g));
       }
