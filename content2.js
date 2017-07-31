@@ -112,7 +112,7 @@ function getMainText(elements) {
     elements.mainTextContainer = elements
       .displayDocument
       .contentDocument
-      .getElementsByClassName('regularcontenttext');
+      .getElementsByClassName('contentheadertext');
 
     if (stop_scrape) {
       if(elements.mainTextContainer.length > 0){
@@ -208,7 +208,7 @@ function getSlideID(elements) {
       .then(embed => {
         // Once slide ID is found, give the page scraper 1 more second
         // to find text on page, then send whatever is found
-        setTimeout(() => {stop_scrape = true; resolve(embed[0].src); console.log(xmlText);}, 3000);
+        setTimeout(() => {stop_scrape = true; resolve(embed[0].src); console.log(xmlText);}, 1000);
       });
   });
 }
