@@ -15,13 +15,13 @@ function execSlide() {
       .then(sendRequest);
   }, 1000);
 }
-
-function defineElements() {
 var config = {
   currentTimeout : 0,
   maxTimeout     : 5000,
   elements       : {}
 };
+
+function defineElements() {
   var expressions = {
     mainDoc        : 'document.getElementById("_RLOCD")',
     bottomDoc      : 'elements.mainDocument.contentDocument.getElementById("FaceBottom")',
