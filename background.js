@@ -47,8 +47,8 @@ chrome.webRequest.onCompleted.addListener(function (details) {
       console.log("no useful data from xml");
     }
     else {
-      latestTextContent = root[0].textContent;
-
+      latestTextContent = root[0].textContent.replace(/<\/*\w+\s*\/*>/g, "\n").trim();
+      console.log(latestTextContent);
       // we only want to run on each resource ONE time
       globalBlacklist.push(resourceURL);
 
