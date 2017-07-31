@@ -68,12 +68,13 @@ function getElByExpr(expression, config) {
 	elements,
 	resolve), waitTime);
     }
-    else if (el === null) throw new Error("Could not find element from expression: " + expression); 
+    else if (el === null || el.length === 0) throw new Error("Could not find element from expression: " + expression); 
     else resolve(el); 
   }
 }
 
 function getPageInformation(elements) {
+
   return new Promise((resolve, reject) => {
     let actions = [
       getMainText(elements),
@@ -89,6 +90,7 @@ function getPageInformation(elements) {
 	elements.nextButton.addEventListener('click', execSlide);
 	addedNextListener = true;
       }
+
 
       if (narrationText.includes('Click the next active link')) {
 	for (var i = 0; i < textContainer.length; i++) {
@@ -113,6 +115,7 @@ function getMainText(elements) {
       .getElementsByClassName('regularcontenttext');
 
     if (stop_scrape) {
+      stop_scrape = false;
       resolve(htmlPageText);
     }
     else {
@@ -181,10 +184,7 @@ function storeNarrationTextInElement() {
 	      .GetNarrationText();
 
 	if (old_slide_narration_scraped === "") { throw new Error("No text");           }
-	else {
-	  console.log(old_slide_narration_scraped);
-	  resolve(old_slide_narration_scraped);
-	}
+	else                                    { resolve(old_slide_narration_scraped); }
       }
       catch (err) { setTimeout(() => recurse(resolve), 1000); }
     }
@@ -202,6 +202,7 @@ function getSlideID(elements) {
 
     getElByExpr(expr, config)
       .then(embed => {
+        //call stop scrape here, always send html info and xml info
 	resolve(embed[0].src);
       });
   });
