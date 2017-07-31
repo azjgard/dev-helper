@@ -140,7 +140,7 @@ function getNarration() {
       if (narrationText === null ||
 	  narrationText.length === 0) { setTimeout(() => recurse(resolve), 1000); }
       else {
-	narrationText.value = '';
+	narrationEl.value = '';
 	resolve(narrationText);
       }
     }
@@ -181,7 +181,10 @@ function storeNarrationTextInElement() {
 	      .GetNarrationText();
 
 	if (old_slide_narration_scraped === "") { throw new Error("No text");           }
-	else                                    { resolve(old_slide_narration_scraped); }
+	else {
+	  console.log(old_slide_narration_scraped);
+	  resolve(old_slide_narration_scraped);
+	}
       }
       catch (err) { setTimeout(() => recurse(resolve), 1000); }
     }
