@@ -15,11 +15,6 @@ function execSlide() {
       .then(sendRequest);
   }, 1000);
 }
-var config = {
-  currentTimeout : 0,
-  maxTimeout     : 5000,
-  elements       : {}
-};
 
 function defineElements() {
   var expressions = {
@@ -28,23 +23,28 @@ function defineElements() {
     nextButton     : 'elements.bottomDocument.contentDocument.getElementById("nextbutton")',
     displayDocument: 'elements.mainDocument.contentDocument.getElementById("display")'
   };
+  var config = {
+    currentTimeout : 0,
+    maxTimeout     : 5000,
+    elements       : {}
+  };
   return new Promise((resolve, reject) => {
     getElByExpr(expressions.mainDoc, config)
       .then(mainDoc => {
-        config.elements.mainDocument = mainDoc;
-        return getElByExpr(expressions.bottomDoc, config);
+	config.elements.mainDocument = mainDoc;
+	return getElByExpr(expressions.bottomDoc, config);
       })
       .then(bottomDoc => {
-        config.elements.bottomDocument = bottomDoc;
-        return getElByExpr(expressions.nextButton, config);
+	config.elements.bottomDocument = bottomDoc;
+	return getElByExpr(expressions.nextButton, config);
       })
       .then(nextButton => {
-        config.elements.nextButton = nextButton;
-        return getElByExpr(expressions.displayDocument, config);
+	config.elements.nextButton = nextButton;
+	return getElByExpr(expressions.displayDocument, config);
       })
       .then(displayDocument => {
-        config.elements.displayDocument = displayDocument;
-        resolve(config.elements);
+	config.elements.displayDocument = displayDocument;
+	resolve(config.elements);
       });
   });
 }
@@ -62,11 +62,11 @@ function getElByExpr(expression, config) {
 
     if ((el === null || el.length === 0) && currentTimeout < maxTimeout) {
       setTimeout(() => recurse(
-        expression,
-        currentTimeout + waitTime,
-        maxTimeout,
-        elements,
-        resolve), waitTime);
+	expression,
+	currentTimeout + waitTime,
+	maxTimeout,
+	elements,
+	resolve), waitTime);
     }
     else if (el === null) throw new Error("Could not find element from expression: " + expression); 
     else resolve(el); 
@@ -107,15 +107,15 @@ function getMainText(elements) {
   return new Promise((resolve, reject) => recurse(resolve));
 
   function recurse(resolve) {
+    elements.mainTextContainer = elements
+      .displayDocument
+      .contentDocument
+      .getElementsByClassName('regularcontenttext');
+
     if (stop_scrape) {
       resolve(htmlPageText);
     }
     else {
-      elements.mainTextContainer = elements
-	.displayDocument
-	.contentDocument
-	.getElementsByClassName('regularcontenttext');
-
       if (elements.mainTextContainer.length > 0) {
 	setTimeout(() => {
 	  elements.mainTextContainer = eval(elements.mainTextContainer);
