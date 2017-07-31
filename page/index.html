@@ -14,27 +14,40 @@
 
 	<button
 	   class="copy-all"
-	   @click="copyAll">
+	   @click="copyAll(event, 0)">
 	  Copy All Page Text
 	</button>
 
 	<h3>Page Text</h3>
 	<div class="text-nodes">
 	  <span
-	     v-for="value in slide.pageText"
+	     v-for="value in slide.xmlText"
 	     @click="copyText"
 	     contenteditable>
 	    {{ value }}
 	  </span>
+	  <span
+	     v-for="value in slide.htmlText"
+	     @click="copyText"
+	     contenteditable>
+	    {{ value }}
+	  </span>
+
+	  <p v-if="!slide.xmlText && !slide.htmlText">
+	    No text found.
+	  </p>
 	</div>
 
 	<h3>CC Text</h3>
 	<span
+	   v-for="value in slide.narrationText"
 	   @click="copyText"
 	   contenteditable>
-	  {{ slide.narrationText }}
+	  {{ value }}
 	</span>
-
+	<p v-if="!slide.narrationText">
+	  No closed captions found.
+	</p>
       </div>
     </div>
 
