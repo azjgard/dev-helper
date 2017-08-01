@@ -4,8 +4,10 @@
   </head>
   <link rel="stylesheet" href="/page/style.css" type="text/css" />
   <body>
-
     <div id="container">
+      <div
+	 id="feedback-dialog"
+	 :class="feedbackDialog.class">{{ feedbackDialog.text }}</div>
 
       <h1>{{ title }}</h1>
       <div class="slide" v-for="slide in slides">
@@ -14,7 +16,7 @@
 
 	<button
 	   class="copy-all"
-	   @click="copyAll(event, 0)">
+	   @click="copyAll">
 	  Copy All Page Text
 	</button>
 
