@@ -90,10 +90,12 @@ chrome.runtime.onMessage.addListener(
       // 	  .filter(value => value.match(/\w/g));
       // }
 
+
       data.xmlText  = cleanTextObject(data.xmlText);
       data.htmlText = cleanTextObject(data.htmlText);
       data.narrationText = cleanNarrationText(data.narrationText);
-
+      console.log("data", data);
+      
       // add slide if it doesn't already exist
       if (!slideAlreadyExists) {
 	app._data.slides.push(data);

@@ -85,6 +85,7 @@ function getDocument(url) {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     var msg = request.message;
+    console.log(request);
 
     // don't listen if there was no message attribute
     if (!msg) {

@@ -112,7 +112,7 @@ function getMainText(elements) {
     elements.mainTextContainer = elements
       .displayDocument
       .contentDocument
-      .getElementsByClassName('contentheadertext');
+      .getElementsByClassName('regularcontenttext');
 
     if (stop_scrape) {
       if(elements.mainTextContainer.length > 0){
@@ -206,9 +206,9 @@ function getSlideID(elements) {
 
     getElByExpr(expr, config)
       .then(embed => {
-        // Once slide ID is found, give the page scraper 1 more second
+        // Once slide ID is found, give the page scraper 3 more second
         // to find text on page, then send whatever is found
-        setTimeout(() => {stop_scrape = true; resolve(embed[0].src); console.log(xmlText);}, 1000);
+        setTimeout(() => {stop_scrape = true; resolve(embed[0].src);  }, 1000);
       });
   });
 }
@@ -222,13 +222,15 @@ function sendRequest(pageInformation) {
     message : 'new-html-page',
     data    : {
       slideId       : slideID,
-      narrationText : narrationText,
-      xmlText       : xmlText
+      narrationText : narrationText
     }
   };
 
-  if(xmlText === ''){
+  if(!xmlText){
     request.data.xmlText = null;
+  }
+  else {
+    request.data.xmlText = xmlText;
   }
 
   if (htmlText === null) {
@@ -240,7 +242,6 @@ function sendRequest(pageInformation) {
 	  .map   (text => text.trim());
     request.data.htmlText = textArray;
   }
-  console.log(request.data);
 
   chrome.runtime.sendMessage(request);
   stop_scrape = false;
@@ -277,6 +278,5 @@ chrome.runtime.onMessage.addListener(
 
     if (msg == 'stop-scrape') {
       xmlText = data;
-      console.log("xmlText", xmlText);
     }
   });
