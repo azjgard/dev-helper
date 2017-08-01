@@ -82,7 +82,8 @@ function getPageInformation(elements) {
     let actions = [
       getMainText(elements),
       getNarration(),
-      getSlideID(elements)
+      getSlideID(elements),
+      getSlidePercentage(elements)
     ];
 
     Promise.all(actions).then(pageInformation => {
@@ -213,15 +214,34 @@ function getSlideID(elements) {
   });
 }
 
+function getSlidePercentage(elements) {
+  return new Promise((resolve, reject) => {
+    let expr = 'elements.bottomDocument.contentDocument.getElementById("ProgressBarPercent")';
+    let config = {
+      currentTimeout : 0,
+      maxTimeout     : 5000,
+      elements       : elements
+    };
+
+    getElByExpr(expr, config)
+      .then(el => {
+	console.log(el.innerText);
+	resolve(el.innerText);
+      });
+  });
+}
+
 function sendRequest(pageInformation) {
   let htmlText      = pageInformation[0];
   let narrationText = pageInformation[1];
   let slideID       = pageInformation[2];
+  let slidePercent  = pageInformation[3];
 
   let request = {
     message : 'new-html-page',
     data    : {
       slideId       : slideID,
+      slidePercent  : slidePercent,
       narrationText : narrationText
     }
   };

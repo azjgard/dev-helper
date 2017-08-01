@@ -3,15 +3,22 @@ var app = new Vue({
   el: '#container',
   data: {
     title: "Old Slide Text",
-    slides: []
+    slides: [],
+    feedbackDialog: {
+      text: '',
+      class: {
+	visible: false
+      }
+    }
   },
   methods: {
     copyText: function(event) {
       document.execCommand('selectAll', false, null);
       document.execCommand('copy');
       window.getSelection().empty();
-    },
 
+      this.showDialog("Text copied!", 1000);
+    },
     // breaking the Vue paradigm so we can copy text :)
     copyAll: function(event) {
       let slide         = event.toElement.parentElement;
@@ -46,6 +53,25 @@ var app = new Vue({
 
       utilityDialog.contentEditable = false;
       utilityDialog.textContent = "";
+
+      this.showDialog("Text copied!", 1000);
+    },
+    showDialog: function(text, timeOut) {
+      
+      this._data.feedbackDialog.text = text;
+      this._data.feedbackDialog.class.visible = true;
+
+      document
+	.getElementById('feedback-dialog')
+	.style
+	.left = document
+	.getElementById('container')
+	.offsetLeft;
+
+      setTimeout(() => {
+	this._data.feedbackDialog.class.visible = false;
+      }, timeOut);
+
     }
   }
 });
@@ -54,8 +80,6 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     var msg  = request.message;
     var data = request.data;
-
-    console.log(request);
 
     if (msg === 'display-xml') {
       var slides             = app._data.slides;
@@ -83,6 +107,9 @@ chrome.runtime.onMessage.addListener(
 
       if (!slideAlreadyExists) {
 	app._data.slides.push(data);
+      }
+      else {
+	app.showDialog("That slide already exists!", 1500);
       }
     }
 });
