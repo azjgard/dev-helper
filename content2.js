@@ -124,8 +124,8 @@ function getMainText(elements) {
       .getElementsByClassName('regularcontenttext');
 
     if (stop_scrape) {
-      if (elements.mainTextContainer.length > 0){
-        resolve(elements.mainTextContainer[0].innerText);
+      if (elements.mainTextContainer.length > 0) {
+        resolve(elements.displayDocument.contentDocument.body.innerText);
       }
       else {
         resolve(null);
@@ -135,7 +135,7 @@ function getMainText(elements) {
       if (elements.mainTextContainer.length > 0) {
         setTimeout(() => {
           elements.mainTextContainer = eval(elements.mainTextContainer);
-          resolve(elements.mainTextContainer[0].innerText);
+          resolve(elements.displayDocument.contentDocument.body.innerText);
         }, 500);
       }
       else {
@@ -265,6 +265,7 @@ function sendRequest(pageInformation) {
     let textArray = htmlText.split('\n')
 	  .filter(text => text.match(/\w/g))
 	  .map   (text => text.trim());
+
     request.data.htmlText = textArray;
   }
 
