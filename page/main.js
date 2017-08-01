@@ -100,10 +100,12 @@ chrome.runtime.onMessage.addListener(
 
       if (data.xmlText) {
         for (var key in data.xmlText) {
-	  let text = data.xmlText[key].text;
-	  if (text.match(/\w/))
-	    xmlArr.push(text);
-        }
+	  let textArr = data.xmlText[key].text;
+
+	  for (var x = 0; x < textArr.length; x++) {
+	    if (textArr[x].match(/\w/)) xmlArr.push(textArr[x]);
+	  }
+	}
       }
 
       data.xmlText       = xmlArr;
@@ -117,7 +119,7 @@ chrome.runtime.onMessage.addListener(
 	app.showDialog("That slide already exists!", 1500);
       }
     }
-});
+  });
 
 function cleanTextObject(obj) {
   let newObj = null;
