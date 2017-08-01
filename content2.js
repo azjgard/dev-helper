@@ -25,7 +25,7 @@ function defineElements() {
   };
   var config = {
     currentTimeout : 0,
-    maxTimeout     : 5000,
+    maxTimeout     : 30000,
     elements       : {}
   };
   return new Promise((resolve, reject) => {
@@ -209,7 +209,7 @@ function getSlideID(elements) {
     let expr   = 'elements.displayDocument.contentDocument.getElementsByTagName("embed")';
     let config = {
       currentTimeout : 0,
-      maxTimeout     : 5000,
+      maxTimeout     : 30000,
       elements       : elements
     };
 
@@ -225,7 +225,7 @@ function getSlidePercentage(elements) {
     let expr = 'elements.bottomDocument.contentDocument.getElementById("ProgressBarPercent")';
     let config = {
       currentTimeout : 0,
-      maxTimeout     : 5000,
+      maxTimeout     : 30000,
       elements       : elements
     };
 
