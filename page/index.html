@@ -24,15 +24,15 @@
 	<div class="text-nodes">
 	  <span
 	     v-for="value in slide.xmlText"
+	     v-html="value"
 	     @click="copyText"
 	     contenteditable>
-	    {{ value }}
 	  </span>
 	  <span
 	     v-for="value in slide.htmlText"
+	     v-html="value"
 	     @click="copyText"
 	     contenteditable>
-	    {{ value }}
 	  </span>
 
 	  <p v-if="!slide.xmlText && !slide.htmlText">
@@ -43,9 +43,9 @@
 	<h3>CC Text</h3>
 	<span
 	   v-for="value in slide.narrationText"
+	   v-html="value"
 	   @click="copyText"
 	   contenteditable>
-	  {{ value }}
 	</span>
 	<p v-if="!slide.narrationText">
 	  No closed captions found.
