@@ -49,8 +49,16 @@ function getDocument(url) {
   return xhr.responseText;
 }
 
+<<<<<<< HEAD
 var getContext = function(which_tab) {
   let loc = '';
+=======
+// listen for messages from the content scripts
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    var msg = request.message;
+    console.log(request);
+>>>>>>> 121b5b9c62ff2aef1336fecb1afd7db79acceca6
 
   if (which_tab) { loc = which_tab;            }
   else           { loc = window.location.href; }

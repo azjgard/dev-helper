@@ -114,7 +114,7 @@ function getMainText(elements) {
     elements.mainTextContainer = elements
       .displayDocument
       .contentDocument
-      .getElementsByClassName('contentheadertext');
+      .getElementsByClassName('regularcontenttext');
 
     if (stop_scrape) {
       if (elements.mainTextContainer.length > 0){
@@ -208,7 +208,7 @@ function getSlideID(elements) {
 
     getElByExpr(expr, config)
       .then(embed => {
-        setTimeout(() => {stop_scrape = true; resolve(embed[0].src); console.log(xmlText);}, 1000);
+        setTimeout(() => {stop_scrape = true; resolve(embed[0].src);  }, 1000);
       });
   });
 }
@@ -222,13 +222,15 @@ function sendRequest(pageInformation) {
     message : 'new-html-page',
     data    : {
       slideId       : slideID,
-      narrationText : narrationText,
-      xmlText       : xmlText
+      narrationText : narrationText
     }
   };
 
   if (xmlText === '') {
     request.data.xmlText = null;
+  }
+  else {
+    request.data.xmlText = xmlText;
   }
 
   if (htmlText === null) {

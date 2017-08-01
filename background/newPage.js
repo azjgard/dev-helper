@@ -23,14 +23,15 @@ const createXmlPage = xmlPageIsOpen => new Promise((resolve, reject) => {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     var msg = request.message;
-
     if (msg == 'new-html-page') {
       addSlideToHtmlPage(request.data);
     }
   });
 
-
 function addSlideToHtmlPage(slideObject) {
+  if(slideObject.xmlText){
+    slideObject.xmlText = [slideObject.xmlText];
+  }
   queryTabs({})
     .then(tabs => getTabByUrlPattern(tabs, htmlPageURL)) // try and get the tab the htmlPage is open at
     .then(tabArray => new Promise((resolve, reject) => resolve(tabArray.length === 0 ? false : true))) // check if we found it
