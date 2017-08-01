@@ -96,12 +96,17 @@ chrome.runtime.onMessage.addListener(
 	}
       }
 
-      if(data.xmlText){
-        for(var key in data.xmlText){
-          data.xmlText[key].text       = cleanTextObject([data.xmlText[key].text]);
+      var xmlArr = [];
+
+      if (data.xmlText) {
+        for (var key in data.xmlText) {
+	  let text = data.xmlText[key].text;
+	  if (text.match(/\w/))
+	    xmlArr.push(text);
         }
       }
-      console.log(data.xmlText);
+
+      data.xmlText       = xmlArr;
       data.htmlText      = cleanTextObject(data.htmlText);
       data.narrationText = cleanNarrationText(data.narrationText);
 
@@ -116,7 +121,7 @@ chrome.runtime.onMessage.addListener(
 
 function cleanTextObject(obj) {
   let newObj = null;
-  if (obj !== null && typeof obj === "object") {
+  if (obj !== null && typeof obj === "object" && obj.length > 0) {
     newObj = obj.filter(value => value.match(/\w/g));
   }
   return newObj;

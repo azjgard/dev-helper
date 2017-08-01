@@ -225,7 +225,6 @@ function getSlidePercentage(elements) {
 
     getElByExpr(expr, config)
       .then(el => {
-	console.log(el.innerText);
 	resolve(el.innerText);
       });
   });
@@ -246,47 +245,27 @@ function sendRequest(pageInformation) {
     }
   };
 
-  // function xmlReceived(){
-  // let timer = 0;
-  // let maxTimer = 3000;
-  // let timeout = 500;
-  //   return new Promise(function(resolve, reject){
-  //       recurse(resolve, timer, timeout, maxTimer);
-  //   });
-  // }
+  if (xmlText === '') {
+    request.data.xmlText = null;
+  }
+  else {
+    request.data.xmlText = xmlText;
+  }
 
-  // function recurse(resolve, timer, timeout, maxTimer){
-  //   if(xmlText === '' && timer < maxTimer){
-  //     console.log(timer);
-  //     setTimeout(() => recurse(resolve, timer += timeout, timeout, maxTimer), timeout);
-  //   }
-  //   else resolve();
-  // }
-  // xmlReceived();
+  if (htmlText === null) {
+    request.data.htmlText = null;
+  }
+  else {
+    let textArray = htmlText.split('\n')
+	  .filter(text => text.match(/\w/g))
+	  .map   (text => text.trim());
+    request.data.htmlText = textArray;
+  }
 
-  // Promise.all([xmlReceived()]).then(function(){
-      if (xmlText === '') {
-        request.data.xmlText = null;
-      }
-      else {
-        request.data.xmlText = xmlText;
-      }
+  chrome.runtime.sendMessage(request);
 
-      if (htmlText === null) {
-        request.data.htmlText = null;
-      }
-      else {
-        let textArray = htmlText.split('\n')
-              .filter(text => text.match(/\w/g))
-              .map   (text => text.trim());
-        request.data.htmlText = textArray;
-      }
-
-      chrome.runtime.sendMessage(request);
-
-      stop_scrape = false;
-      xmlText     = '';
-    // });
+  stop_scrape = false;
+  xmlText     = '';
 }
 
 //
