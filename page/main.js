@@ -114,6 +114,9 @@ chrome.runtime.onMessage.addListener(
 
       if (!slideAlreadyExists) {
 	app._data.slides.push(data);
+	setTimeout(() => {
+	  window.scrollTo(0,document.body.scrollHeight);
+	}, 50);
       }
       else {
 	app.showDialog("That slide already exists!", 1500);

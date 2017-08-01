@@ -102,6 +102,9 @@ function getPageInformation(elements) {
         }
       }
 
+      // we need to get the slide percentage after
+      // we've gotten everything else to ensure that
+      // it has changed by the time we grab it.
       getSlidePercentage(elements)
 	.then(percentage => {
 	  pageInformation.push(percentage);
