@@ -11,27 +11,49 @@ chrome.webRequest.onCompleted.addListener(function (details) {
     let responseText = getDocument(resourceURL);
     let parser       = new DOMParser();
     let xmlDoc       = parser.parseFromString(responseText, "text/xml");
-    let root         = xmlDoc.getElementsByTagName('CatapultDM');
+    let root         = xmlDoc.getElementsByTagName('CatapultDM')[0];
+    console.log(root);
+    let xmlTextObj   = {};
 
-    if (root[0].children.length === 1 &&
-       (root[0].children[0].tagName === 'files' ||
-	root[0].children[0].tagName === 'settings')) {}
-    else {
-      globalBlacklist.push(resourceURL);
+    function createXmlObject(){
+        let x = 1;
+        for(var i = 0; i < root.children.length; i++) {
 
-      let textContent = root[0]
-	.textContent
-	.replace(/<\/*\w+\s*\/*>/g, "\n")
-	.trim();
-
-      var request = {
-        message : 'stop-scrape',
-        data    : textContent
-      };
-
-      // send a message to the listener in content2.js
-      sendToTab('old-slide', request);
+          let tagname = checkXmlObject(root.children[i].tagName, x);
+          xmlTextObj[tagname] = {
+            tagName : tagname,
+            text    : root.children[i].textContent
+          };
+        }
+          console.log(xmlTextObj);
     }
+    createXmlObject();
+
+    function checkXmlObject(tagname, x){
+      console.log('check if name is same');
+      if(xmlTextObj.hasOwnProperty(tagname)){
+        tagname += x;
+        x++;
+        checkXmlObject(tagname, x);
+      }
+      else return tagname;
+    }
+
+      if (root.children.length === 1 &&
+          (root.children[0].tagName === 'files' ||
+           root.children[0].tagName === 'settings')) {}
+      else {
+        globalBlacklist.push(resourceURL);
+
+        var request = {
+          message : 'stop-scrape',
+          data    : xmlTextObj
+        };
+
+        // send a message to the listener in content2.js
+        sendToTab('old-slide', request);
+      }
+
   }
 }, { urls : [ "*://avondale-iol/*"]});
 
@@ -75,7 +97,7 @@ function sendToTab(which_tab, request){
       let context = getContext(tabs[i].url);
       
       if (context === which_tab) {
-	chrome.tabs.sendMessage(tabs[i].id, request);
+        chrome.tabs.sendMessage(tabs[i].id, request);
       }   
     }
   });

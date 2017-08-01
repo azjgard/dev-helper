@@ -3,7 +3,7 @@
 // is currently doing. Search 'TODO'
 
 var stop_scrape = false;
-var xmlText = null;
+var xmlText = "";
 var addedNextListener = false;
 
 execSlide();
@@ -31,20 +31,20 @@ function defineElements() {
   return new Promise((resolve, reject) => {
     getElByExpr(expressions.mainDoc, config)
       .then(mainDoc => {
-	config.elements.mainDocument = mainDoc;
-	return getElByExpr(expressions.bottomDoc, config);
+        config.elements.mainDocument = mainDoc;
+        return getElByExpr(expressions.bottomDoc, config);
       })
       .then(bottomDoc => {
-	config.elements.bottomDocument = bottomDoc;
-	return getElByExpr(expressions.nextButton, config);
+        config.elements.bottomDocument = bottomDoc;
+        return getElByExpr(expressions.nextButton, config);
       })
       .then(nextButton => {
-	config.elements.nextButton = nextButton;
-	return getElByExpr(expressions.displayDocument, config);
+        config.elements.nextButton = nextButton;
+        return getElByExpr(expressions.displayDocument, config);
       })
       .then(displayDocument => {
-	config.elements.displayDocument = displayDocument;
-	resolve(config.elements);
+        config.elements.displayDocument = displayDocument;
+        resolve(config.elements);
       });
   });
 }
@@ -62,11 +62,11 @@ function getElByExpr(expression, config) {
 
     if ((el === null || el.length === 0) && currentTimeout < maxTimeout) {
       setTimeout(() => recurse(
-	expression,
-	currentTimeout + waitTime,
-	maxTimeout,
-	elements,
-	resolve), waitTime);
+        expression,
+        currentTimeout + waitTime,
+        maxTimeout,
+        elements,
+        resolve), waitTime);
     }
     else if (el === null || el.length === 0) {
       throw new Error("Could not find element from expression: " + expression); 
@@ -90,16 +90,16 @@ function getPageInformation(elements) {
       let textContainer = elements.mainTextContainer;
 
       if (!addedNextListener){
-	elements.nextButton.addEventListener('click', execSlide);
-	addedNextListener = true;
+        elements.nextButton.addEventListener('click', execSlide);
+        addedNextListener = true;
       }
 
       if (narrationText.includes('Click the next active link')) {
-	for (var i = 0; i < textContainer.length; i++) {
-	  if (textContainer[i].tagName === 'A') {
-	    textContainer[i].addEventListener('click', execSlide);
-	  }
-	}
+        for (var i = 0; i < textContainer.length; i++) {
+          if (textContainer[i].tagName === 'A') {
+            textContainer[i].addEventListener('click', execSlide);
+          }
+        }
       }
 
       resolve(pageInformation);
@@ -126,13 +126,13 @@ function getMainText(elements) {
     }
     else {
       if (elements.mainTextContainer.length > 0) {
-	setTimeout(() => {
-	  elements.mainTextContainer = eval(elements.mainTextContainer);
-	  resolve(elements.mainTextContainer[0].innerText);
-	}, 500);
+        setTimeout(() => {
+          elements.mainTextContainer = eval(elements.mainTextContainer);
+          resolve(elements.mainTextContainer[0].innerText);
+        }, 500);
       }
       else {
-	setTimeout(() => recurse(resolve), 1000);
+        setTimeout(() => recurse(resolve), 1000);
       }
     }
   }
@@ -147,10 +147,10 @@ function getNarration() {
       let narrationText = narrationEl && narrationEl.value;
 
       if (narrationText === null ||
-	  narrationText.length === 0) { setTimeout(() => recurse(resolve), 1000); }
+          narrationText.length === 0) { setTimeout(() => recurse(resolve), 1000); }
       else {
-	narrationEl.value = '';
-	resolve(narrationText);
+        narrationEl.value = '';
+        resolve(narrationText);
       }
     }
 
@@ -164,15 +164,15 @@ function storeNarrationTextInElement() {
     .then(text => {
       // if the element doesn't exist, create it
       if (!document.querySelector('#old_slide_narration_text')) {
-	var input   = document.createElement('input');
-	input.id    = "old_slide_narration_text";
-	input.value = text;
-	input.setAttribute('type', 'hidden');
-	document.body.appendChild(input);
+        var input   = document.createElement('input');
+        input.id    = "old_slide_narration_text";
+        input.value = text;
+        input.setAttribute('type', 'hidden');
+        document.body.appendChild(input);
       }
       // otherwise, just set its value
       else {
-	document.querySelector('#old_slide_narration_text').value = text;
+        document.querySelector('#old_slide_narration_text').value = text;
       }
     });
 
@@ -181,16 +181,16 @@ function storeNarrationTextInElement() {
     
     function recurse(resolve) {
       try {
-	var old_slide_narration_scraped =
-	      document
-	      .querySelector('#_RLOCD')
-	      .contentDocument
-	      .querySelector('#display')
-	      .contentWindow
-	      .GetNarrationText();
+        var old_slide_narration_scraped =
+              document
+              .querySelector('#_RLOCD')
+              .contentDocument
+              .querySelector('#display')
+              .contentWindow
+              .GetNarrationText();
 
-	if (old_slide_narration_scraped === "") { throw new Error("No text");           }
-	else                                    { resolve(old_slide_narration_scraped); }
+        if (old_slide_narration_scraped === "") { throw new Error("No text");           }
+        else                                    { resolve(old_slide_narration_scraped); }
       }
       catch (err) { setTimeout(() => recurse(resolve), 1000); }
     }
@@ -226,27 +226,47 @@ function sendRequest(pageInformation) {
     }
   };
 
-  if (xmlText === '') {
-    request.data.xmlText = null;
-  }
-  else {
-    request.data.xmlText = xmlText;
-  }
+  // function xmlReceived(){
+  // let timer = 0;
+  // let maxTimer = 3000;
+  // let timeout = 500;
+  //   return new Promise(function(resolve, reject){
+  //       recurse(resolve, timer, timeout, maxTimer);
+  //   });
+  // }
 
-  if (htmlText === null) {
-    request.data.htmlText = null;
-  }
-  else {
-    let textArray = htmlText.split('\n')
-	  .filter(text => text.match(/\w/g))
-	  .map   (text => text.trim());
-    request.data.htmlText = textArray;
-  }
+  // function recurse(resolve, timer, timeout, maxTimer){
+  //   if(xmlText === '' && timer < maxTimer){
+  //     console.log(timer);
+  //     setTimeout(() => recurse(resolve, timer += timeout, timeout, maxTimer), timeout);
+  //   }
+  //   else resolve();
+  // }
+  // xmlReceived();
 
-  chrome.runtime.sendMessage(request);
+  // Promise.all([xmlReceived()]).then(function(){
+      if (xmlText === '') {
+        request.data.xmlText = null;
+      }
+      else {
+        request.data.xmlText = xmlText;
+      }
 
-  stop_scrape = false;
-  xmlText     = null;
+      if (htmlText === null) {
+        request.data.htmlText = null;
+      }
+      else {
+        let textArray = htmlText.split('\n')
+              .filter(text => text.match(/\w/g))
+              .map   (text => text.trim());
+        request.data.htmlText = textArray;
+      }
+
+      chrome.runtime.sendMessage(request);
+
+      stop_scrape = false;
+      xmlText     = '';
+    // });
 }
 
 //

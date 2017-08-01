@@ -72,7 +72,12 @@ chrome.runtime.onMessage.addListener(
 	}
       }
 
-      data.xmlText       = cleanTextObject(data.xmlText);
+      if(data.xmlText){
+        for(var key in data.xmlText){
+          data.xmlText[key].text       = cleanTextObject([data.xmlText[key].text]);
+        }
+      }
+      console.log(data.xmlText);
       data.htmlText      = cleanTextObject(data.htmlText);
       data.narrationText = cleanNarrationText(data.narrationText);
 
