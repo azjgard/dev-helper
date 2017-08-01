@@ -81,8 +81,6 @@ chrome.runtime.onMessage.addListener(
     var msg  = request.message;
     var data = request.data;
 
-    console.log(request);
-
     if (msg === 'display-xml') {
       var slides             = app._data.slides;
       var slideAlreadyExists = false;
@@ -104,6 +102,9 @@ chrome.runtime.onMessage.addListener(
 
       if (!slideAlreadyExists) {
 	app._data.slides.push(data);
+      }
+      else {
+	app.showDialog("That slide already exists!", 1500);
       }
     }
 });
