@@ -12,9 +12,6 @@ chrome.webRequest.onCompleted.addListener(function (details) {
     let parser       = new DOMParser();
 
     let xmlDoc       = parser.parseFromString(responseText, "text/xml");
-    let root         = xmlDoc.getElementsByTagName('text')[0];
-    let textItems    = root && root.children;
-
     let xmlTextObj   = {};
 
     grabXmlText(xmlTextObj, 'text');

@@ -83,7 +83,6 @@ function getPageInformation(elements) {
       getMainText(elements),
       getNarration(),
       getSlideID(elements),
-      getSlidePercentage(elements)
     ];
 
     Promise.all(actions).then(pageInformation => {
@@ -103,7 +102,11 @@ function getPageInformation(elements) {
         }
       }
 
-      resolve(pageInformation);
+      getSlidePercentage(elements)
+	.then(percentage => {
+	  pageInformation.push(percentage);
+	  resolve(pageInformation);
+	});
     });
   });
 }
