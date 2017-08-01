@@ -68,13 +68,16 @@ function getElByExpr(expression, config) {
 	elements,
 	resolve), waitTime);
     }
-    else if (el === null || el.length === 0) throw new Error("Could not find element from expression: " + expression); 
-    else resolve(el); 
+    else if (el === null || el.length === 0) {
+      throw new Error("Could not find element from expression: " + expression); 
+    }
+    else {
+      resolve(el); 
+    }
   }
 }
 
 function getPageInformation(elements) {
-
   return new Promise((resolve, reject) => {
     let actions = [
       getMainText(elements),
@@ -90,7 +93,6 @@ function getPageInformation(elements) {
 	elements.nextButton.addEventListener('click', execSlide);
 	addedNextListener = true;
       }
-
 
       if (narrationText.includes('Click the next active link')) {
 	for (var i = 0; i < textContainer.length; i++) {
@@ -115,7 +117,7 @@ function getMainText(elements) {
       .getElementsByClassName('contentheadertext');
 
     if (stop_scrape) {
-      if(elements.mainTextContainer.length > 0){
+      if (elements.mainTextContainer.length > 0){
         resolve(elements.mainTextContainer[0].innerText);
       }
       else {
@@ -206,8 +208,6 @@ function getSlideID(elements) {
 
     getElByExpr(expr, config)
       .then(embed => {
-        // Once slide ID is found, give the page scraper 1 more second
-        // to find text on page, then send whatever is found
         setTimeout(() => {stop_scrape = true; resolve(embed[0].src); console.log(xmlText);}, 1000);
       });
   });
@@ -227,7 +227,7 @@ function sendRequest(pageInformation) {
     }
   };
 
-  if(xmlText === ''){
+  if (xmlText === '') {
     request.data.xmlText = null;
   }
 
@@ -240,11 +240,11 @@ function sendRequest(pageInformation) {
 	  .map   (text => text.trim());
     request.data.htmlText = textArray;
   }
-  console.log(request.data);
 
   chrome.runtime.sendMessage(request);
+
   stop_scrape = false;
-  xmlText = null;
+  xmlText     = null;
 }
 
 //
@@ -268,15 +268,12 @@ var executeInPageContext = function(fn) {
   document.documentElement.removeChild(script); // clean up
 };
 
-
-
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    var msg = request.message;
+    var msg  = request.message;
     var data = request.data;
 
     if (msg == 'stop-scrape') {
       xmlText = data;
-      console.log("xmlText", xmlText);
     }
   });

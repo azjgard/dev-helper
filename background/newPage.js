@@ -1,4 +1,3 @@
-// url to the html page that displays XML
 const htmlPageURL = chrome.runtime.getURL('/page/index.html');
 
 // promisified chrome.tabs.query
@@ -21,22 +20,12 @@ const createXmlPage = xmlPageIsOpen => new Promise((resolve, reject) => {
   }
 });
 
-// Content Script Message Listener
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     var msg = request.message;
-    console.log(request);
+
     if (msg == 'new-html-page') {
-      console.log('adding html page');
       addSlideToHtmlPage(request.data);
-    }
-    if (msg == 'scrape-html') {
-      scrapeHtml()
-        .then(addSlideToHtmlPage);
-    }
-    if (msg == 'grab-narration') {
-      grabNarration()
-        .then(addSlideToHtmlPage);
     }
   });
 
