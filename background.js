@@ -1,4 +1,5 @@
-var globalBlacklist   = [];
+const xmlPreviewURL = chrome.runtime.getURL('/page/index.html');
+var globalBlacklist = [];
 
 chrome.webRequest.onCompleted.addListener(function (details) {
   var resourceURL = details.url;
@@ -114,3 +115,18 @@ function sendToTab(which_tab, request){
     }
   });
 }
+
+// reset the global blacklist if the XML Preview is closed
+chrome.tabs.onRemoved.addListener(function(tabID, removeInfo) {
+  chrome.tabs.query({}, tabs => {
+    let slideUrlFound = false;
+
+    for (var i = 0; i < tabs.length; i++) {
+      if (tabs[i].url === xmlPreviewURL) {
+	slideUrlFound = true;
+      }
+    }
+
+    if (!slideUrlFound) globalBlacklist = [];
+  });
+});
