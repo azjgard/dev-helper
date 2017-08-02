@@ -15,7 +15,7 @@
 	    "matches": [
 		"*://avondale-iol/*"
 	    ],
-	    "js" : ["content2.js"], 
+	    "js" : ["content/content2.js"], 
 	    "run_at" : "document_idle"
 	},
 	{
@@ -27,7 +27,7 @@
     "background" : {
 	"scripts" : [
 	    "background/newPage.js",
-	    "background.js"
+	    "background/background.js"
 	]
     },
 
