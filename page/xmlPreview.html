@@ -11,6 +11,7 @@
   <body>
     <div id="main-container">
 
+      <div id="filler-sidebar"></div>
       <div id="sidebar">
 	<h2 class="title">Active Slide Text</h2>
 	<h3 class="title">Current Slide: {{ slide_active.id }}</h3>
@@ -22,19 +23,31 @@
 	  </div>
 	</div>
 	<button @click="addContent">Add Content</button>
+	<button @click="export">Export Content</button>
       </div>  
 
       <div id="center-content">
 	<div
+	   tabindex="5"
 	   v-for="slide in slides"
 	   :class="slide.classList"
-	   @click.self="setActiveElement(slide)">
+	   @click.self="setActiveElement(slide)" 
+	   @focus="setActiveElement(slide)">
+	  <button
+	     class="delete-button"
+	     @click="deleteElement(slides, slide)">Delete</button>
 	  <div
+	     tabindex="5"
 	     v-for="xmlBlock in slide.xmlBlocks"
 	     :class="xmlBlock.classList"
-	     @click="setActiveElement({ parent: slide, target: xmlBlock})"
-	     contenteditable>
-	    {{ xmlBlock.text }}
+	     @click="setActiveElement({ parent: slide, target: xmlBlock})" 
+	     @focus="setActiveElement({ parent: slide, target: xmlBlock})">
+	    <button
+	       class="delete-button"
+	       @click="deleteElement(slide.xmlBlocks, xmlBlock)">Delete</button>
+	    <div contenteditable>
+	      {{ xmlBlock.text }}
+	    </div>
 	  </div>
 	</div>
       </div>

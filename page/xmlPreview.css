@@ -5,10 +5,17 @@
     box-sizing: border-box;
     font-family: Helvetica;
 }
-body {
+
+html,
+body,
+#main-container {
     padding: 0;
     margin: 0;
+    min-height: 100%;
+    width: 100%;
 }
+
+div:focus,
 [contenteditable]:focus {
     outline: 0px solid transparent;
 }
@@ -31,15 +38,20 @@ h4.title { font-size: calc(100% - 2px);  }
     margin: 50px 0;
     border: 1px solid #000; 
     padding: 20px;
+    padding-top: 30px;
 }
 
+.slide.active,
 .slide.activeChild {
     border: 1px solid blue;
 }
 
 .xmlBlock {
-    padding: 10px;
     background-color: #fff;
+}
+
+.xmlBlock [contenteditable] {
+    padding: 10px;
 }
 
 .xmlBlock:not(.slide) {
@@ -55,11 +67,23 @@ h4.title { font-size: calc(100% - 2px);  }
     margin: 0 15px;
 }
 
+#filler-sidebar,
 #sidebar {
     flex-grow: 1;
     height: 100%;
+    width: 33%;
     max-width: 200px;
+    background-color: #fff;
+}
+
+#sidebar {
+    position: fixed;
     border: 1px solid #000;
+    z-index: 999;
+}
+
+@media screen and (max-width: 932px) {
+    #sidebar {}
 }
 
 /* Transitions */
@@ -73,6 +97,18 @@ h4.title { font-size: calc(100% - 2px);  }
     0%   { background-color: rgba(0,0,0,0.05) }
     50%  { background-color: rgba(0,0,0,0.11)  }
     100% { background-color: rgba(0,0,0,0.05) }
+}
+
+.slide,
+.xmlBlock {
+    position: relative;
+}
+
+.delete-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
 }
 
 .slide.active,

@@ -3,6 +3,9 @@
 // <!-- https://vuejs.org/v2/guide/events.html#Modifier-Keys -->
 
 // TODO: add syntax highlighting for the xml
+// TODO: add manual tab and shift+tab functions that take you back and forth between elements
+// TODO: add feature to export all current page text to XML
+// TODO: add feature to delete a slide
 
 let testData = {
   slide_active: {
@@ -22,12 +25,51 @@ var app = new Vue({
   data    : testData,
   methods : {
 
+    export: function() {
+      let textArray    = this.getAllText();
+      let exportString = '';
+
+      this.executeOnElements(textArray, text => {
+	exportString += text;
+      });
+      
+      console.log(exportString);
+    },
+
+    getAllText: function(separator) {
+      let xmlBlocks = this.getAllXmlBlocks();
+      let text      = [];
+
+      this.executeOnElements(xmlBlocks, xmlBlock => {
+	text.push(xmlBlock.text);
+      });
+
+      return text;
+    },
+
+    getAllXmlBlocks: function() {
+      let slides = this.getAllSlides();
+      let blocks = [];
+
+      this.executeOnElements(slides, slide => {
+	this.executeOnElements(slide.xmlBlocks, xmlBlock => {
+	  blocks.push(xmlBlock);
+	});
+      });
+
+      return blocks;
+    },
+
     init: function() {
       for (var i = 0; i < 10; i++) {
 	this.addContent();
       }
 
       this.setActiveSlide(
+	this.getAllSlides()[0]
+      );
+
+      this.setActiveElement(
 	this.getAllSlides()[0]
       );
     },
@@ -164,6 +206,11 @@ var app = new Vue({
       }
     },
 
+    deleteElement: function(parentArray, element) {
+      let index = parentArray.indexOf(element);
+      parentArray.splice(index, 1);
+    },
+
     changeElementPosition: function(parentArray, element, upOrDown) {
       let temp            = element;
       let elementIndex    = parentArray.indexOf(element);
@@ -214,12 +261,7 @@ document.addEventListener('keydown', function(event) {
 
 document.addEventListener('keyup', function(event) {
   let keyCode = event.which;
-
-  switch(keyCode) {
-  case control:
-    controlPressed = false;
-    break;
-  }
+  if (keyCode === control) controlPressed = false;
 });
 
 app.init();
