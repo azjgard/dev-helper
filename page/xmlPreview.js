@@ -4,8 +4,12 @@
 
 // TODO: add syntax highlighting for the xml
 // TODO: add manual tab and shift+tab functions that take you back and forth between elements
-// TODO: add feature to export all current page text to XML
-// TODO: add feature to delete a slide DONE
+
+Vue.directive('textchange', {
+  update: function(el, binding) {
+    console.log(binding);
+  }
+});
 
 let testData = {
   slide_active: {
@@ -41,7 +45,9 @@ var app = new Vue({
       let text      = [];
 
       this.executeOnElements(xmlBlocks, xmlBlock => {
+	text.push(xmlBlock.pre);
 	text.push(xmlBlock.text);
+	text.push(xmlBlock.post);
       });
 
       return text;
@@ -90,6 +96,8 @@ var app = new Vue({
 	],
 	xmlBlocks : [
 	  {
+	    pre  : '<textItem title="Hello World">',
+	    post : '</textItem>',
 	    text : makeid(),
 	    classList : {
 	      xmlBlock : true,
@@ -97,6 +105,8 @@ var app = new Vue({
 	    }
 	  },
 	  {
+	    pre  : '<textItem title="Hello World">',
+	    post : '</textItem>',
 	    text : makeid(),
 	    classList : {
 	      xmlBlock : true,
@@ -110,7 +120,9 @@ var app = new Vue({
 
       for (var i = 0; i < num; i++) {
 	obj.xmlBlocks.push({
-	  text: makeid(),
+	  pre  : '<textItem title="Hello World">',
+	  post : '</textItem>',
+	  text : makeid(),
 	  classList: {
 	    xmlBlock: true,
 	    active: false

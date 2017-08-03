@@ -58,10 +58,16 @@ h4.title { font-size: calc(100% - 2px);  }
 
 .xmlBlock {
     background-color: #fff;
+    padding: 5px;
 }
 
 .xmlBlock [contenteditable] {
     padding: 10px;
+    margin: 5px;
+}
+.xmlBlock.active [contenteditable] {
+    border: 1px solid blue;
+    background-color: #fff;
 }
 
 .xmlBlock:not(.slide) {
