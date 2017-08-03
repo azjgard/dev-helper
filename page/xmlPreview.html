@@ -7,7 +7,8 @@
   <head>
     <title>XML Page</title>
   </head>
-  <link rel="stylesheet" href="../page/xmlPreview.css" type="text/css" />
+  <link rel="stylesheet" href="../page/xmlPreview.css" />
+  <link rel="stylesheet" href="../lib/prism.css" />
   <body>
     <div id="main-container">
 
@@ -28,11 +29,9 @@
 
       <div id="center-content">
 	<div
-	   tabindex="5"
 	   v-for="slide in slides"
 	   :class="slide.classList"
-	   @click.self="setActiveElement(slide)" 
-	   @focus="setActiveElement(slide)">
+	   @click.self="setActiveElement(slide)">
 	  <button
 	     class="delete-button"
 	     @click="deleteElement(slides, slide)">Delete</button>
@@ -46,12 +45,18 @@
 	       class="delete-button"
 	       @click="deleteElement(slide.xmlBlocks, xmlBlock)">Delete</button>
 
-	    <code><pre>{{ xmlBlock.pre }}</pre></code>
+	    <code class="language-xml">
+	      <pre>{{ xmlBlock.pre }}</pre>
+	    </code>
+
 	    <input
 	       tabindex="5"
 	       v-model="xmlBlock.text"
 	       @focus="setActiveElement({ parent: slide, target: xmlBlock})"/>
-	    <code><pre>{{ xmlBlock.post }}</pre></code>
+
+	    <code class="language-xml">
+	      <pre>{{ xmlBlock.post }}</pre>
+	    </code>
 
 	  </div>
 	</div>
@@ -60,6 +65,7 @@
     </div>
 
     <script src="../lib/vue.js"></script>
+    <script src="../lib/prism.js"></script>
     <script src="../page/xmlPreview.js"></script>
   </body>
 </html>

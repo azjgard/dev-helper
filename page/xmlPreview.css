@@ -38,7 +38,7 @@ h4.title { font-size: calc(100% - 2px);  }
     margin: 50px 0;
     border: 1px solid #000; 
     padding: 20px;
-    padding-top: 30px;
+    padding-top: 50px;
 }
 
 .slide.active,
@@ -48,9 +48,12 @@ h4.title { font-size: calc(100% - 2px);  }
 
 .slide > span {
     position: absolute;
-    top: 5px;
-    left: 20px;
-    color: #ccc;
+    top: 0px;
+    left: 0px;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    background-color: #fff !important;
 }
 .slide.active > span {
     color: blue;
@@ -61,18 +64,18 @@ h4.title { font-size: calc(100% - 2px);  }
     padding: 5px;
 }
 
+.xmlBlock:not(.slide) {
+    border: 1px solid #ccc; 
+}
+
 .xmlBlock input {
-    padding: 10px;
-    margin: 5px;
+    padding: 3px;
+    margin-left: 30px;
     display: block;
 }
 .xmlBlock.active input {
     border: 1px solid blue;
     background-color: #fff;
-}
-
-.xmlBlock:not(.slide) {
-    border: 1px solid #ccc; 
 }
 
 .xmlBlock pre  { margin: 0;             }
