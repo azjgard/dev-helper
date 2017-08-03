@@ -1,6 +1,7 @@
 
 const xmlPreviewURL = chrome.runtime.getURL('/page/index.html');
 var globalBlacklist = [];
+var xmlDoc;
 
 chrome.webRequest.onCompleted.addListener(function (details) {
   var resourceURL = details.url;
@@ -10,64 +11,11 @@ chrome.webRequest.onCompleted.addListener(function (details) {
       !isBlacklisted(resourceURL, blacklist) &&
       !isBlacklisted(resourceURL, globalBlacklist)) {
 
-    let responseText = getDocument(resourceURL);
-    let parser       = new DOMParser();
-
-    let xmlDoc       = parser.parseFromString(responseText, "text/xml");
-    let xmlTextObj   = {};
-
-    grabXmlText(xmlTextObj, 'text');
-    grabXmlText(xmlTextObj, 'scenes');
-    grabXmlText(xmlTextObj, 'question_array');
-    grabXmlText(xmlTextObj, 'answer_array');
-
-    function grabXmlText(xmlTextObj, rootName) {
-      let root      = xmlDoc.getElementsByTagName(rootName)[0];
-      let textItems = root && root.children;
-
-      createXmlObject();
-
-      function createXmlObject() {
-	let x = 1;
-
-	if (textItems && textItems.length > 0) {
-	  for (var i = 0; i < textItems.length; i++) {
-	    let tagname = checkXmlObject(textItems[i].tagName, x);
-	    let text    = textItems[i].textContent;
-
-	    if (xmlTextObj.hasOwnProperty(tagname)) {
-	      xmlTextObj[tagname].text.push(text);
-	    }
-	    else {
-	      xmlTextObj[tagname] = {
-		tagName : tagname,
-		text    : [text]
-	      };
-	    }
-	  }
-	}
-      }
-
-      function checkXmlObject(tagname, x) {
-	if(xmlTextObj.hasOwnProperty(tagname)){
-	  tagname += x;
-	  x++;
-	  checkXmlObject(tagname, x);
-	}
-	else return tagname;
-      }
-    }
-
+    // add xml resource to blacklist
     globalBlacklist.push(resourceURL);
 
-    var request = {
-      message : 'stop-scrape',
-      data    : xmlTextObj
-    };
-
-    // send a message to the listener in content2.js
-    sendToTab('old-slide', request);
-
+    // XML gets saved
+    xmlDoc = storeXML(resourceURL);
   }
 }, { urls : [ "*://avondale-iol/*"]});
 
@@ -111,7 +59,7 @@ function sendToTab(which_tab, request){
       let context = getContext(tabs[i].url);
       
       if (context === which_tab) {
-	chrome.tabs.sendMessage(tabs[i].id, request);
+        chrome.tabs.sendMessage(tabs[i].id, request);
       }   
     }
   });
@@ -124,10 +72,17 @@ chrome.tabs.onRemoved.addListener(function(tabID, removeInfo) {
 
     for (var i = 0; i < tabs.length; i++) {
       if (tabs[i].url === xmlPreviewURL) {
-	slideUrlFound = true;
+        slideUrlFound = true;
       }
     }
 
     if (!slideUrlFound) globalBlacklist = [];
   });
 });
+
+
+function storeXML(resourceURL){
+  let responseText = getDocument(resourceURL);
+  let parser       = new DOMParser();
+  return parser.parseFromString(responseText, "text/xml");
+}

@@ -81,6 +81,7 @@ chrome.runtime.onMessage.addListener(
     var msg  = request.message;
     var data = request.data;
 
+    console.log(request.data);
     if (msg === 'display-xml') {
       var slides             = app._data.slides;
       var slideAlreadyExists = false;

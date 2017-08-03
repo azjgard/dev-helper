@@ -6,37 +6,38 @@
     "version"     : "2.2",
 
     "browser_action" : {
-	"default_icon" : "icon48.png",
-	"default_title": "Web Requests"
+        "default_icon" : "icon48.png",
+        "default_title": "Web Requests"
     },
 
     "content_scripts":[
-	{
-	    "matches": [
-		"*://avondale-iol/*"
-	    ],
-	    "js" : ["content/content2.js"], 
-	    "run_at" : "document_idle"
-	},
-	{
-	    "matches": [ "<all_urls>" ],
-	    "js" : ["content/xmlPage.js"]
-	}
+        {
+            "matches": [
+                "*://avondale-iol/*"
+            ],
+            "js" : ["content/content2.js"], 
+            "run_at" : "document_idle"
+        },
+        {
+            "matches": [ "<all_urls>" ],
+            "js" : ["content/xmlPage.js"]
+        }
     ],
 
     "background" : {
-	"scripts" : [
-	    "background/newPage.js",
-	    "background/background.js"
-	]
+        "scripts" : [
+            "lib/jquery.js",
+            "background/newPage.js",
+            "background/background.js"
+        ]
     },
 
     "permissions" : [
-	"tabs",
-	"<all_urls>",
-	"webRequest",
-	"notifications",
-	"storage",
-	"system.display"
+        "tabs",
+        "<all_urls>",
+        "webRequest",
+        "notifications",
+        "storage",
+        "system.display"
     ]
 }

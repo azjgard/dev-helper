@@ -3,7 +3,7 @@
 // is currently doing. Search 'TODO'
 
 var stop_scrape = false;
-var xmlText = "";
+// var xmlText = "";
 var addedNextListener = false;
 
 execSlide();
@@ -251,12 +251,12 @@ function sendRequest(pageInformation) {
     }
   };
 
-  if (xmlText === '') {
-    request.data.xmlText = null;
-  }
-  else {
-    request.data.xmlText = xmlText;
-  }
+  // if (xmlText === '') {
+  //   request.data.xmlText = null;
+  // }
+  // else {
+  //   request.data.xmlText = xmlText;
+  // }
 
   if (htmlText === null) {
     request.data.htmlText = null;
@@ -269,10 +269,14 @@ function sendRequest(pageInformation) {
     request.data.htmlText = textArray;
   }
 
+  //TODO 
+    // User chooses conversion type from popup
+    //   - send conversion type from content2.js with any html found, 
+  request.data.slideType = prompt("What kind of slide is this?", "image");
   chrome.runtime.sendMessage(request);
 
   stop_scrape = false;
-  xmlText     = '';
+  // xmlText     = '';
 }
 
 //
@@ -296,12 +300,12 @@ var executeInPageContext = function(fn) {
   document.documentElement.removeChild(script); // clean up
 };
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    var msg  = request.message;
-    var data = request.data;
+// chrome.runtime.onMessage.addListener(
+//   function(request, sender, sendResponse) {
+//     var msg  = request.message;
+//     var data = request.data;
 
-    if (msg == 'stop-scrape') {
-      xmlText = data;
-    }
-  });
+//     if (msg == 'stop-scrape') {
+//       xmlText = data;
+//     }
+//   });
