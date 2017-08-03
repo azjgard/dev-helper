@@ -11,17 +11,24 @@
     },
 
     "content_scripts":[
-        {
-            "matches": [
-                "*://avondale-iol/*"
-            ],
-            "js" : ["content/content2.js"], 
-            "run_at" : "document_idle"
-        },
-        {
-            "matches": [ "<all_urls>" ],
-            "js" : ["content/xmlPage.js"]
-        }
+	{
+	    "matches": [
+		"*://avondale-iol/*"
+	    ],
+	    "js" : ["content/content2.js"], 
+	    "run_at" : "document_idle"
+	},
+	{
+	    "matches": [ "<all_urls>" ],
+	    "js" : ["content/xmlPage.js"]
+	},
+	{
+	    "matches": [
+		"*://*/xmlPreview.html"
+	    ],
+	    "js"  : ["lib/prism.js"],
+	    "css" : ["lib/prism.css"]
+	}
     ],
 
     "background" : {
