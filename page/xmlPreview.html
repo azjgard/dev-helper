@@ -38,19 +38,20 @@
 	     @click="deleteElement(slides, slide)">Delete</button>
 	  <span> Slide Identifier: {{ slide.id }} </span>
 	  <div
-	     tabindex="5"
 	     v-for="xmlBlock in slide.xmlBlocks"
 	     :class="xmlBlock.classList"
 	     @click="setActiveElement({ parent: slide, target: xmlBlock})" 
-	     @focus="setActiveElement({ parent: slide, target: xmlBlock})"
-	     v-textchange>
+	     @focus="setActiveElement({ parent: slide, target: xmlBlock})">
 	    <button
 	       class="delete-button"
 	       @click="deleteElement(slide.xmlBlocks, xmlBlock)">Delete</button>
 
-	    {{ xmlBlock.pre }}
-	    <div contenteditable>{{ xmlBlock.text }}</div>
-	    {{ xmlBlock.post }}
+	    <code><pre>{{ xmlBlock.pre }}</pre></code>
+	    <input
+	       tabindex="5"
+	       v-model="xmlBlock.text"
+	       @focus="setActiveElement({ parent: slide, target: xmlBlock})"/>
+	    <code><pre>{{ xmlBlock.post }}</pre></code>
 
 	  </div>
 	</div>

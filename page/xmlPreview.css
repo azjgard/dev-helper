@@ -61,11 +61,12 @@ h4.title { font-size: calc(100% - 2px);  }
     padding: 5px;
 }
 
-.xmlBlock [contenteditable] {
+.xmlBlock input {
     padding: 10px;
     margin: 5px;
+    display: block;
 }
-.xmlBlock.active [contenteditable] {
+.xmlBlock.active input {
     border: 1px solid blue;
     background-color: #fff;
 }
@@ -73,6 +74,9 @@ h4.title { font-size: calc(100% - 2px);  }
 .xmlBlock:not(.slide) {
     border: 1px solid #ccc; 
 }
+
+.xmlBlock pre  { margin: 0;             }
+.xmlBlock code { display: inline-block; }
 
 #main-container {
     display: flex;

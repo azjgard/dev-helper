@@ -5,12 +5,6 @@
 // TODO: add syntax highlighting for the xml
 // TODO: add manual tab and shift+tab functions that take you back and forth between elements
 
-Vue.directive('textchange', {
-  update: function(el, binding) {
-    console.log(binding);
-  }
-});
-
 let testData = {
   slide_active: {
     id: "10%",
