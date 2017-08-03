@@ -46,6 +46,16 @@ h4.title { font-size: calc(100% - 2px);  }
     border: 1px solid blue;
 }
 
+.slide > span {
+    position: absolute;
+    top: 5px;
+    left: 20px;
+    color: #ccc;
+}
+.slide.active > span {
+    color: blue;
+}
+
 .xmlBlock {
     background-color: #fff;
 }
@@ -90,12 +100,12 @@ h4.title { font-size: calc(100% - 2px);  }
 
 @keyframes blink {
     0%   { background-color: rgba(0,0,0,0.05) }
-    50%  { background-color: rgba(0,0,0,0.11)  }
+    50%  { background-color: rgba(0,0,0,0.11) }
     100% { background-color: rgba(0,0,0,0.05) }
 }
 @-webkit-keyframes blink {
     0%   { background-color: rgba(0,0,0,0.05) }
-    50%  { background-color: rgba(0,0,0,0.11)  }
+    50%  { background-color: rgba(0,0,0,0.11) }
     100% { background-color: rgba(0,0,0,0.05) }
 }
 

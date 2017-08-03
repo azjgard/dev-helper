@@ -36,6 +36,7 @@
 	  <button
 	     class="delete-button"
 	     @click="deleteElement(slides, slide)">Delete</button>
+	  <span> Slide Identifier: {{ slide.id }} </span>
 	  <div
 	     tabindex="5"
 	     v-for="xmlBlock in slide.xmlBlocks"

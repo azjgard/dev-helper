@@ -5,7 +5,7 @@
 // TODO: add syntax highlighting for the xml
 // TODO: add manual tab and shift+tab functions that take you back and forth between elements
 // TODO: add feature to export all current page text to XML
-// TODO: add feature to delete a slide
+// TODO: add feature to delete a slide DONE
 
 let testData = {
   slide_active: {
