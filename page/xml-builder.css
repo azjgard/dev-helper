@@ -2,19 +2,84 @@
     font-family: Helvetica;
 }
 
+#menu,
+.word {
+    -webkit-transition: all .4s;
+    -moz-transition: all .4s;
+    transition: all .4s;
+}
+
 .word {
     padding: 5px;
     border: 1px solid #ccc;
-
-    -webkit-transition: background-color .4s;
-    -moz-transition: background-color .4s;
-    transition: background-color .4s;
-}
-.word:hover {
-    cursor: pointer;
-    background-color: #eee;
 }
 .word.in-xml {
     background-color: #0086D2;
     color: #fff;
+}
+
+#show-menu {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    height: 60px;
+    width: 60px;
+    text-align: center;
+
+    z-index: 99999;
+}
+
+button:hover,
+#show-menu:hover,
+.word:hover {
+    cursor: pointer;
+    background-color: #eee;
+}
+
+#menu {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0,0,0,.3);
+
+    z-index: 9999999;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#menu.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#menu button {
+    display: block;
+}
+
+#menu > div {
+    position: relative;
+    width: 80%;
+    max-width: 600px;
+    margin: auto;
+    background-color: #fff;
+    padding: 20px;
+}
+
+#menu > div > div {
+    display: flex;
+    justify-content: center;
+}
+
+#menu #close {
+    position: absolute;
+    right: 5px;
+    top: 5px;
 }

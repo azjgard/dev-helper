@@ -206,3 +206,26 @@ function generateID(blacklist) {
 function getTemplate(id) {
   return document.getElementById(id).innerHTML;
 }
+
+
+///////////////////
+// Menu Functions
+
+function toggleMenu(e) {
+  let menu = document.querySelector('#menu');
+
+  if (menu.className.includes('visible')) {
+    menu.classList.remove('visible');
+  }
+  else {
+    menu.classList.add('visible');
+  }
+}
+
+document
+  .querySelector('#show-menu')
+  .addEventListener('click', toggleMenu);
+
+document
+  .querySelector('#close')
+  .addEventListener('click', toggleMenu);
