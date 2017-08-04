@@ -1,0 +1,20 @@
+* {
+    font-family: Helvetica;
+}
+
+.word {
+    padding: 5px;
+    border: 1px solid #ccc;
+
+    -webkit-transition: background-color .4s;
+    -moz-transition: background-color .4s;
+    transition: background-color .4s;
+}
+.word:hover {
+    cursor: pointer;
+    background-color: #eee;
+}
+.word.in-xml {
+    background-color: #0086D2;
+    color: #fff;
+}
