@@ -1,13 +1,13 @@
 {
     "manifest_version": 2,
 
-    "name"        : "Web Requests",
-    "description" : "Tracking resources",
-    "version"     : "2.2",
+    "name"        : "Dev Helper Prototype",
+    "description" : "Automatically grab and display text from old slide interactive webs.",
+    "version"     : "1.0",
 
     "browser_action" : {
 	"default_icon" : "icon48.png",
-	"default_title": "Web Requests"
+	"default_title": "Dev Helper Prototype"
     },
 
     "content_scripts":[
