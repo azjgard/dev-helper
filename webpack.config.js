@@ -7,13 +7,18 @@ const filename = 'background.js';
 
 const output = {
   path : outPath,
-  filename
+  filename,
+  publicPath: 'output'
 };
 
 const loaders = [
   { 
     test   : /\.css$/,
     loader : 'style-loader!css-loader'
+  },
+  {
+    test : /\.xml$/,
+    loader  : 'raw-loader'
   }
 ];
 
