@@ -1,7 +1,7 @@
 const newPage    = require('./scripts/newPage.js');
-const xmlHandler = require('./scripts/xmlHandler.js');
+const background = require('./scripts/background.js');
 
 newPage();
-xmlHandler();
+background();
 
 
