@@ -485,15 +485,11 @@ function getContext(which_tab) {
   if (which_tab) { loc = which_tab;            }
   else           { loc = window.location.href; }
 
-  if (loc.includes('avondale-iol') && isPage(pattern_oldSlide)) {
+  if (loc.includes('avondale-iol') && loc.match(pattern_oldSlide)) {
     return 'old-slide'; 
   }
   else {
     return 'misc';
-  }
-
-  function isPage(pattern) {
-    return loc.match(pattern);
   }
 };
 
