@@ -21,13 +21,6 @@
 	{
 	    "matches": [ "<all_urls>" ],
 	    "js" : ["content/xmlPage.js"]
-	},
-	{
-	    "matches": [
-		"*://*/xmlPreview.html"
-	    ],
-	    "js"  : ["lib/prism.js"],
-	    "css" : ["lib/prism.css"]
 	}
     ],
 
