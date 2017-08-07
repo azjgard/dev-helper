@@ -1,17 +1,17 @@
 let path = require('path');
 
-let assembleComponents	= require('./templates/assembleComponents.json');
-// let clickMe		= require('./templates/clickMe.json');
-// let exam		= require('./templates/exam.json');
-// let html		= require('./templates/html_clickMeWithVideo.json');
-// let htmlMultiImage	= require('./templates/html_multi_imageHandlerSlide.json');
-// let htmlSequential	= require('./templates/html_sequentialIllustrationOfSystems.json');
-// let htmlSlide		= require('./templates/html_slide.json');
-// let htmlVideo		= require('./templates/html_video.json');
-// let image		= require('./templates/image.json');
-// let imageGallery	= require('./templates/imageGallery.json');
-// let quiz		= require('./templates/quiz.json');
-// let video		= require('./templates/video.json');
+let assembleComponents = require('./templates/assembleComponents.xml');
+// let clickMe            = require('./templates/clickMe.xml');
+// let exam               = require('./templates/exam.xml');
+// let html               = require('./templates/html_clickMeWithVideo.xml');
+// let htmlMultiImage     = require('./templates/html_multi_imageHandlerSlide.xml');
+// let htmlSequential     = require('./templates/html_sequentialIllustrationOfSystems.xml');
+// let htmlSlide          = require('./templates/html_slide.xml');
+// let htmlVideo          = require('./templates/html_video.xml');
+// let image              = require('./templates/image.xml');
+// let imageGallery       = require('./templates/imageGallery.xml');
+// let quiz               = require('./templates/quiz.xml');
+// let video              = require('./templates/video.xml');
 
 module.exports = {
   assembleComponents	
