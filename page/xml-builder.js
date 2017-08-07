@@ -26,11 +26,12 @@ document
 //     let message = request.message;
 
 //     if (message === 'add-slide') {
-//       let xml  = request.xml;
-//       let text = request.text;
+//       let xml        = request.xml;
+//       let text       = request.text;
+//       let percentage = request.percentage;
 
 //       try {
-// 	addEditor(xml);
+// 	addSlide(xml, text, percentage);
 // 	sendResponse({ message: 'Slide added successfully.' });
 //       }
 //       catch (err) {
@@ -206,7 +207,6 @@ function generateID(blacklist) {
 function getTemplate(id) {
   return document.getElementById(id).innerHTML;
 }
-
 
 ///////////////////
 // Menu Functions
