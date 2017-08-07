@@ -1,7 +1,7 @@
 
 const xmlPreviewURL = chrome.runtime.getURL('/page/index.html');
 var globalBlacklist = [];
-var xmlDoc;
+var xmlDoc = null;
 
 chrome.webRequest.onCompleted.addListener(function (details) {
   var resourceURL = details.url;

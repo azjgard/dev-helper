@@ -125,7 +125,7 @@ function getMainText(elements) {
 
     if (stop_scrape) {
       if (elements.mainTextContainer.length > 0) {
-        resolve(elements.displayDocument.contentDocument.body.innerText);
+        resolve(elements.displayDocument.contentDocument.body.outerHTML);
       }
       else {
         resolve(null);
@@ -135,7 +135,7 @@ function getMainText(elements) {
       if (elements.mainTextContainer.length > 0) {
         setTimeout(() => {
           elements.mainTextContainer = eval(elements.mainTextContainer);
-          resolve(elements.displayDocument.contentDocument.body.innerText);
+          resolve(elements.displayDocument.contentDocument.body.outerHTML);
         }, 500);
       }
       else {
@@ -262,11 +262,12 @@ function sendRequest(pageInformation) {
     request.data.htmlText = null;
   }
   else {
-    let textArray = htmlText.split('\n')
-	  .filter(text => text.match(/\w/g))
-	  .map   (text => text.trim());
+    request.data.htmlText = htmlText;
+    // let textArray = htmlText.split('\n')
+    //       .filter(text => text.match(/\w/g))
+    //       .map   (text => text.trim());
 
-    request.data.htmlText = textArray;
+    // request.data.htmlText = textArray;
   }
 
   //TODO 
