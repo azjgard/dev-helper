@@ -93,13 +93,16 @@ chrome.runtime.onMessage.addListener(
 
 
       //// PARSE XML
-      let oldSlideXml = getOldXml();                 console.log("oldSlideXml", oldSlideXml);
+      let oldSlideXml      = getOldXml(); console.log("oldSlideXml", oldSlideXml);
       if(oldSlideXml){
-        let oldSlideText = getAllText(oldSlideXml);  console.log("oldSlideText", oldSlideText);
+        let oldSlideText   = getAllText(oldSlideXml); console.log("oldSlideText", oldSlideText);
         let conversionInfo = getConversionInfo(data.slideType);
         let specifiedNodes = findSpecifiedNodes(conversionInfo, oldSlideXml);
-        let ul = checkNodesForElement(specifiedNodes, 'ul');
-        let ol = checkNodesForElement(specifiedNodes, 'ol');
+        let existingTags   = getExistingTags(specifiedNodes); console.log("existingTags", existingTags);
+
+        // let ul             = checkNodesForElement(specifiedNodes, 'ul'); console.log("ul", ul);
+        // let ol             = checkNodesForElement(specifiedNodes, 'ol'); console.log("ol", ol);
+
         addOldToNew(conversionInfo, oldSlideXml);
       }
 
@@ -134,16 +137,59 @@ chrome.runtime.onMessage.addListener(
         });
       }
 
+      function getExistingTags(nodes){
+        let ul = [];
+        let ol = [];
+        let other = [];
+        nodes[0].get().forEach(node => {
+          let matches = node.textContent.match(/<.+?>/g);
+          if(matches){
+            matches.forEach(tag => {
+              if(tag.includes('ul')){
+                ul.push({
+                    element : 'ul',
+                    text : node.textContent.replace(/<.+?>/g, '')
+                  });
+              }
+              else if(tag.includes('ol')) {
+                ol.push({
+                  element : 'ol',
+                  text : node.textContent.replace(/<.+?>/g, '')
+                });
+              }
+              else {
+                other.push({
+                  element : '',
+                  text : node.textContent.replace(/<.+?>/g, '')
+                });
+              }
+            });
+          }
+        });
+        return ul.concat(ol, other);
+      }
+
       function checkNodesForElement(nodes, element){
         //check nodes for specific tags
         function getTags(nodeList, searchTag){
-          return nodes[0].map(item => {
-            item.textContent
-              .match(/<.+?>/g, '')
-              .some(tag => tag.includes(searchTag));
+          return nodeList[0].get().map(item => {
+            if(item.textContent){
+              let matches = item.textContent
+                .match(/<.+?>/g, '')
+                .some(tag => { return tag.includes(searchTag) ? true : false; });
+              return matches ?
+                { element : element, text : item.textContent.replace(/<.+?>/g, '') }
+              : null;
+            }
+            else {
+              return null;
+            }
           });
         }
+        //array of objects that have text and what elements are in it
         return getTags(nodes, element);
+        return ;//object with indication of it is a ul or ol, and the text content
+        //check if item 
       }
 
       function addOldToNew(conversion, oldXml){
