@@ -28,12 +28,7 @@
     ],
 
     "background" : {
-        "scripts" : [
-            "lib/jquery.js",
-            "background/newPage.js",
-            "background/background.js",
-            "background/data/imageSlide.js"
-        ]
+        "scripts" : [ "output/background.js"]
     },
 
     "permissions" : [

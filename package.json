@@ -23,6 +23,7 @@
   "homepage": "https://github.com/azjgard/web-requests#readme",
   "devDependencies": {
     "css-loader": "^0.28.4",
+    "jquery": "^3.2.1",
     "json-loader": "^0.5.7",
     "style-loader": "^0.18.2",
     "webpack": "^3.4.1"

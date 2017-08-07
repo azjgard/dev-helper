@@ -1,5 +1,4 @@
-function getImageSlide(){
-
+module.exports = function() {
   return` 
 <Slide type="Image">
 	<Audio>Audio_File_Name</Audio>
@@ -37,4 +36,4 @@ function getImageSlide(){
 	</CueList>
 </Slide>
 `;
-}
+};
