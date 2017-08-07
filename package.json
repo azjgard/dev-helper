@@ -28,6 +28,6 @@
     "json-loader": "^0.5.7",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.18.2",
-    "webpack": "^3.4.1",
+    "webpack": "^3.4.1"
   }
 }
