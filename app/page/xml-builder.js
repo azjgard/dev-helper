@@ -1,8 +1,8 @@
 let blacklist = [];
 let data   = {
   editors: {
-    used_IDs : []
-  }
+  },
+  used_IDs : []
 };
 
 addSlide(
@@ -64,7 +64,7 @@ function addSlide(xml, words, percentage) {
 }
 
 function addEditor(initialText, wordsArray) {
-  let editorInfo = initializeEditor(data.editors.used_IDs,
+  let editorInfo = initializeEditor(data.used_IDs,
 				    initialText,
 				    wordsArray);
   data.editors[editorInfo.id] = editorInfo.editor;
@@ -103,9 +103,6 @@ function initializeEditor(blacklist, initialText, words) {
   };
 }
 
-// TODO
-// I was experimenting here.. break this up into the
-// appropriate sub functions!
 function handleClicks(ev) {
   let editorContainer = ev.currentTarget;
 
@@ -121,6 +118,7 @@ function handleClicks(ev) {
   // first before actually doing anything else
   visibleEditor.focus();
 
+  // if it was a word that was clicked
   if (ev.target.className === 'word') {
     let word               = ev.target;
     let codeMirrorInstance = data.editors[ID];
@@ -181,6 +179,8 @@ function addSlideWords(container, wordsArray) {
   }
 }
 
+// this function will generate a unique ID for each CodeMirror instance
+// that is not currently contained within the blacklist
 function generateID(blacklist) {
   var text        = "";
   var blacklisted = false;
@@ -222,6 +222,28 @@ function toggleMenu(e) {
   }
 }
 
+function exportXML(e) {
+  let editors   = data.editors;
+  let xmlString = '';
+
+  for (let i in editors) {
+    let editor     = editors[i];
+    let editorText = editor.getValue();
+    xmlString += editorText;
+  }
+
+  save(xmlString);
+}
+
+function save(xmlString) {
+  // TODO: download a file or save to the server
+
+  console.log('Exported:');
+  console.log('---------------');
+  console.log(xmlString);
+  console.log('---------------');
+}
+
 document
   .querySelector('#show-menu')
   .addEventListener('click', toggleMenu);
@@ -229,3 +251,7 @@ document
 document
   .querySelector('#close')
   .addEventListener('click', toggleMenu);
+
+document
+  .querySelector('#export')
+  .addEventListener('click', exportXML);
