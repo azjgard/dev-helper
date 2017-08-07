@@ -1,0 +1,47 @@
+<Slide type="HTML">
+  <disableNext>true</disableNext>
+  <Audio>Audio_File_Name</Audio>
+  <Instructions>
+    Closed_Captions
+  </Instructions>
+  <Content>
+    <div id="multiImage1">
+      <div id="ImageContainer" class="BottomImage ImageHeight80 ImageBackground">
+	<div id="navigationLabelWrapper" />
+	<div class="ImageAnimationContainer">
+	  <div id="backgroundImg"></div>
+	  <div id="multiImageWrapper">
+	    <div id="containerOne" class="multiImageContainer">
+	      <div id="imageOne" class="multiImageDiv"></div>
+	      <div class="multiImageTitle">
+		<h3>Lightbox Header</h3>
+	      </div>
+	      <div class="multiImageContent">
+		<div id="lightboxImgContainer">
+		  <div id="lightboxImgOne" class="ImageBorder" ></div>
+		</div>
+		<div id="lightboxTextContainer">
+		  <ul>
+		    <li>Lightbox Text Content</li>
+		  </ul>
+		</div>
+	      </div>
+	      <div class="multiImageCCAndAudio">
+		<h1>Audio_File_Name</h1>
+		<p>
+		  Closed Captions go here
+		</p>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+      </div>
+      <div id="TextContainer" class="TopText TextHeight20">
+	<h1>
+	  On screen text content
+	</h1>
+      </div>
+    </div>
+    <script>LoadMultiImageHandler(true, true);</script>
+  </Content>
+</Slide>
