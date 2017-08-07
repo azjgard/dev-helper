@@ -179,16 +179,12 @@ module.exports = function() {
 
         //// PARSE XML
         let oldSlideXml      = getOldXml(); console.log("oldSlideXml", oldSlideXml);
+        let xmlTextArray     = null;
         if(oldSlideXml){
-          let oldSlideText   = getAllText(oldSlideXml); console.log("oldSlideText", oldSlideText);
+          let oldSlideText   = getAllText(oldSlideXml); 
           let conversionInfo = getConversionInfo(data.slideType);
           let specifiedNodes = findSpecifiedNodes(conversionInfo, oldSlideXml);
-          let existingTags   = getExistingTags(specifiedNodes); console.log("existingTags", existingTags);
-
-          // let ul             = checkNodesForElement(specifiedNodes, 'ul'); console.log("ul", ul);
-          // let ol             = checkNodesForElement(specifiedNodes, 'ol'); console.log("ol", ol);
-
-          addOldToNew(conversionInfo, oldSlideXml);
+          xmlTextArray      = getTextArray(specifiedNodes); 
         }
 
         function getOldXml(){
@@ -222,7 +218,7 @@ module.exports = function() {
           });
         }
 
-        function getExistingTags(nodes){
+        function getTextArray(nodes){
           let ul = [];
           let ol = [];
           let other = [];
@@ -230,109 +226,37 @@ module.exports = function() {
             if(node.textContent.includes('<ul>')) {
               ul.push({
                 element : 'ul',
-                text : node.textContent.replace(/<.+?>/g, '')
+                text : `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`
               });
             }
             else if(node.textContent.includes('ol')) {
               ol.push({
                 element : 'ol',
-                text : node.textContent.replace(/<.+?>/g, '')
+                text : `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`
               });
             }
             else {
-                  other.push({
-                    element : null,
-                    text : node.textContent.replace(/<.+?>/g, '')
-                  });
+              other.push({
+                element : null,
+                text : `<Text id="textId">${node.textContent.replace(/<.+?>/g, '')}</Text>`
+              });
             }
           });
           return ul.concat(ol, other);
         }
 
-        function checkNodesForElement(nodes, element){
-          //check nodes for specific tags
-          function getTags(nodeList, searchTag){
-            return nodeList[0].get().map(item => {
-              if(item.textContent){
-                let matches = item.textContent
-                      .match(/<.+?>/g, '')
-                      .some(tag => { return tag.includes(searchTag) ? true : false; });
-                return matches ?
-                  { element : element, text : item.textContent.replace(/<.+?>/g, '') }
-                : null;
-              }
-              else {
-                return null;
-              }
-            });
-          }
-          //array of objects that have text and what elements are in it
-          return getTags(nodes, element);
-          return ;//object with indication of it is a ul or ol, and the text content
-          //check if item 
-        }
-
-        function addOldToNew(conversion, oldXml){
-          // nodes[0] is an array of the specified items a person is looking for
-
-
-
-          //put new text in new xml
-          // let rootChildren = getRootChildren(oldSlideXml);
-          // let txt = oldSlideXml ? parseText(oldSlideXml, 'xml') : null;
-          // console.log("xmltxt", txt);
-
-          // 
-          //// PARSE HTML
-          // let htmlResult =
-          //       (function(){
-          //         let htmlDoc = parseString(data.htmlText, 'text/html');
-          //         console.log("htmlDoc", htmlDoc);
-          //         // put html in the new xmlTemplate
-          //         let rootChildren = getRootChildren(htmlDoc);
-          //         findElementsWithInnerText(rootChildren);
-          //       })();
-        }
-
-
-
-        function parseText(text, type){
-          let txt = text;
-
-          switch(type){
-          case 'html':
-            // code here
-            break;
-          case 'xml':
-            // get all text within CDATA tags
-            var cdata = txt.match(/<!\[CDATA\[(.+?)\]\]/g);
-
-            // get all ordered and unordered lists
-            let ulTags = data.match(/<ul>(.+?)<\/ul>/g);
-
-            //pull text from <ul>
-            let unorderdLi = ulTags.map(ul => {
-              return ul.replace(/<ul>|<\/ul>/g, '');
-            });
-            
-            break;
-          default:
-            return null;
-            break;
-          }
-        }
 
         // convert xml to string and send to server
-
-        function getRootChildren(element){
-          console.log($(element).children());
-          return Array.from($(element).children());
+        let x;
+        if(xmlTextArray){
+          x = xmlTextArray.reduce((accumulator, current, index) => {
+            console.log(index);
+            xmlTextArray.splice(index, 1);
+            console.log(xmlTextArray);
+            return accumulator + current.text;
+          }, '');
         }
-
-
-
-
-
+        console.log(x);
 
         // // addSlideToHtmlPage(data);
         // //reset global variable

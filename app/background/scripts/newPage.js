@@ -99,10 +99,13 @@ module.exports = function() {
         let oldSlideXml      = getOldXml(); console.log("oldSlideXml", oldSlideXml);
         let xmlTextArray     = null;
         if(oldSlideXml){
-          let oldSlideText   = getAllText(oldSlideXml); console.log("oldSlideText", oldSlideText);
+          //get all text just in case
+          let oldSlideText   = getAllText(oldSlideXml); 
+          //returns the nodes that need to be searched for in the xml document
           let conversionInfo = getConversionInfo(data.slideType);
+          //get all nodes that fit specification in old xml
           let specifiedNodes = findSpecifiedNodes(conversionInfo, oldSlideXml);
-          xmlTextArray      = getTextArray(specifiedNodes); console.log("textArray", textArray);
+          xmlTextArray      = getTextArray(specifiedNodes); 
         }
 
         function getOldXml(){
@@ -137,39 +140,36 @@ module.exports = function() {
         }
 
         function getTextArray(nodes){
-          let ul = [];
-          let ol = [];
-          let other = [];
+          let ul = '';
+          let ol = '';
+          let other = '';
           nodes[0].get().forEach(node => {
             if(node.textContent.includes('<ul>')) {
-              ul.push({
-                element : 'ul',
-                text : node.textContent.replace(/<.+?>/g, '')
-              });
+              ul += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
             }
             else if(node.textContent.includes('ol')) {
-              ol.push({
-                element : 'ol',
-                text : node.textContent.replace(/<.+?>/g, '')
-              });
+              ol += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
             }
             else {
-                  other.push({
-                    element : null,
-                    text : node.textContent.replace(/<.+?>/g, '')
-                  });
+              other += `<Text id="textId">${node.textContent.replace(/<.+?>/g, '')}</Text>`;
             }
           });
-          return ul.concat(ol, other);
+          return {
+            ul,
+            ol,
+            other
+          };
         }
 
 
         // convert xml to string and send to server
+        let x;
         if(xmlTextArray){
-          xmlTextArray.forEach(text => {
-            //add text into premade conversion
-          });
+          x = xmlTextArray.reduce((accumulator, current, index) => {
+            return current.element === 'ul' ? accumulator + current.text : null;
+          }, '');
         }
+        console.log(x);
 
         // // addSlideToHtmlPage(data);
         // //reset global variable
