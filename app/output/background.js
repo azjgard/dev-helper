@@ -70,6 +70,8 @@
 const newPage    = __webpack_require__(1);
 const background = __webpack_require__(4);
 
+const template = __webpack_require__(5);
+
 newPage();
 background();
 
@@ -10951,6 +10953,537 @@ module.exports = function() {
   }
 };
 
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+let path = __webpack_require__(6);
+
+// these are all going to have to be redone. I was removing all of the CDATA
+// tags so that it becomes easier for us to parse the templates, but then
+// I realized that they will have to be in the final template.. which is why
+// they're present in the first place.
+let assembleComponents = __webpack_require__(8);
+let clickMe            = __webpack_require__(9);
+let exam               = __webpack_require__(10);
+let html               = __webpack_require__(11);
+let htmlMultiImage     = __webpack_require__(12);
+let htmlSequential     = __webpack_require__(13);
+let htmlSlide          = __webpack_require__(14);
+let htmlVideo          = __webpack_require__(15);
+let image              = __webpack_require__(16);
+let imageGallery       = __webpack_require__(17);
+let quiz               = __webpack_require__(18);
+let video              = __webpack_require__(19);
+
+module.exports = {
+  assembleComponents	,
+  clickMe		,
+  exam			,
+  html			,
+  htmlMultiImage	,
+  htmlSequential	,
+  htmlVideo		,
+  image			,
+  imageGallery		,
+  quiz			,
+  video
+};
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var splitPath = function(filename) {
+  return splitPathRe.exec(filename).slice(1);
+};
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+exports.basename = function(path, ext) {
+  var f = splitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+exports.extname = function(path) {
+  return splitPath(path)[3];
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = "<Slide type=\"AssembleComponents\" disableNext=\"true\">\r\n  <Title>Slide_Title</Title>\r\n  <Audio>Audio_File_Name</Audio>\r\n  <Instructions>Closed_Captions</Instructions>\r\n\r\n  <!-- Initial Slide Contents -->\r\n  <Header>\r\n    Header_Text\r\n  </Header>\r\n  <Text>Supplemental_Text_optional</Text>\r\n  <ComponentImage>Placeholder_Asset_png</ComponentImage>\r\n\r\n  <!-- Steps for Assembly -->\r\n  <DraggableList>\r\n    <Draggable orderInSequence=\"1\">\r\n      <Label>Step_1</Label>\r\n      <Feedback>\r\n\t<Text>Response_Text</Text>\r\n\t<Image>Step_1_Asset_gif</Image>\r\n      </Feedback>\r\n    </Draggable>\r\n    <Draggable orderInSequence=\"2\">\r\n      <Label>Step_2</Label>\r\n      <Feedback>\r\n\t<Text>Response_Text</Text>\r\n\t<Image>Step_2_Asset_gif</Image>\r\n      </Feedback>\r\n    </Draggable>\r\n    <Draggable orderInSequence=\"3\">\r\n      <Label>Step_3</Label>\r\n      <Feedback>\r\n\t<Text>Response_Text</Text>\r\n\t<Image>Step_3_Asset_gif</Image>\r\n      </Feedback>\r\n    </Draggable>\r\n    <Draggable orderInSequence=\"4\">\r\n      <Label>Step_4</Label>\r\n      <Feedback>\r\n\t<Text>Response_Text</Text>\r\n\t<Image>Step_4_Asset_gif</Image>\r\n      </Feedback>\r\n    </Draggable>\r\n    <Draggable orderInSequence=\"5\">\r\n      <Label>Step_5</Label>\r\n      <Feedback>\r\n\t<Text>Response_Text</Text>\r\n\t<Image>Step_5_Asset_gif</Image>\r\n      </Feedback>\r\n    </Draggable>\r\n    <Draggable orderInSequence=\"6\">\r\n      <Label>Step_6</Label>\r\n      <Feedback>\r\n\t<Text>Response_Text</Text>\r\n\t<Image>Step_6_Asset_gif</Image>\r\n      </Feedback>\r\n    </Draggable>\r\n    <Draggable orderInSequence=\"7\">\r\n      <Label>Step_7</Label>\r\n      <Feedback>\r\n\t<Text>Response_Text</Text>\r\n\t<Image>Step_7_Asset_gif</Image>\r\n      </Feedback>\r\n    </Draggable>\r\n  </DraggableList>\r\n</Slide>\r\n"
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = "<Slide type=\"ClickMe\" customClass=\"defaultClickMe\" useLightbox=\"false\" disableNext=\"true\"> <!-- useLightbox = \"true\" will reconfigure as multi-image slide -->\r\n  <ImageLayout position=\"Lower\" showBackground=\"true\" contentPercentage=\"80\" forceOrder=\"true\" requireVisitAll=\"true\"/>\r\n  <Introduction>\r\n    <Audio>Audio_File_Name</Audio>\r\n    <Captions>Closed_Captions</Captions>\r\n    <Image>Image_File_Name_png</Image>\r\n    <Header>Header_Tex</Header>\r\n    <Text>Some_Intro_Text</Text>\r\n  </Introduction>\r\n  <ImageContentList>\r\n    <ImageContent>\r\n      <Audio>Audio_File_Name</Audio>\r\n      <Captions>Closed_Captions</Captions>\r\n      <Image id=\"ImageId1\">Image_File_Name_png</Image>\r\n      <Label id=\"LabelId1\">Label_Text</Label>\r\n      <Header id=\"HeaderId1\">Header_Text</Header>\r\n      <Text id=\"TextId1\">Text</Text>\r\n      <BulletPointList>\r\n\t<BulletPoint id=\"bullet1_1\">Bullet_Point</BulletPoint>\r\n      </BulletPointList>\r\n    </ImageContent>\r\n    <ImageContent>\r\n      <Audio>Audio_File_Name</Audio>\r\n      <Captions>Closed_Captions</Captions>\r\n      <Image id=\"ImageId2\">Image_File_Name_png</Image>\r\n      <Label id=\"LabelId2\">Label_Text</Label>\r\n      <Header id=\"HeaderId2\">Header_text</Header>\r\n      <Text id=\"TextId2\">Text</Text>\r\n      <BulletPointList>\r\n\t<BulletPoint id=\"Bullet2_1\">Bullet_Point</BulletPoint>\r\n      </BulletPointList>\r\n    </ImageContent>\r\n  </ImageContentList>\r\n  <CueList>\r\n    <Cue>\r\n      <Trigger triggerType=\"Timed\" triggerTime=\"0.0\"/>\r\n      <Effect effectType=\"Visibility\" displayMode=\"Show\" target=\"HeaderId\" effect=\"fade\" duration=\"1.0\"/>\r\n    </Cue>\r\n    <Cue>\r\n      <Trigger triggerType=\"Timed\" triggerTime=\"0.0\"/>\r\n      <Effect effectType=\"Visibility\" displayMode=\"Show\" target=\"ImageId\" effect=\"fade\" duration=\"1.0\"/>\r\n    </Cue>\r\n    <Cue>\r\n      <Trigger triggerType=\"Timed\" triggerTime=\"0.25\"/>\r\n      <Effect effectType=\"Visibility\" displayMode=\"Show\" target=\"TextId\" effect=\"fade\" duration=\"0.5\"/>\r\n    </Cue>\r\n    <Cue>\r\n      <Trigger triggerType=\"Timed\" triggerTime=\"0.5\"/>\r\n      <Effect effectType=\"Visibility\" displayMode=\"Show\" target=\"Bullet1_1\" effect=\"fade\" duration=\"0.5\"/>\r\n    </Cue>\r\n  </CueList>\r\n</Slide>\r\n"
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = "<Slide type=\"Exam\" lockNavigation=\"true\" allowAnswerChange=\"false\" confirmSubmission=\"false\" reviewResults=\"true\">\r\n  <Introduction>\r\n    <p>\r\n    This Test Drive covers the content presented in this lesson and consists of [NUM_QUESTIONS] assessment activities on [CHAPTER_NAME].\r\n</p>\r\n  <p>\r\n  You must score [PASSING_SCORE]% or higher to pass this Test Drive.\r\n</p>\r\n  <p>\r\n  Click 'Next' to begin.\r\n</p>\r\n  ]]/>\r\n</Introduction>\r\n  <Summary>\r\n  <Passed>\r\n  <Header>\r\n  You MUST click 'Next' in order to complete your attempt of this course and receive a grade.\r\n</Header>\r\n  <Body/>\r\n</Passed>\r\n  <Failed>\r\n  <Header>\r\n  Click on 'Review Question' for any answers missed. You MUST click 'Next' in order to complete your attempt of this course and receive a grade.\r\n</Header>\r\n  <Body/>\r\n</Failed>\r\n</Summary>\r\n  <ConfirmationWindow>\r\n  <Title>Submit Test Drive Answers?</Title>\r\n  <Body>Are you sure you want to submit your answers for grading? If you wish to continue, select Submit; otherwise, select Cancel to review your answers.</Body>\r\n  <Cancel>Cancel</Cancel>\r\n  <Submit>Submit</Submit>\r\n</ConfirmationWindow>\r\n  <QuestionList>\r\n  <!-- Questions -->\r\n  <!-- See the question type templates -->\r\n</QuestionList>\r\n</Slide>\r\n"
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+module.exports = "<Slide type=\"HTML\" disableNext=\"true\">\r\n  <Title>Optional_Section_Title</Title>\r\n  <Content>\r\n    <div class=\"ClickMeWithVideoContainer defaultClickMe clickMeWrapper\">\r\n    <div id=\"ImageContainer\" class=\"BottomImage ImageHeight70 ImageBackground clickMeSlide\">\r\n    <div id=\"navigationLabelWrapper\"></div>\r\n  <div id=\"ClickMeImageContainer\">\r\n  <div id=\"buttonContainer\" class=\"defaultClickMeButtons\"></div>\r\n  <div id=\"ClickMeImgTagContainer\"></div>\r\n</div>\r\n</div> \r\n  <div id=\"TextContainer\" class=\"TopText TextHeight30\">\r\n  <div id=\"TextBodyContent\"></div>\r\n</div>\r\n</div>\r\n  <Script>\r\n  // Create a new JSON object for each ClickMe button.\r\n  view = [\r\n  {\r\n  button : \"BUTTON_TEXT_HERE\",\r\n  header : \"HEADER_TEXT_HERE\",\r\n  text : \"PARAGRAPH_TEXT_HERE\",\r\n  bullets : [\r\n  \"BULLET_ONE\",\r\n  \"BULLET_TWO\"\r\n  ],\r\n  audio : \"AUDIO_FILE_HERE_WITHOUT_EXTENSION\",\r\n  captions : \"CAPTION_TEXT_HERE\",\r\n  image : \"IMAGE_SOURCE_IF_NO_VIDEO\",\r\n  video : \"VIDEO_FILE_IF_NO_IMAGE\",\r\n  showBorder : true\r\n  },\r\n  {\r\n  button : \"BUTTON_TEXT_HERE\",\r\n  header : \"HEADER_TEXT_HERE\",\r\n  text : \"PARAGRAPH_TEXT_HERE\",\r\n  bullets : [\r\n  \"BULLET_ONE\",\r\n  \"BULLET_TWO\"\r\n  ],\r\n  audio : \"AUDIO_FILE_HERE_WITHOUT_EXTENSION\",\r\n  captions : \"CAPTION_TEXT_HERE\",\r\n  image : \"IMAGE_SOURCE_IF_NO_VIDEO\",\r\n  video : \"VIDEO_FILE_IF_NO_IMAGE\",\r\n  showBorder : true\r\n  }\r\n  ];\r\n  \r\n  // Initialize the slide\r\n  ClickMeWithVideoInitializeSlide(view);\r\n</Script>\r\n</Content>\r\n</Slide>\r\n"
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+module.exports = "<Slide type=\"HTML\">\r\n  <disableNext>true</disableNext>\r\n  <Audio>Audio_File_Name</Audio>\r\n  <Instructions>\r\n    Closed_Captions\r\n  </Instructions>\r\n  <Content>\r\n    <div id=\"multiImage1\">\r\n      <div id=\"ImageContainer\" class=\"BottomImage ImageHeight80 ImageBackground\">\r\n\t<div id=\"navigationLabelWrapper\" />\r\n\t<div class=\"ImageAnimationContainer\">\r\n\t  <div id=\"backgroundImg\"></div>\r\n\t  <div id=\"multiImageWrapper\">\r\n\t    <div id=\"containerOne\" class=\"multiImageContainer\">\r\n\t      <div id=\"imageOne\" class=\"multiImageDiv\"></div>\r\n\t      <div class=\"multiImageTitle\">\r\n\t\t<h3>Lightbox Header</h3>\r\n\t      </div>\r\n\t      <div class=\"multiImageContent\">\r\n\t\t<div id=\"lightboxImgContainer\">\r\n\t\t  <div id=\"lightboxImgOne\" class=\"ImageBorder\" ></div>\r\n\t\t</div>\r\n\t\t<div id=\"lightboxTextContainer\">\r\n\t\t  <ul>\r\n\t\t    <li>Lightbox Text Content</li>\r\n\t\t  </ul>\r\n\t\t</div>\r\n\t      </div>\r\n\t      <div class=\"multiImageCCAndAudio\">\r\n\t\t<h1>Audio_File_Name</h1>\r\n\t\t<p>\r\n\t\t  Closed Captions go here\r\n\t\t</p>\r\n\t      </div>\r\n\t    </div>\r\n\t  </div>\r\n\t</div>\r\n      </div>\r\n      <div id=\"TextContainer\" class=\"TopText TextHeight20\">\r\n\t<h1>\r\n\t  On screen text content\r\n\t</h1>\r\n      </div>\r\n    </div>\r\n    <script>LoadMultiImageHandler(true, true);</script>\r\n  </Content>\r\n</Slide>\r\n"
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+module.exports = ""
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+module.exports = ""
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+module.exports = ""
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports) {
+
+module.exports = ""
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports) {
+
+module.exports = ""
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = ""
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+module.exports = ""
 
 /***/ })
 /******/ ]);
