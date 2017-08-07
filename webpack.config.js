@@ -18,7 +18,7 @@ const loaders = [
   },
   {
     test : /\.xml$/,
-    loader  : 'raw-loader'
+    use  : 'raw-loader'
   }
 ];
 
