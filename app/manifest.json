@@ -25,10 +25,7 @@
     ],
 
     "background" : {
-	"scripts" : [
-	    "background/newPage.js",
-	    "background/background.js"
-	]
+	"scripts" : [ "output/background.js" ]
     },
 
     "permissions" : [

@@ -1,9 +1,8 @@
-const path = require('path');
+const path    = require('path');
+const appPath = (p) => path.resolve(__dirname, 'app', p);
 
-const entry =
-  path.resolve(__dirname, 'background/backgroundController.js');
-
-const outPath  = path.resolve(__dirname, 'output');
+const entry    = appPath('background/backgroundController.js');
+const outPath  = appPath('output');
 const filename = 'background.js';
 
 const output = {
@@ -27,3 +26,4 @@ module.exports = {
   output ,
   module : modules
 };
+
