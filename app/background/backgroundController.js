@@ -1,7 +1,5 @@
-const newPage    = require('./scripts/newPage.js');
-const background = require('./scripts/background.js');
+const newPage = require('./scripts/newPage.js');
 
 newPage();
-background();
 
 

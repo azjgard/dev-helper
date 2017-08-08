@@ -121,7 +121,7 @@ module.exports = function() {
         }
 
         function newXmlTemplate(){
-          let newSlideXml = require('./data/imageSlide.js')();
+          // let newSlideXml = require('./data/imageSlide.js')();
           return parseString(newSlideXml, 'text/xml');
         }
 
