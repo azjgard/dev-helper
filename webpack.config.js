@@ -1,9 +1,13 @@
 const path    = require('path');
 const appPath = (p) => path.resolve(__dirname, 'app', p);
 
-const entry    = appPath('background/backgroundController.js');
+const entry = {
+  background : appPath('background/backgroundController.js'),
+  content    : appPath('content/contentController.js')
+};
+
 const outPath  = appPath('output');
-const filename = 'background.js';
+const filename = '[name].js';
 
 const output = {
   path : outPath,

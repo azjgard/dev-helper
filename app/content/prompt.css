@@ -1,0 +1,24 @@
+.custom-prompt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    border: 1px solid #000;
+    background-color: #fff;
+    z-index: 9999;
+
+    -webkit-transition: opacity .75s;
+    -moz-transition: opacity .75s;
+    transition: opacity .75s;
+}
+.custom-prompt.visible {
+    pointer-events: auto;
+    opacity: 1;
+}
+.custom-prompt button:last-child {
+    position: absolute;
+    top: 0;
+    right: 0;
+}

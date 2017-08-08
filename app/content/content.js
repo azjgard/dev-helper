@@ -1,6 +1,9 @@
 // TODO: add event listeners to each slide at the appropriate times
 // to grab the information for each, instead of just the first one, as it
 // is currently doing. Search 'TODO'
+//
+
+console.log('hahahahahahah');
 
 var stop_scrape = false;
 // var xmlText = "";
@@ -250,6 +253,13 @@ function sendRequest(pageInformation) {
       narrationText : narrationText
     }
   };
+
+  // if (xmlText === '') {
+  //   request.data.xmlText = null;
+  // }
+  // else {
+  //   request.data.xmlText = xmlText;
+  // }
 
   if (htmlText === null) {
     request.data.htmlText = null;
