@@ -1,23 +1,23 @@
 * Setting up a local version
-** Ensure that [[https://nodejs.org][NodeJS]] is installed globally (along with [[https://docs.npmjs.com/getting-started/what-is-npm][NPM]])
-** Clone and enter this repository
+1. Ensure that [[https://nodejs.org][NodeJS]] is installed globally (along with [[https://docs.npmjs.com/getting-started/what-is-npm][NPM]])
+2. Clone and enter this repository
 #+BEGIN_SRC sh
   git clone https://github.com/azjgard/web-requests
   cd web-requests/
 #+END_SRC
-** Install the Node dependencies
+3. Install the Node dependencies
    #+BEGIN_SRC sh
         npm install
    #+END_SRC
-** Build the code
+4. Build the code
 #+BEGIN_SRC sh
   npm run build
 #+END_SRC
-** [[https://superuser.com/questions/247651/how-does-one-install-an-extension-for-chrome-browser-from-the-local-file-system#answer-247654][Upload the 'app' folder as a Chrome Extension]]
-** Navigate to [[http://avondale-iol/][the old course site]] and open a slide to see the tool work automatically
+5. [[https://superuser.com/questions/247651/how-does-one-install-an-extension-for-chrome-browser-from-the-local-file-system#answer-247654][Upload]] the 'app' folder as a Chrome Extension 
+6. Navigate to [[http://avondale-iol/][the old course site]] and open a slide to see the tool work automatically
 * Development
-  As opposed to <code>npm run build</code>, the following command is used for development:
+  The following command is used for development:
 #+BEGIN_SRC sh
   npm run watch
 #+END_SRC
-  This will cause a rebuild to occur every time a file change is detected.
+  This will cause a rebuild to occur every time a file is changed.
