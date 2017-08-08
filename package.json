@@ -24,10 +24,15 @@
   "homepage": "https://github.com/azjgard/web-requests#readme",
   "devDependencies": {
     "css-loader": "^0.28.4",
+    "image-loader": "0.0.1",
+    "img-loader": "^2.0.0",
     "jquery": "^3.2.1",
+    "jquery-ui": "^1.12.1",
+    "jquery-ui-bundle": "^1.12.1",
     "json-loader": "^0.5.7",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.18.2",
+    "url-loader": "^0.5.9",
     "webpack": "^3.4.1"
   }
 }
