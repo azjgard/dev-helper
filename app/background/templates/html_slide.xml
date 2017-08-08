@@ -1,0 +1,17 @@
+<!-- HTML slides are considered 'custom' slides and should only be used when an 
+alternative slide type does not meet the requirements and there is not 
+sufficient need to build out a slide type to support this particular slide. -->
+<Slide type="HTML">
+<Audio>Audio_File_Name</Audio>
+<Instructions>
+Closed_Captions
+</Instructions>
+<Content>
+<![CDATA[
+<!-- HTML Content -->
+]]/>
+</Content>
+<CueList>
+<!-- Cues still work, use ids specified in CDATA -->
+</CueList>
+</Slide>
