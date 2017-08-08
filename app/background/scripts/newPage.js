@@ -58,7 +58,7 @@ const $ = require('jquery');
 const slideTemplate = require('../slideTemplates.js');
 
 module.exports = function() {
-  const htmlPageURL = chrome.runtime.getURL('/page/index.html');
+  const htmlPageURL = chrome.runtime.getURL('page/xml-builder.html');
 
   /////////////////////////////////////////////////////////////////////
   //// promisified chrome.tabs.query
@@ -99,7 +99,7 @@ module.exports = function() {
         // }
 
         let newData = getDataForFrontend(data); console.log("newData", newData);
-        // addSlideToHtmlPage(newData);
+        addSlideToHtmlPage(newData);
       }
     });
 
@@ -107,10 +107,10 @@ module.exports = function() {
     //// VARIABLES
     let newSlideXml    = newXmlTemplate(data.slideType), //console.log("newSlideXml", newSlideXml);,
         oldSlideXml    = getOldXml(), //console.log("oldSlideXml", oldSlideXml);,
-        oldXmlTextAll  = null,
+        oldXmlTextAll  = [],
         newXmlObject   = null,
         html           = parseString(data.htmlText, 'text/html'), 
-        oldHtmlTextAll = null,
+        oldHtmlTextAll = [],
         specificHtml   = null;
     
     //// PARSE OLD XML
@@ -160,10 +160,9 @@ module.exports = function() {
 
     xmlDoc = null;
     return {
-      slideXml : $(newSlideXml).children()[0].outerHTML,
-      allXml : oldXmlTextAll,
-      slideHtml: specificHtml, //add to newSlideXml?
-      allHtml: oldHtmlTextAll,
+      xml : $(newSlideXml).children()[0].outerHTML,
+      text : oldXmlTextAll.concat(oldHtmlTextAll),
+      // slideHtml: specificHtml, //add to newSlideXml?
       percentage: data.slidePercent
     };
 
@@ -240,7 +239,7 @@ module.exports = function() {
 
     function getAllXmlText(oldXml){
       let xmlText = $(oldXml)[0].childNodes[0].textContent.trim();
-      return xmlText ? xmlText : null;
+      return xmlText ? xmlText : [];
     }
 
     function getConversionInfo(slideType){
