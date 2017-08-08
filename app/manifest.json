@@ -17,13 +17,9 @@
 	    ],
 	    "js" : [
                 "lib/jquery.js",
-                "content/content2.js"
+                "content/content.js"
             ], 
 	    "run_at" : "document_idle"
-	},
-	{
-	    "matches": [ "<all_urls>" ],
-	    "js" : ["content/xmlPage.js"]
 	}
     ],
 
