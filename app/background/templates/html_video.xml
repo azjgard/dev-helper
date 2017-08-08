@@ -1,0 +1,37 @@
+<!-- HTML Video slides are considered 'custom' slides and should only be used 
+when the desired video will not fit within the branded video slide type 
+(typically when the video will not be full-screen or is with other content.)
+In order to support this, the index file must include the following script
+reference: 
+<script type="text/javascript" src="js/brand/VideoHTMLSlide.js"></script>. 
+-->
+<Slide type="HTML">
+<Instructions>
+Closed Captions
+</Instructions>
+<Content>
+<![CDATA[
+<div id="ImageContainer" class="BottomImage ImageHeight80 ImageBackground">
+<div id="navigationLabelWrapper" />
+<div id='video_media' class='play-button no-mute no-volume' style="height:100%">
+<video id="htmlVideo">
+<source type="video/mp4" src="./Assets/Video/video_file.mp4">
+</video>
+</div>
+</div>
+<div id="TextContainer" class="TopText TextHeight20">
+<h1 id="headerId" style="visibility: visible; display: block;">Header Text</h1>
+<div id="TextBodyContent"><div class="TextContent" id=""></div>
+<div class="BulletContent"><ul id="">
+<li id="bullet1" class="depth1" style="visibility: visible; display: list-item;">Bullet Text</li>
+</ul></div>
+</div>
+</div>
+<script> setupHTMLVideoSlide(); </script>
+]]/>
+</Content>
+<CueList>
+<!-- Cues still work, use ids specified in CDATA.  To affect the video with
+visibility cues, target the video_media container. -->
+</CueList>
+</Slide>

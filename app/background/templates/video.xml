@@ -1,0 +1,31 @@
+<Slide type="Video" loop="false">
+<Instructions>
+Closed_Captions
+</Instructions>
+<VideoLayout position="Lower" contentPercentage="75" showBorder="false" showBackground="true" disableNextUntilVideoFinished="false" />
+<Video id="VideoId">Video_File_Name</Video>
+<PosterImage>Image_File_Name_png</PosterImage>
+<Header id="HeaderId">Header_Text</Header>
+<Text id="TextId">Text</Text>
+<BulletPointList>
+<BulletPoint id="BulletId">Bullet_point</BulletPoint>
+</BulletPointList>
+<CueList>
+<Cue>
+<Trigger triggerType="Timed" triggerTime="0.0"/>
+<Effect effectType="Visibility" displayMode="Show" target="VideoId" effect="fade" duration="1.0"/>
+</Cue>
+<Cue>
+<Trigger triggerType="Timed" triggerTime="0.0"/>
+<Effect effectType="Visibility" displayMode="Show" target="HeaderId" effect="fade" duration="1.0"/>
+</Cue>
+<Cue>
+<Trigger triggerType="Timed" triggerTime="0.25"/>
+<Effect effectType="Visibility" displayMode="Show" target="TextId" effect="fade" duration="0.5"/>
+</Cue>
+<Cue>
+<Trigger triggerType="Timed" triggerTime="0.5"/>
+<Effect effectType="Visibility" displayMode="Show" target="BulletId" effect="fade" duration="0.5"/>
+</Cue>
+</CueList>
+</Slide>
