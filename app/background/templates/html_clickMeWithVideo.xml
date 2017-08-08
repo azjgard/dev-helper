@@ -1,0 +1,53 @@
+<Slide type="HTML" disableNext="true">
+  <Title>Optional_Section_Title</Title>
+  <Content>
+    <div class="ClickMeWithVideoContainer defaultClickMe clickMeWrapper">
+    <div id="ImageContainer" class="BottomImage ImageHeight70 ImageBackground clickMeSlide">
+    <div id="navigationLabelWrapper"></div>
+  <div id="ClickMeImageContainer">
+  <div id="buttonContainer" class="defaultClickMeButtons"></div>
+  <div id="ClickMeImgTagContainer"></div>
+</div>
+</div> 
+  <div id="TextContainer" class="TopText TextHeight30">
+  <div id="TextBodyContent"></div>
+</div>
+</div>
+  <Script>
+  // Create a new JSON object for each ClickMe button.
+  view = [
+  {
+  button : "BUTTON_TEXT_HERE",
+  header : "HEADER_TEXT_HERE",
+  text : "PARAGRAPH_TEXT_HERE",
+  bullets : [
+  "BULLET_ONE",
+  "BULLET_TWO"
+  ],
+  audio : "AUDIO_FILE_HERE_WITHOUT_EXTENSION",
+  captions : "CAPTION_TEXT_HERE",
+  image : "IMAGE_SOURCE_IF_NO_VIDEO",
+  video : "VIDEO_FILE_IF_NO_IMAGE",
+  showBorder : true
+  },
+  {
+  button : "BUTTON_TEXT_HERE",
+  header : "HEADER_TEXT_HERE",
+  text : "PARAGRAPH_TEXT_HERE",
+  bullets : [
+  "BULLET_ONE",
+  "BULLET_TWO"
+  ],
+  audio : "AUDIO_FILE_HERE_WITHOUT_EXTENSION",
+  captions : "CAPTION_TEXT_HERE",
+  image : "IMAGE_SOURCE_IF_NO_VIDEO",
+  video : "VIDEO_FILE_IF_NO_IMAGE",
+  showBorder : true
+  }
+  ];
+  
+  // Initialize the slide
+  ClickMeWithVideoInitializeSlide(view);
+</Script>
+</Content>
+</Slide>

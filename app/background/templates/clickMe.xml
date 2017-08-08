@@ -1,0 +1,52 @@
+<Slide type="ClickMe" customClass="defaultClickMe" useLightbox="false" disableNext="true"> <!-- useLightbox = "true" will reconfigure as multi-image slide -->
+  <ImageLayout position="Lower" showBackground="true" contentPercentage="80" forceOrder="true" requireVisitAll="true"/>
+  <Introduction>
+    <Audio>Audio_File_Name</Audio>
+    <Captions>Closed_Captions</Captions>
+    <Image>Image_File_Name_png</Image>
+    <Header>Header_Tex</Header>
+    <Text>Some_Intro_Text</Text>
+  </Introduction>
+  <ImageContentList>
+    <ImageContent>
+      <Audio>Audio_File_Name</Audio>
+      <Captions>Closed_Captions</Captions>
+      <Image id="ImageId1">Image_File_Name_png</Image>
+      <Label id="LabelId1">Label_Text</Label>
+      <Header id="HeaderId1">Header_Text</Header>
+      <Text id="TextId1">Text</Text>
+      <BulletPointList>
+	<BulletPoint id="bullet1_1">Bullet_Point</BulletPoint>
+      </BulletPointList>
+    </ImageContent>
+    <ImageContent>
+      <Audio>Audio_File_Name</Audio>
+      <Captions>Closed_Captions</Captions>
+      <Image id="ImageId2">Image_File_Name_png</Image>
+      <Label id="LabelId2">Label_Text</Label>
+      <Header id="HeaderId2">Header_text</Header>
+      <Text id="TextId2">Text</Text>
+      <BulletPointList>
+	<BulletPoint id="Bullet2_1">Bullet_Point</BulletPoint>
+      </BulletPointList>
+    </ImageContent>
+  </ImageContentList>
+  <CueList>
+    <Cue>
+      <Trigger triggerType="Timed" triggerTime="0.0"/>
+      <Effect effectType="Visibility" displayMode="Show" target="HeaderId" effect="fade" duration="1.0"/>
+    </Cue>
+    <Cue>
+      <Trigger triggerType="Timed" triggerTime="0.0"/>
+      <Effect effectType="Visibility" displayMode="Show" target="ImageId" effect="fade" duration="1.0"/>
+    </Cue>
+    <Cue>
+      <Trigger triggerType="Timed" triggerTime="0.25"/>
+      <Effect effectType="Visibility" displayMode="Show" target="TextId" effect="fade" duration="0.5"/>
+    </Cue>
+    <Cue>
+      <Trigger triggerType="Timed" triggerTime="0.5"/>
+      <Effect effectType="Visibility" displayMode="Show" target="Bullet1_1" effect="fade" duration="0.5"/>
+    </Cue>
+  </CueList>
+</Slide>

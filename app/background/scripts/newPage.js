@@ -140,7 +140,7 @@ module.exports = function() {
                 ? true
                 : false;
             })
-          //this map doesn't work like I want. There is some text stored inside CDATA tags and I need to figure out how to get them out
+          //this map doesn't work like I want. There is some text stored inside CDATA tags and I need to figure out how to get them out;
             .map(element => { return element.innerText.replace(/\/\/<!\[CDATA\[[^]+\/\/\]\]>/g, ''); });
 
         }

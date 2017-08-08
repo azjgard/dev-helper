@@ -1,0 +1,65 @@
+<Slide type="AssembleComponents" disableNext="true">
+  <Title>Slide_Title</Title>
+  <Audio>Audio_File_Name</Audio>
+  <Instructions>Closed_Captions</Instructions>
+
+  <!-- Initial Slide Contents -->
+  <Header>
+    Header_Text
+  </Header>
+  <Text>Supplemental_Text_optional</Text>
+  <ComponentImage>Placeholder_Asset_png</ComponentImage>
+
+  <!-- Steps for Assembly -->
+  <DraggableList>
+    <Draggable orderInSequence="1">
+      <Label>Step_1</Label>
+      <Feedback>
+	<Text>Response_Text</Text>
+	<Image>Step_1_Asset_gif</Image>
+      </Feedback>
+    </Draggable>
+    <Draggable orderInSequence="2">
+      <Label>Step_2</Label>
+      <Feedback>
+	<Text>Response_Text</Text>
+	<Image>Step_2_Asset_gif</Image>
+      </Feedback>
+    </Draggable>
+    <Draggable orderInSequence="3">
+      <Label>Step_3</Label>
+      <Feedback>
+	<Text>Response_Text</Text>
+	<Image>Step_3_Asset_gif</Image>
+      </Feedback>
+    </Draggable>
+    <Draggable orderInSequence="4">
+      <Label>Step_4</Label>
+      <Feedback>
+	<Text>Response_Text</Text>
+	<Image>Step_4_Asset_gif</Image>
+      </Feedback>
+    </Draggable>
+    <Draggable orderInSequence="5">
+      <Label>Step_5</Label>
+      <Feedback>
+	<Text>Response_Text</Text>
+	<Image>Step_5_Asset_gif</Image>
+      </Feedback>
+    </Draggable>
+    <Draggable orderInSequence="6">
+      <Label>Step_6</Label>
+      <Feedback>
+	<Text>Response_Text</Text>
+	<Image>Step_6_Asset_gif</Image>
+      </Feedback>
+    </Draggable>
+    <Draggable orderInSequence="7">
+      <Label>Step_7</Label>
+      <Feedback>
+	<Text>Response_Text</Text>
+	<Image>Step_7_Asset_gif</Image>
+      </Feedback>
+    </Draggable>
+  </DraggableList>
+</Slide>
