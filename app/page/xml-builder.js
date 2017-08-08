@@ -21,27 +21,32 @@ document
     );
   });
 
-// chrome.runtime.onMessage.addListener(
-//   function(request, sender, sendResponse) {
-//     let message = request.message;
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    let message = request.message;
 
-//     if (message === 'add-slide') {
-//       let xml        = request.xml;
-//       let text       = request.text;
-//       let percentage = request.percentage;
+    if (message === 'add-slide') {
+      // let allXml     = request.xml,
+      //     slideXml   = request.slideXml,
+      //     allHtml    = request.allHtml,
+      //     slideHtml  = request.slideHtml,
+      //     percentage = request.percentage;
+      let xml        = request.xml;
+      let text       = request.text;
+      let percentage = request.percentage;
 
-//       try {
-// 	addSlide(xml, text, percentage);
-// 	sendResponse({ message: 'Slide added successfully.' });
-//       }
-//       catch (err) {
-// 	sendResponse({
-// 	  message : 'Slide addition unsuccessful.',
-// 	  error   : err
-// 	});
-//       }
-//     }
-//   });
+      try {
+	addSlide(xml, text, percentage);
+	sendResponse({ message: 'Slide added successfully.' });
+      }
+      catch (err) {
+	sendResponse({
+	  message : 'Slide addition unsuccessful.',
+	  error   : err
+	});
+      }
+    }
+  });
 
 function addSlide(xml, words, percentage) {
   try {
