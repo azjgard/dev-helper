@@ -3,8 +3,6 @@
 // is currently doing. Search 'TODO'
 //
 
-console.log('hahahahahahah');
-
 var stop_scrape = false;
 // var xmlText = "";
 var addedNextListener = false;
