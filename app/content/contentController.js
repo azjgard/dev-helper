@@ -1,2 +1,2 @@
 const content = require('./content.js');
-const prompt  = require('./prompt.js');
+require('./slideSelectionMenu.js');

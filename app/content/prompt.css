@@ -2,12 +2,13 @@
     position: fixed;
     top: 0;
     left: 0;
-    padding: 20px;
+    padding: 30px;
     opacity: 0;
     pointer-events: none;
-    border: 1px solid #000;
+    border: 1px solid #c5c5c5;
     background-color: #fff;
-    z-index: 9999;
+    box-shadow: 1px 1px 15px #ccc;
+    z-index: 99;
 
     -webkit-transition: opacity .75s;
     -moz-transition: opacity .75s;
@@ -17,8 +18,21 @@
     pointer-events: auto;
     opacity: 1;
 }
+.custom-prompt button:not(:last-child) {
+    display: block;
+    width: 30%;
+    padding: 3px;
+    margin: 18px auto 0 auto;
+}
 .custom-prompt button:last-child {
     position: absolute;
     top: 0;
     right: 0;
+    margin: 0;
+    border-top: none;
+    border-right: none;
+}
+
+.ui-draggable {
+    cursor: pointer;
 }
