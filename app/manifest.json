@@ -15,24 +15,13 @@
 	    "matches": [
 		"*://avondale-iol/*"
 	    ],
-	    "js" : [
-                "lib/jquery.js",
-                "content/content.js"
-            ], 
+	    "js" : ["output/content.js"], 
 	    "run_at" : "document_idle"
 	}
     ],
-
-    "background" : {
-        "scripts" : [ "output/background.js"]
-    },
-
+    "background" : { "scripts" : ["output/background.js"]},
     "permissions" : [
         "tabs",
-        "<all_urls>",
-        "webRequest",
-        "notifications",
-        "storage",
-        "system.display"
+        "webRequest"
     ]
 }
