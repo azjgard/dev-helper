@@ -57,7 +57,7 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "output";
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 0);
@@ -160,31 +160,71 @@ module.exports = function() {
       let data = request.data;
       //this creates a string of xml to send to the front end
       if (msg == 'new-html-page') {
+
         //// CREATE XML TEMPLATE BASED ON USER SPECIFICATIONS
         let newSlideXml = newXmlTemplate(); console.log("newSlideXml", newSlideXml);
-        
-        function newXmlTemplate(){
-          let newSlideXml = __webpack_require__(3)();
-          return parseString(newSlideXml, 'text/xml');
-
-          function parseString(str, conversion){
-            if(str){
-              let parser = new DOMParser();
-              return parser.parseFromString(str, conversion);
-            }
-            else return null;
-          }
-        }
-
 
         //// PARSE XML
         let oldSlideXml      = getOldXml(); console.log("oldSlideXml", oldSlideXml);
-        let xmlTextArray     = null;
+        let newXmlObject     = null;
         if(oldSlideXml){
+          //get all text just in case
           let oldSlideText   = getAllText(oldSlideXml); 
+          //returns the nodes that need to be searched for in the xml document
           let conversionInfo = getConversionInfo(data.slideType);
+          //get all nodes that fit specification in old xml
           let specifiedNodes = findSpecifiedNodes(conversionInfo, oldSlideXml);
-          xmlTextArray      = getTextArray(specifiedNodes); 
+          newXmlObject      = getTextArray(specifiedNodes); 
+        }
+
+        //// PARSE HTML
+        let html        = parseString(data.htmlText, 'text/html'); console.log(html);
+        //get all inner text of html just in case
+        let allHtmlText = getHtmlText(html); console.log("allHtmlText", allHtmlText);
+
+
+        //ADD XML OBJECT STRINGS INTO NEW TEMPLATE
+        if(newXmlObject){
+          for(var key in newXmlObject){
+            if(key === 'ul'){
+              $(newSlideXml).find('BulletPoint').remove();
+              $(newSlideXml).find('BulletPointList').append(newXmlObject.ul);
+            }
+            else if(key === 'ol'){
+            }
+            else {
+              $(newSlideXml).find('Text').remove();
+              $(newSlideXml).find('BulletPointList').before(newXmlObject.other);
+            }
+          }
+          console.log($(newSlideXml));
+          console.log($(newSlideXml).children());
+          console.log($(newSlideXml).children()[0].outerHTML);
+        }
+
+        function newXmlTemplate(){
+          let newSlideXml = __webpack_require__(3)();
+          return parseString(newSlideXml, 'text/xml');
+        }
+
+        function parseString(str, conversion){
+          if(str){
+            let parser = new DOMParser();
+            return parser.parseFromString(str, conversion);
+          }
+          else return null;
+        }
+
+        function getHtmlText(htmlDoc){
+          return Array.from($(htmlDoc.body)[0].children)
+            .filter(element => {
+              return element.tagName !== 'script' && element.tagName !== 'object'
+                ? true
+                : false;
+            })
+          //this map doesn't work like I want. There is some text stored inside CDATA tags and I need to figure out how to get them out
+            .map(element => { return element.innerText.replace(/\/\/<!\[CDATA\[[^]+\/\/\]\]>/g, ''); });
+
         }
 
         function getOldXml(){
@@ -219,243 +259,31 @@ module.exports = function() {
         }
 
         function getTextArray(nodes){
-          let ul = [];
-          let ol = [];
-          let other = [];
+          let ul = '';
+          let ol = '';
+          let other = '';
           nodes[0].get().forEach(node => {
             if(node.textContent.includes('<ul>')) {
-              ul.push({
-                element : 'ul',
-                text : `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`
-              });
+              ul += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
             }
             else if(node.textContent.includes('ol')) {
-              ol.push({
-                element : 'ol',
-                text : `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`
-              });
+              ol += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
             }
             else {
-              other.push({
-                element : null,
-                text : `<Text id="textId">${node.textContent.replace(/<.+?>/g, '')}</Text>`
-              });
+              other += `<Text id="textId">${node.textContent.replace(/<.+?>/g, '')}</Text>`;
             }
           });
-          return ul.concat(ol, other);
+          return {
+            ul,
+            ol,
+            other
+          };
         }
-
-
-        // convert xml to string and send to server
-        let x;
-        if(xmlTextArray){
-          x = xmlTextArray.reduce((accumulator, current, index) => {
-            console.log(index);
-            xmlTextArray.splice(index, 1);
-            console.log(xmlTextArray);
-            return accumulator + current.text;
-          }, '');
-        }
-        console.log(x);
-
-        // // addSlideToHtmlPage(data);
-        // //reset global variable
+        // addSlideToHtmlPage(newSlideXml);
         xmlDoc = null;
       }
     });
 
-  function parseXmlDoc(parser, xml){
-    // loop through all child nodes
-    let rootChildren = Array.from($(xml).find('*')[0].children);
-
-    // loop through all top level elements in xml document
-    rootChildren.map(child => {
-      let match = false;
-      // loop through list of desired node names to see if the current node name matches desired node name
-      try {
-        parser.nodesToGrab.forEach(node => {
-          if(child.tagName === node){
-            match = true;
-            throw new Error("ok");
-          }
-        });
-      }
-      catch(err) {
-        if(err !== "ok") throw err;
-      }
-      return match ?
-        { match : match, node : child.tagName, attributes : child.attributes, text : child.textContent } :
-      { match : match, node : child.tagName, attributes : null, text : child.textContent };
-    });
-
-  }
-
-  // function parseHtmlDoc(parser, html){
-
-  //   let new_html = document.createElement('html');
-  //   new_html.innerHTML = html;
-  //   let htmlChildren = Array.from($(new_html).find('body').childNodes);
-  //   htmlChildren.forEach(child => {
-
-  //     if(child.childNodes.length > 0){
-  //       //search again
-  //     }
-  //     else {
-  //     }
-  //   });
-
-
-  //   function grab
-
-
-  //   return new_html.childNodes;
-
-  //   // loop through all child nodes
-  //   // parser.nodesToGrab
-  //   // let rootChildren = Array.from($(xml).find('*')[0].children);
-
-  //   // // loop through all top level elements in xml document
-  //   // rootChildren.map(child => {
-  //   //   let match = false;
-  //   //   // loop through list of desired node names to see if the current node name matches desired node name
-  //   //   try {
-  //   //     parser.nodesToGrab.forEach(node => {
-  //   //       if(child.tagName === node){
-  //   //         match = true;
-  //   //         throw new Error("ok");
-  //   //       }
-  //   //     });
-  //   //   }
-  //   //   catch(err) {
-  //   //     if(err !== "ok") throw err;
-  //   //   }
-  //   //   return match ?
-  //   //     { match : match, node : child.tagName, attributes : child.attributes, text : child.textContent } :
-  //   //   { match : match, node : child.tagName, attributes : null, text : child.textContent };
-  //   // });
-
-  // }
-
-  // //put all these strings in a global object or array
-  // function createNewTemplate(parsedHtml, parsedXml, data){
-  //   let slides = {
-  //     singleImage : {
-  //       id : data.slideId,
-  //       slideText: [
-  //         // This will become more complex
-  //         { text: '' },
-  //         { text: '' },
-  //         { text: '' },
-  //         { text: '' },
-  //       ],
-  //       xmlBlocks : [
-  //         {
-  //           pre : `<Slide type="${getSlideType(data.slideType)}">`,
-  //           post : `</Slide>`,
-  //           text : `${parsedHtml + parsedXml}`,
-  //           children : []
-  //         },
-  //         {
-  //           pre : `<Audio>`,
-  //           post : `</Audio>`,
-  //           text : ``
-  //         },
-  //         {
-  //           pre : `<Slide type="${getSlideType(data.slideType)}">`,
-  //           post : `</Slide>`,
-  //           text : `${parsedHtml + parsedXml}`
-  //         },
-  //         {
-  //           pre : `<Instructions>`,
-  //           post : `</Instructions>`,
-  //           text : `${data.narrationText}`
-  //         },
-  //         {
-  //           pre : `<ImageLayout position="" showBackground="" contentPercentage="">`,
-  //           post : `</ImageLayout>`,
-  //           text : ``
-  //         },
-  //         {
-  //           pre : `<ImageContentList>`,
-  //           post : `</ImageContentList>`,
-  //           text : `` // this has nested stuff that is important (ImageContent>Image -> Header -> Text -> BulletPointList>Bullet)
-  //         },
-  //         // ,
-  //         // {
-  //         //   pre : `<Image id="image{num}">`,
-  //         //   post : `</Image>`,
-  //         //   text : `` 
-  //         // }
-  //         // ,
-  //         // {
-  //         //   pre : `<Header id="header{num}">`,
-  //         //   post : `</Header>`,
-  //         //   text : ``
-  //         // }
-  //         // ,
-  //         // {
-  //         //   pre : `<BulletPointList style="(unordered || ordered)">`,
-  //         //   post : `</BulletPointList>`,
-  //         //   text : ``
-  //         // }
-  //         // ,
-  //         // {
-  //         //   pre : `<BulletPoint id="bullet{num}">`,
-  //         //   post : `</BulletPoint>`,
-  //         //   text : ``
-  //         // }
-  //         // ,
-  //         // {
-  //         //   pre : `<Text id="text{num}">`,
-  //         //   post : `</Text>`,
-  //         //   text : `` 
-  //         // }
-  //         // ,
-  //         {
-  //           pre : `<CueList>`,
-  //           post : `</CueList>`,
-  //           text : `` //this has Cue>Trigger -> Effect tags
-  //         }
-  //         // ,
-  //         // {
-  //         //   pre : `<Cue>`,
-  //         //   post : `</Cue>`,
-  //         //   text : ``
-  //         // }
-  //         // ,
-  //         // {
-  //         //   pre : `<Trigger triggerType="" triggerTime=""/>`,
-  //         //   post : ``,
-  //         //   text : ``
-  //         // }
-  //         // ,
-  //         // {
-  //         //   pre : `<Effect effectType="" displayMode="" target="#{text{num}}" effect="" duration=""/>`,
-  //         //   post : ``,
-  //         //   text : ``
-  //         // }
-  //       ]
-  //     }
-  //     //add other slide types below
-  //   };
-  //   return slides[data.slideType];
-
-  // }
-
-  // function getSlideType(type){
-
-  //   switch(type){
-  //   case "singleImage":
-  //     return "Image";
-  //     break;
-  //   case "imageGallery":
-  //     return "Image";
-  //     break;
-  //   default:
-  //     return '';
-  //     break;
-  //   }
-  // }
 
   function addSlideToHtmlPage(slideObject) {
     queryTabs({})
