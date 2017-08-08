@@ -80,7 +80,7 @@ module.exports = function() {
       if (msg == 'new-html-page') {
 
         //// CREATE XML TEMPLATE BASED ON USER SPECIFICATIONS
-        let newSlideXml = newXmlTemplate(); console.log("newSlideXml", newSlideXml);
+        let newSlideXml      = newXmlTemplate(); console.log("newSlideXml", newSlideXml);
 
         //// PARSE XML
         let oldSlideXml      = getOldXml(); console.log("oldSlideXml", oldSlideXml);
@@ -92,13 +92,15 @@ module.exports = function() {
           let conversionInfo = getConversionInfo(data.slideType);
           //get all nodes that fit specification in old xml
           let specifiedNodes = findSpecifiedNodes(conversionInfo, oldSlideXml);
-          newXmlObject      = getTextArray(specifiedNodes); 
+          newXmlObject       = getTextArray(specifiedNodes); 
         }
 
         //// PARSE HTML
-        let html        = parseString(data.htmlText, 'text/html'); console.log(html);
+        let html             = parseString(data.htmlText, 'text/html'); console.log(html);
         //get all inner text of html just in case
-        let allHtmlText = getHtmlText(html); console.log("allHtmlText", allHtmlText);
+        if(html){
+          let allHtmlText      = getHtmlText(html); console.log("allHtmlText", allHtmlText);
+        }
 
 
         //ADD XML OBJECT STRINGS INTO NEW TEMPLATE
@@ -115,8 +117,6 @@ module.exports = function() {
               $(newSlideXml).find('BulletPointList').before(newXmlObject.other);
             }
           }
-          console.log($(newSlideXml));
-          console.log($(newSlideXml).children());
           console.log($(newSlideXml).children()[0].outerHTML);
         }
 
@@ -136,12 +136,18 @@ module.exports = function() {
         function getHtmlText(htmlDoc){
           return Array.from($(htmlDoc.body)[0].children)
             .filter(element => {
+              console.log(element.innerText);
               return element.tagName !== 'script' && element.tagName !== 'object'
                 ? true
                 : false;
             })
           //this map doesn't work like I want. There is some text stored inside CDATA tags and I need to figure out how to get them out;
-            .map(element => { return element.innerText.replace(/\/\/<!\[CDATA\[[^]+\/\/\]\]>/g, ''); });
+            .map(element => { return element.innerText
+                              .replace(/\/\/<!\[CDATA\[/g, '')
+                              .replace(/\/\/\]\]>/g, '')
+                              .replace(/[\w\d]+\(\);*/g, '')
+                              .trim();
+                            });
 
         }
 
