@@ -5,6 +5,7 @@ function getSlideInformation() {
   return new Promise((resolve, reject) => {
     prompt(templates.slideType)
       .then(response => {
+
         let slideType = response.slideType;
 
         if (slideType.match(/quiz/i)) {
