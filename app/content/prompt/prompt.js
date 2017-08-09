@@ -15,9 +15,6 @@ let top  = '0px';
 function promptUser(innerHtml) {
   return new Promise((resolve, reject) => {
 
-    console.log('initial left', left);
-    console.log('initial top', top);
-
     let prompt  = document.querySelector('.custom-prompt');
     let exists  = prompt !== null;
     let selects = null;
