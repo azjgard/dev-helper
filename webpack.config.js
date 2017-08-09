@@ -21,7 +21,7 @@ const loaders = [
     loader : 'style-loader!css-loader'
   },
   {
-    test : /\.xml$/,
+    test : /\.(xml|html)$/,
     use  : 'raw-loader'
   },
   {
