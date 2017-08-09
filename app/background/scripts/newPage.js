@@ -16,16 +16,16 @@
 //// 
 ////   New Section comes when there is are navigation markers and when transitioning to new set of navigation markers
 
-          //glossary
-          //chapter name is same as the course
-          //title and subtitle
-          //audio is same as lesson id
-          //leave the Image tag as is to signal to bms that they need to get the assets
-          // don't worry about getting image callouts and things that will be placed in images
-          // Instructions line endings uniform
-          //bullets fade on for half a second starting at .5 seconds. Headers with fade in for 1 second starting at 0.
-          // put 'check answers' into single quotes.
-          // to character long blanks for certain questions __________
+//glossary
+//chapter name is same as the course
+//title and subtitle
+//audio is same as lesson id
+//leave the Image tag as is to signal to bms that they need to get the assets
+// don't worry about getting image callouts and things that will be placed in images
+// Instructions line endings uniform
+//bullets fade on for half a second starting at .5 seconds. Headers with fade in for 1 second starting at 0.
+// put 'check answers' into single quotes.
+// to character long blanks for certain questions __________
 //// 
 ///////////////////////////////////////////////////////////////////////////
 //// 
@@ -54,8 +54,9 @@
 ///////////////////////////////////////////////////////////////////////////
 //
 
-const $ = require('jquery');
+const $             = require('jquery');
 const slideTemplate = require('../slideTemplates.js');
+var globalNarration = null;
 
 module.exports = function() {
   const htmlPageURL = chrome.runtime.getURL('page/xml-builder.html');
@@ -63,9 +64,9 @@ module.exports = function() {
   /////////////////////////////////////////////////////////////////////
   //// promisified chrome.tabs.query
   /////////////////////////////////////////////////////////////////////
-  const queryTabs = options => new Promise((resolve, reject) => chrome.tabs.query(options, resolve));
+  const queryTabs          = options => new Promise((resolve, reject) => chrome.tabs.query(options, resolve));
   const getTabByUrlPattern = (tabs, url) => new Promise((resolve, reject) => resolve(tabs.filter(tab => tab.url.includes(url))));
-  const createXmlPage = xmlPageIsOpen => new Promise((resolve, reject) => {
+  const createXmlPage      = xmlPageIsOpen => new Promise((resolve, reject) => {
     // if it's not already open, create it
     if (!xmlPageIsOpen)
       chrome.tabs.create({ url : htmlPageURL }, resolve);
@@ -87,22 +88,53 @@ module.exports = function() {
   chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
 
-      let msg = request.message;
+      let msg  = request.message;
       let data = request.data;
 
       if (msg == 'new-html-page') {
-        // requeste.data : {
+        // Example of request data
+        // request.data : {
         //   slideId       : slideID,
         //   slidePercent  : slidePercent,
         //   narrationText : narrationText
         //   htmlText      : htmlText
         // }
-
         let newData = getDataForFrontend(data); console.log("newData", newData);
         addSlideToHtmlPage(newData);
       }
     });
 
+ 
+  //
+  // addSlideToHtmlPage
+  //
+  // descr - sends data object with xml and html text to tab
+  // @params
+  //   - slideObject = {
+  //     xml          : 'string containing new slide xml',
+  //     text         : 'array of all words from old xml and old html',
+  //     percentage   : 'string that identifies how far along user is in old slide'
+  //   }
+  function addSlideToHtmlPage(slideObject) {
+    queryTabs({})
+      .then(tabs     => getTabByUrlPattern(tabs, htmlPageURL)) // try and get the tab the htmlPage is open at
+      .then(tabArray => new Promise((resolve, reject) => resolve(tabArray.length === 0 ? false : true))) // check if we found it
+      .then(createXmlPage) // try and create it if necessary
+      .then(Tab      => setTimeout(() => chrome.tabs.sendMessage(Tab.id, { message: 'add-slide', data : slideObject }), 500));
+  }
+
+  
+  //
+  // getDataForFrontend
+  //
+  // descr - takes html data from old slide tab, parses html and xml, and creates new xml string to send to front end
+  // @params
+  //   - data = {
+  //   slideId       : slideID,
+  //   slidePercent  : slidePercent,
+  //   narrationText : narrationText
+  //   htmlText      : htmlText
+  // }
   function getDataForFrontend(data){
     //// VARIABLES
     let newSlideXml    = newXmlTemplate(data.slideType), //console.log("newSlideXml", newSlideXml);,
@@ -113,14 +145,18 @@ module.exports = function() {
         oldHtmlTextAll = [],
         specificHtml   = null;
     
+    /////////////////////////////////////////////////////////////////////
+    //// MAIN CODE EXECUTION 
+    /////////////////////////////////////////////////////////////////////
+
     //// PARSE OLD XML
     // get all text just in case
-    // returns the nodes that need to be searched for in the xml document
+    // return the nodes that need to be searched for in the old xml document
     // get all nodes that fit specification in old xml
     // set finished xml object
     if(oldSlideXml){
-      let conversionInfo = getConversionInfo(data.slideType);
-      let specifiedNodes = findSpecifiedNodes(conversionInfo, oldSlideXml);
+      let searchNodes = getConversionInfo(data.slideType);
+      let specifiedNodes = findSpecifiedNodes(searchNodes, oldSlideXml);
       newXmlObject       = getTextArray(specifiedNodes); 
       oldXmlTextAll      = getAllXmlText(oldSlideXml); 
     }
@@ -148,34 +184,74 @@ module.exports = function() {
     //get all inner text of html just in case
     //get specific innerHTML
     if(html){
-      oldHtmlTextAll        = getAllHtmlText(html); //console.log("oldHtmlTextAll", oldHtmlTextAll);
-      specificHtml       = getSpecificHtmlText(html); //console.log("specificHtml", specificHtml);
+      oldHtmlTextAll = getAllHtmlText(html); 
+      specificHtml   = getSpecificHtmlText(html); 
     }
 
-    //////////////////////////////////////
     //TODO - ADD HTML STRINGS INTO NEW TEMPLATE
     
     // - code goes here
-    //////////////////////////////////////
+    //------------------------------------------
+
+    //// ADD NARRATION TO NEW SLIDE
+    if(data.narrationText){
+      let instructions = $(newSlideXml).find('Instructions');
+      let narrationText = data.narrationText;
+
+      //TODO - somehow figure outhow to let the bms guys know that they shouldn't copy in the title of the tag
+      //We could get rid of it by using this .split(/<br\/><br\/>.+?<br\/>/g)
+      if(narrationText.match(/<br\/><br\/>/g)){
+        narrationText = narrationText
+          .split(/<br\/><br\/>/g)
+          .map(cc => { return cc.replace(/<.+?>/g, ' ').trim(); });
+      }
+      else {
+        narrationText = narrationText
+          .replace(/<.+?>/g, ' ')
+          .trim();
+      }
+
+      // TODO - figure out how to match the text from the pages with multiple narrations to the corrent narrations
+      instructions.empty();
+      instructions.append(narrationText);
+    }
 
     xmlDoc = null;
+
+    //TODO - do we need to return data.slideId as well???
     return {
-      xml : $(newSlideXml).children()[0].outerHTML,
-      text : oldXmlTextAll.concat(oldHtmlTextAll),
-      // slideHtml: specificHtml, //add to newSlideXml?
-      percentage: data.slidePercent
+      xml          : $(newSlideXml).children()[0].outerHTML,
+      text         : oldXmlTextAll.concat(oldHtmlTextAll),
+      // slideHtml : specificHtml, //TODO - ADD TO NEWSLIDEXML
+      percentage   : data.slidePercent
     };
 
 
     /////////////////////////////////////////////////////////////////////
     //// FUNCTIONS
     /////////////////////////////////////////////////////////////////////
-
+    
+    //
+    // newXmlTemplate
+    // descr - gets the correct template
+    // @params
+    //   - slideType = string that user provides that specifies slide conversion type
+    // @return
+    //   - string version of new slide xml template
     function newXmlTemplate(slideType){
       let newSlideXml = slideTemplate[slideType];
       return parseString(newSlideXml, 'text/xml');
     }
 
+    
+    //
+    // parseString
+    //// descr - converts string version of a structure and returns a node tree structure
+    //// @params
+    ////   - str - the string to convert
+    ////   - conversion - string denoting the node tree structure to convert to (e.g. 'text/xml')
+    //// @return
+    ////   - Node tree document
     function parseString(str, conversion){
       if(str){
         let parser = new DOMParser();
@@ -183,15 +259,20 @@ module.exports = function() {
       }
       else return null;
     }
-
-    // Grab all child elements of the body
-    // .filter - filter out the script and object tags
-    // .map    - return arrays of cleansed html text
-    // .filter - remove empty arrays
-    // .reduce - flatten the final array
+    
+    //
+    // getAllHtmlText
+    //// descr - searches through the root children of the body for text and returns findings in an array
+    //// @params
+    ////   - htmlDoc - document with a node tree (DOM-like structure)
+    //// @return
+    ////   - an array text from the document
     function getAllHtmlText(htmlDoc){
+      // Grab all child elements of the body
       return Array.from($(htmlDoc.body)[0].children)
+        // filter out the script and object tags
         .filter(element  => { return element.tagName !== 'script' && element.tagName !== 'object' ? true : false; })
+        // return arrays of cleansed html text
         .map(element     => {
           return element.innerText
             .replace(/\/\/<!\[CDATA\[/g, '')
@@ -205,10 +286,24 @@ module.exports = function() {
             .filter(text => { return text != '' && !text.includes('Play Audiodocument'); })
             .map(text    => { return text.trim(); });
         })
+      // remove empty arrays
         .filter(arr      => { return arr.length ? true : false; })
+      // flatten the final array
         .reduce((a,b)    => { return a.concat(b); }, []);
     }
 
+    
+    //
+    // getSpecificHtmlText
+    //// descr - search for text from specified html elements and return object with text in it
+    //// @params
+    ////   - htmlDoc - document with DOM-like structure
+    //// @return
+    ////   - Object - {
+    ////   content      : 'string of the main text from old slide',
+    ////   header       : 'string of text with the header of the main text',
+    ////   headerMargin : "string with text from the header of the main text if the normal header wasn't found"
+    //// }
     function getSpecificHtmlText(htmlDoc){
       let html             = $(htmlDoc),
           contentText      = html.find('.regularcontenttext>ul'),
@@ -219,34 +314,55 @@ module.exports = function() {
           headerMargin     = null;
 
       if(contentText.length){
-        let lis = Array.from(contentText[0].querySelectorAll('li'));
-        content = lis.map(li => { return li.textContent; }); 
+        let lis      = Array.from(contentText[0].querySelectorAll('li'));
+        content      = lis.map(li => { return li.textContent; }); 
       }
       if(headerText.length){
-        header = headerText[0].textContent.trim();
+        header       = headerText[0].textContent.trim();
       }
       if(headerTextMargin.length){
         headerMargin = headerTextMargin[0].textContent.trim();
       }
       return {content, header, headerMargin};
     }
-
+    
+    //
+    // getOldXml
+    //// descr - gets the old slide xml document
+    //// @params
+    ////   - none
+    //// @return
+    ////   - the xml document or null if their is no xml document
     function getOldXml(){
       return xmlDoc ?
         xmlDoc
         : null;
     }
-
+    
+    //
+    // getAllXmlText
+    //// descr - grabs all text from old slide xml document
+    //// @params
+    ////   - oldXml - DOM-like xml document
+    //// @return
+    ////   - string of text from xml or an empty array
     function getAllXmlText(oldXml){
       let xmlText = $(oldXml)[0].childNodes[0].textContent.trim();
       return xmlText ? xmlText : [];
     }
-
+    
+    //
+    // getConversionInfo
+    //// descr - gets necessary conversion information based on what conversion the user specified
+    //// @params
+    ////   - slideType - string denoting the slide convesion type for the current old slide
+    //// @return
+    ////   - an array of the nodes that will be searched for in the old xml document
     function getConversionInfo(slideType){
-      let slideObj = {};
+      let nodes = [];
       switch(slideType){
       case "image":
-        slideObj.nodes = [
+        nodes = [
           'textItem',
           'question',
           'answer'
@@ -255,17 +371,36 @@ module.exports = function() {
       default:
         break;
       }
-      return slideObj;
+      return nodes;
     }
-
-    function findSpecifiedNodes(conversion, oldXml){
+    
+    //
+    // findSpecifiedNodes
+    //// descr - retrieves specified nodes from old xml document
+    //// @params
+    ////   - nodes - array of strings with the names of the nodes to search for
+    ////   - oldXml - the old slide xml document (DOM-like)
+    //// @return
+    ////   - an array of found nodes
+    function findSpecifiedNodes(nodes, oldXml){
       //find all specified nodes for slide conversion type
-      return conversion.nodes.map(nodeName => {
+      return nodes.map(nodeName => {
         return $(oldXml).find(nodeName);
       });
     }
-
-    //TODO - store things in a better way than just ul, ol, and other.
+    
+    //
+    // getTextArray
+    //// descr - gets text from specific xml nodes and saves the text in new slide xml tags
+    //// @params
+    ////   - nodes - jquery array of xml nodes
+    //// @return
+    ////   - Object {
+    ////   ul    : 'string of new slide xml bullet points',
+    ////   ol    : 'string of new slide xml bullet points',
+    ////   other : 'string of text nodes for new slide xml'
+    //// }
+    //TODO - store things in a better way than just ul, ol, and other. Update comments above as you go.
     function getTextArray(nodes){
       let ul        = '',
           ol        = '',
@@ -278,31 +413,22 @@ module.exports = function() {
           // if(node.tagName === 'question'){}
           // else if(node.tagName === 'answer'){}
           // if(node.tagName === 'question'){}
-          ul += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
+          ul    += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
         }
         else if(node.textContent.includes('ol')) {
-          ol += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
+          ol    += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
         }
         else {
           other += `<Text id="textId">${node.textContent.replace(/<.+?>/g, '')}</Text>`;
         }
       });
-      return {
-        ul,
-        ol,
-        other
-      };
+      return { ul, ol, other };
     }
   }
-
-  function addSlideToHtmlPage(slideObject) {
-    queryTabs({})
-      .then(tabs => getTabByUrlPattern(tabs, htmlPageURL)) // try and get the tab the htmlPage is open at
-      .then(tabArray => new Promise((resolve, reject) => resolve(tabArray.length === 0 ? false : true))) // check if we found it
-      .then(createXmlPage) // try and create it if necessary
-      .then(Tab => setTimeout(() => chrome.tabs.sendMessage(Tab.id, { message: 'add-slide', data : slideObject }), 500));
-  }
 };
+
+
+
 
 
 // background.js
@@ -382,7 +508,7 @@ function sendToTab(which_tab, request){
       let context = getContext(tabs[i].url);
 
       if (context === which_tab) {
-	chrome.tabs.sendMessage(tabs[i].id, request);
+        chrome.tabs.sendMessage(tabs[i].id, request);
       }   
     }
   });
