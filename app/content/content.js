@@ -1,7 +1,8 @@
 // TODO: add event listeners to each slide at the appropriate times
 // to grab the information for each, instead of just the first one, as it
 // is currently doing. Search 'TODO'
-//
+
+let promptSlideInfo = require('./slideSelectionMenu.js');
 
 var stop_scrape = false;
 // var xmlText = "";
@@ -248,37 +249,25 @@ function sendRequest(pageInformation) {
     data    : {
       slideId       : slideID,
       slidePercent  : slidePercent,
-      narrationText : narrationText
+      narrationText : narrationText,
+      slideMeta     : ''
     }
   };
-
-  // if (xmlText === '') {
-  //   request.data.xmlText = null;
-  // }
-  // else {
-  //   request.data.xmlText = xmlText;
-  // }
 
   if (htmlText === null) {
     request.data.htmlText = null;
   }
   else {
     request.data.htmlText = htmlText;
-    // let textArray = htmlText.split('\n')
-    //       .filter(text => text.match(/\w/g))
-    //       .map   (text => text.trim());
-
-    // request.data.htmlText = textArray;
   }
 
-  //TODO 
-    // User chooses conversion type from popup
-    //   - send conversion type from content2.js with any html found, 
-  request.data.slideType = prompt("What kind of slide is this?", "image");
-  chrome.runtime.sendMessage(request);
+  promptSlideInfo()
+    .then(data => {
+      request.slideMeta = data;
+      chrome.runtime.sendMessage(request);
+    });
 
   stop_scrape = false;
-  // xmlText     = '';
 }
 
 //
@@ -301,13 +290,3 @@ var executeInPageContext = function(fn) {
   document.documentElement.appendChild(script); // run the script
   document.documentElement.removeChild(script); // clean up
 };
-
-// chrome.runtime.onMessage.addListener(
-//   function(request, sender, sendResponse) {
-//     var msg  = request.message;
-//     var data = request.data;
-
-//     if (msg == 'stop-scrape') {
-//       xmlText = data;
-//     }
-//   });

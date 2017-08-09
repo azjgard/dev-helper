@@ -36,3 +36,7 @@
 .ui-draggable {
     cursor: pointer;
 }
+
+.no-display {
+    display: none;
+}
