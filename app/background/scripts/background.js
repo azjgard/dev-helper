@@ -1,7 +1,4 @@
 
-// background.js
-///////////////////////////////
-
 const xmlPreviewURL = chrome.runtime.getURL('/page/index.html');
 var globalBlacklist = [];
 var xmlDoc = null;
@@ -25,6 +22,8 @@ function analyzeXML(details) {
 
     // XML gets saved
     xmlDoc = storeXML(resourceURL);
+    console.log('--- xmlDoc ---');
+    console.log(xmlDoc);
   }
 }
 

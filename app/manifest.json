@@ -6,22 +6,26 @@
     "version"     : "1.0",
 
     "browser_action" : {
-	"default_icon" : "icon48.png",
-	"default_title": "Dev Helper Prototype"
+        "default_icon" : "icon48.png",
+        "default_title": "Dev Helper Prototype"
     },
 
     "content_scripts":[
-	{
-	    "matches": [
-		"*://avondale-iol/*"
-	    ],
-	    "js" : ["output/content.js"], 
-	    "run_at" : "document_idle"
-	}
+        {
+            "matches": [
+                "*://avondale-iol/*"
+            ],
+            "js" : ["output/content.js"], 
+            "run_at" : "document_idle"
+        }
     ],
     "background" : { "scripts" : ["output/background.js"]},
     "permissions" : [
         "tabs",
-        "webRequest"
+        "<all_urls>",
+        "webRequest",
+        "notifications",
+        "storage",
+        "system.display"
     ]
 }

@@ -54,7 +54,7 @@ function addSlide(xml, words, percentage) {
     let title = editorContainer
 	  .querySelector('h2');
 
-    title.textContent = `Slide - ${percentage}%`;
+    title.textContent = `Slide - ${percentage}`;
 
     return true;
   }

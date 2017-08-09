@@ -1,5 +1,7 @@
 
-var xmlDoc              = require('./background.js');
+// TODO - xmlDoc is always null because it is grabbing the inition value from background.js
+// figure out how to change this
+var   xmlDoc              = require('./background.js');
 const parseOldXml         = require('./parseXml.js');
 const slideTemplate       = require('../slideTemplates.js');
 const getXmlFromHtml      = require('./parseHtml.js').getXmlFromHtml;
@@ -30,6 +32,8 @@ function getDataForFrontend(data){
       xmlFromHtml    = '';
 
   /// PARSE OLD XML
+  console.log('--- oldSlideXml ---');
+  console.log(oldSlideXml);
   if(oldSlideXml){
     newXmlObject = parseOldXml(data.slideMeta.slideType, oldSlideXml);
   }
