@@ -6,8 +6,17 @@ require('./prompt.css');
 
 let transitionLength = 750; // milliseconds
 
+// these variables track the prompt position
+// when the user drags it around
+let left = '0px';
+let top  = '0px';
+
 function promptUser(innerHtml) {
   return new Promise((resolve, reject) => {
+
+    console.log('initial left', left);
+    console.log('initial top', top);
+
     let prompt  = document.querySelector('.custom-prompt');
     let exists  = prompt !== null;
     let selects = null;
@@ -17,11 +26,15 @@ function promptUser(innerHtml) {
       prompt.innerHTML = innerHtml +
 	'<button class="ui-button">Submit</button><button class="ui-button">X</button>';
       prompt.className = 'custom-prompt';
+
       document.body.appendChild(prompt);
     }
 
     prompt  = document.querySelector('.custom-prompt');
     selects = prompt.querySelectorAll('select');
+
+    prompt.style.left = left;
+    prompt.style.top  = top;
 
     // allow the prompt to be dragged around
     $(prompt).draggable({ cancel: '.ui-button' });
@@ -94,6 +107,9 @@ function getPromptData(prompt) {
 function showPrompt(prompt) { prompt.classList.add('visible'); }
 function hidePrompt(prompt) {
   prompt.classList.remove('visible');
+
+  left = prompt.style.left;
+  top  = prompt.style.top;
 
   // delete it from the document
   setTimeout(() => prompt.remove(), transitionLength);
