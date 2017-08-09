@@ -6,25 +6,7 @@ require('./prompt.css');
 
 let transitionLength = 750; // milliseconds
 
-function generateInnerHtml(config) {
-  let htmlString = '';
-
-  for (var i = 0; i < config.length; i++) {
-    htmlString += `<p>${config[i].text}</p>`;
-    htmlString += `<select name="${config[i].name}">`;
-
-    for (var x = 0; x < config[i].options.length; x++) {
-      let option = config[i].options[x];
-      htmlString += `<option>${option}</option>`;
-    }
-
-    htmlString += '</select>';
-  }
-
-  return htmlString;
-}
-
-function promptUser(config) {
+function promptUser(innerHtml) {
   return new Promise((resolve, reject) => {
     let prompt  = document.querySelector('.custom-prompt');
     let exists  = prompt !== null;
@@ -32,7 +14,8 @@ function promptUser(config) {
 
     if (!exists) {
       prompt           = document.createElement('div');
-      prompt.innerHTML = generateInnerHtml(config) + '<button class="ui-button">Submit</button><button class="ui-button">X</button>';
+      prompt.innerHTML = innerHtml +
+	'<button class="ui-button">Submit</button><button class="ui-button">X</button>';
       prompt.className = 'custom-prompt';
       document.body.appendChild(prompt);
     }
@@ -40,11 +23,12 @@ function promptUser(config) {
     prompt  = document.querySelector('.custom-prompt');
     selects = prompt.querySelectorAll('select');
 
+    // allow the prompt to be dragged around
     $(prompt).draggable({ cancel: '.ui-button' });
 
-    for (let i = 0; i < selects.length; i++) {
-      $(selects[i]).selectmenu();
-    }
+    // initialize jquery-ui input elements
+    $('.custom-prompt select').selectmenu();
+    $('.custom-prompt input[type="radio"]').checkboxradio();
 
     // the timeout puts the show function at the bottom of the queue,
     // ensuring we get the nice fade-in effect
@@ -57,7 +41,8 @@ function promptUser(config) {
 	hidePrompt(prompt);
 
 	// the timeout is so that the promise only resolves
-	// once the dialog is fully faded out
+	// once the dialog is fully faded out; this allows easy
+	// prompt chaining
 	setTimeout(() => resolve(getPromptData(prompt)), transitionLength);
       });
 
@@ -72,28 +57,45 @@ function promptUser(config) {
 }
 
 function getPromptData(prompt) {
-  let selects = prompt.querySelectorAll('select');
-  let data    = {};
+  let selects   = prompt.querySelectorAll('select');
+  let fieldsets = prompt.querySelectorAll('fieldset');
+  let data      = {};
 
-  // for (let i = 0; i < selects.length; i++) {
-  //   let select = selects[i];
-  //   let name   = select.name;
+  // selectbox data
+  for (let i = 0; i < selects.length; i++) {
+    let select = selects[i];
+    let key    = select.name;
+    data[key]  = $(select).val();
+  }
 
-  //   data[name] = $(select).val();
-  // }
+  // input field data
+  for (let i = 0; i < fieldsets.length; i++) {
+    let fieldset = fieldsets[i];
+    let children = fieldset.children;
+    let key      = fieldset.name;
 
-  // return data;
-  return $(selects[0]).val();
+    for (var x = 0; x < children.length; x++) {
+      let child = children[x];
+
+      if (child.tagName === 'INPUT' && child.checked) {
+	let id       = child.id;
+	let selector = `label[for="${id}"]`;
+	let value    = $(fieldset)
+	      .children(selector)
+	      .text()
+	      .trim();
+	data[key] = value;
+      }
+    }
+  }
+  return data;
 }
 
-function showPrompt(prompt) {
-  prompt.classList.add('visible');
-}
-
+function showPrompt(prompt) { prompt.classList.add('visible'); }
 function hidePrompt(prompt) {
   prompt.classList.remove('visible');
 
-  // timeout length should match the transition length for the .custom-prompt class CSS
+  // delete it from the document
   setTimeout(() => prompt.remove(), transitionLength);
 }
 

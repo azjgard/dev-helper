@@ -1,86 +1,20 @@
-let prompt = require('./prompt.js');
-let config = [
-  [
-    {
-      name: 'slideType',
-      text: 'What will the new slide type be?',
-      options: [
-	'Image'						,
-	'Quiz'						,
-	'Video'
-      ]
+let templates = require('./templates/promptForms.js');
+let prompt    = require('./prompt.js');
+
+prompt(templates.slideType)
+  .then(response => {
+    let slideType = response.slideType;
+
+    if (slideType.match(/quiz/i)) {
+      return prompt(templates.slides.quiz);
     }
-  ],
-  {
-    image: [
-      {
-	text: 'Which type of image slide?',
-	options: [
-	  'Image Left',
-	  'Image Right',
-	  'Image Center'
-	]
-      }
-    ],
-    quiz: [
-      {
-	text: 'How many questions?',
-	options: ['1', '2', '3', '4', '5', '6', '7']
-      }
-    ],
-    video: [
-      {
-	text: 'You\'ve reached the video slide.',
-	options: [
-	  'There is only one option..'
-	]
-      }
-    ]
-  }
-];
-
-let data = {};
-
-function promptUser(index, response, dataObject) {
-  let currentConfig = config[index];
-
-  // 0 is a special case because there will not be any
-  // config[index][responseKey]
-  if (index === 0) {
-    prompt(currentConfig).then((res) => promptUser(1, res, dataObject));
-  }
-  else {
-    try {
-      let responseKey = response.toLowerCase();
-      if (!config[index][responseKey]) { return; }
-      else {
-	prompt(config[index][responseKey]).then((res) => promptUser(index + 1, res, dataObject));
-      }
+    else if (slideType.match(/image/i)) {
+      return prompt(templates.slides.image);
     }
-    catch (e) { return; }
-  }
-}
+    else if (slideType.match(/exam/i)) {
+      return prompt(templates.slides.exam);
+    }
 
-promptUser(0, null, data);
+    return Promise.resolve();
+  });
 
-// promptUser(0, null, data);
-
-// prompt('What design type will this slide be converted to?', true)
-//   .then(type => {
-//     global.type = type;
-
-//       switch(type) {
-//       case 'image':
-// 	return prompt('Why do you like images?');
-// 	break;
-//       case 'quiz':
-// 	return prompt('Why do you like quizzes?');
-// 	break;
-//       case 'exam':
-// 	return prompt('Why do you like exams?');
-// 	break;
-//       default:
-// 	return prompt('Why did you not give a valid answer?');
-// 	break;
-//       }
-//   });
