@@ -292,8 +292,7 @@ module.exports = function() {
   // @return
   //   - string version of new slide xml template
   function newXmlTemplate(slideType){
-    let newSlideXml = slideTemplate[slideType];
-    return parseString(newSlideXml, 'text/xml');
+    let newSlideXml = slideTemplate[slideType]; return parseString(newSlideXml, 'text/xml');
   }
 
   
