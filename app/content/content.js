@@ -263,7 +263,9 @@ function sendRequest(pageInformation) {
 
   promptSlideInfo()
     .then(data => {
-      request.slideMeta = data;
+
+      request.data.slideMeta = data;
+
       chrome.runtime.sendMessage(request);
     });
 

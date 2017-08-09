@@ -100,7 +100,6 @@ module.exports = function() {
         // }
 
         let newData = getDataForFrontend(data); console.log("newData", newData);
-        console.log(newData.xml);
         //TODO - allow sub-bullets to be added (AD-103, steering overview http://avondale-iol/AD-103/AD-103-1-Web03/sco3/lmsinit.htm?ShowCDMenu=1)
         // - add bulletId numbers when inserting bullets
         // - get all text coming through 
@@ -145,7 +144,7 @@ module.exports = function() {
   function getDataForFrontend(data){
     //// VARIABLES
     let html           = parseString(data.htmlText, 'text/html'), 
-        newSlideXml    = newXmlTemplate(data.slideType), 
+        newSlideXml    = newXmlTemplate(data.slideMeta.slideType), 
         oldSlideXml    = getOldXml(), 
         oldXmlTextAll  = [],
         oldHtmlTextAll = [],
@@ -155,7 +154,7 @@ module.exports = function() {
 
     /// PARSE OLD XML
     if(oldSlideXml){
-      newXmlObject = parseOldXml(data.slideType, oldSlideXml);
+      newXmlObject = parseOldXml(data.slideMeta.slideType, oldSlideXml);
     }
 
     //// PARSE OLD HTML
@@ -292,7 +291,12 @@ module.exports = function() {
   // @return
   //   - string version of new slide xml template
   function newXmlTemplate(slideType){
-    let newSlideXml = slideTemplate[slideType];
+    let newSlideXml = slideTemplate[slideType.toLowerCase()];
+
+    console.log('------');
+    console.log(slideTemplate);
+    console.log(slideType);
+    console.log('------');
     return parseString(newSlideXml, 'text/xml');
   }
 
@@ -444,9 +448,12 @@ module.exports = function() {
   //// @return
   ////   - an array of the nodes that will be searched for in the old xml document
   function getConversionInfo(slideType){
+    console.log('made it to slideType!');
+    console.log(slideType);
+
     let nodes = [];
     switch(slideType){
-    case "image":
+    case "Image":
       nodes = [
         'textItem',
         'question',

@@ -26,9 +26,10 @@ chrome.runtime.onMessage.addListener(
     let message = request.message;
 
     if (message === 'add-slide') {
-      let xml        = request.xml;
-      let text       = request.text;
-      let percentage = request.percentage;
+      let data       = request.data;
+      let xml        = data.xml;
+      let text       = data.text;
+      let percentage = data.percentage;
 
       try {
 	addSlide(xml, text, percentage);
