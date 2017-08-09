@@ -6,8 +6,18 @@ require('./prompt.css');
 
 let transitionLength = 750; // milliseconds
 
+// these variables track the prompt position
+// when the user drags it around, and ensure
+// that it always appears where it is expected to
+let left = '0px';
+let top  = '0px';
+
 function promptUser(innerHtml) {
   return new Promise((resolve, reject) => {
+
+    console.log('initial left', left);
+    console.log('initial top', top);
+
     let prompt  = document.querySelector('.custom-prompt');
     let exists  = prompt !== null;
     let selects = null;
@@ -17,11 +27,15 @@ function promptUser(innerHtml) {
       prompt.innerHTML = innerHtml +
 	'<button class="ui-button">Submit</button><button class="ui-button">X</button>';
       prompt.className = 'custom-prompt';
+
       document.body.appendChild(prompt);
     }
 
     prompt  = document.querySelector('.custom-prompt');
     selects = prompt.querySelectorAll('select');
+
+    prompt.style.left = left;
+    prompt.style.top  = top;
 
     // allow the prompt to be dragged around
     $(prompt).draggable({ cancel: '.ui-button' });
@@ -30,7 +44,7 @@ function promptUser(innerHtml) {
     $('.custom-prompt select').selectmenu();
     $('.custom-prompt input[type="radio"]').checkboxradio();
 
-    // the timeout puts the show function at the bottom of the queue,
+    // the timeout puts the showPrompt function at the bottom of the queue,
     // ensuring we get the nice fade-in effect
     setTimeout(() => showPrompt(prompt), 20);
 
@@ -95,7 +109,9 @@ function showPrompt(prompt) { prompt.classList.add('visible'); }
 function hidePrompt(prompt) {
   prompt.classList.remove('visible');
 
-  // delete it from the document
+  left = prompt.style.left;
+  top  = prompt.style.top;
+
   setTimeout(() => prompt.remove(), transitionLength);
 }
 
