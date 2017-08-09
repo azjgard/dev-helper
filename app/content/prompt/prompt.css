@@ -40,3 +40,15 @@
 .no-display {
     display: none;
 }
+
+.redo-prompt {
+    position: fixed;
+    top: 508px;
+    left: 30px;
+    padding: 10px;
+    z-index: 9999;
+    border: 1px solid #c5c5c5;
+    background-color: #fff;
+    box-shadow: 1px 1px 15px #ccc;
+    cursor: pointer;
+}

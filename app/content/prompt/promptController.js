@@ -3,20 +3,20 @@ let prompt    = require('./prompt.js');
 
 function getSlideInformation() {
   return new Promise((resolve, reject) => {
-    prompt(templates.slideType)
+    prompt(templates.slideType, getSlideInformation)
       .then(response => {
         let slideType = response.slideType;
 
 	if (!slideType) return Promise.resolve(false);
 	else {
 	  if (slideType.match(/quiz/i)) {
-	    return prompt(templates.slides.quiz);
+	    return prompt(templates.slides.quiz, getSlideInformation);
 	  }
 	  else if (slideType.match(/image/i)) {
-	    return prompt(templates.slides.image);
+	    return prompt(templates.slides.image, getSlideInformation);
 	  }
 	  else if (slideType.match(/exam/i)) {
-	    return prompt(templates.slides.exam);
+	    return prompt(templates.slides.exam, getSlideInformation);
 	  }
 	  else {
 	    return Promise.resolve(false);
