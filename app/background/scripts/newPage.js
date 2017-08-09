@@ -56,7 +56,6 @@
 
 const $             = require('jquery');
 const slideTemplate = require('../slideTemplates.js');
-var globalNarration = null;
 
 module.exports = function() {
   const htmlPageURL = chrome.runtime.getURL('page/xml-builder.html');
@@ -100,11 +99,19 @@ module.exports = function() {
         //   htmlText      : htmlText
         // }
         let newData = getDataForFrontend(data); console.log("newData", newData);
+        console.log(newData.xml);
+        //TODO - allow sub-bullets to be added (AD-103, steering overview http://avondale-iol/AD-103/AD-103-1-Web03/sco3/lmsinit.htm?ShowCDMenu=1)
+        // - add bulletId numbers when inserting bullets
+        // - get all text coming through 
+
         addSlideToHtmlPage(newData);
       }
     });
 
- 
+  /////////////////////////////////////////////////////////////////////
+  //// FUNCTIONS
+  /////////////////////////////////////////////////////////////////////
+  
   //
   // addSlideToHtmlPage
   //
@@ -123,7 +130,6 @@ module.exports = function() {
       .then(Tab      => setTimeout(() => chrome.tabs.sendMessage(Tab.id, { message: 'add-slide', data : slideObject }), 500));
   }
 
-  
   //
   // getDataForFrontend
   //
@@ -137,68 +143,97 @@ module.exports = function() {
   // }
   function getDataForFrontend(data){
     //// VARIABLES
-    let newSlideXml    = newXmlTemplate(data.slideType), //console.log("newSlideXml", newSlideXml);,
-        oldSlideXml    = getOldXml(), //console.log("oldSlideXml", oldSlideXml);,
+    let html           = parseString(data.htmlText, 'text/html'), 
+        newSlideXml    = newXmlTemplate(data.slideType), 
+        oldSlideXml    = getOldXml(), 
         oldXmlTextAll  = [],
-        newXmlObject   = null,
-        html           = parseString(data.htmlText, 'text/html'), 
         oldHtmlTextAll = [],
-        specificHtml   = null;
-    
-    /////////////////////////////////////////////////////////////////////
-    //// MAIN CODE EXECUTION 
-    /////////////////////////////////////////////////////////////////////
+        newXmlObject   = '',
+        specificHtml   = '',
+        xmlFromHtml    = '';
 
-    //// PARSE OLD XML
-    // get all text just in case
-    // return the nodes that need to be searched for in the old xml document
-    // get all nodes that fit specification in old xml
-    // set finished xml object
+    /// PARSE OLD XML
     if(oldSlideXml){
-      let searchNodes = getConversionInfo(data.slideType);
-      let specifiedNodes = findSpecifiedNodes(searchNodes, oldSlideXml);
-      newXmlObject       = getTextArray(specifiedNodes); 
-      oldXmlTextAll      = getAllXmlText(oldSlideXml); 
-    }
-
-    //ADD XML OBJECT STRINGS INTO NEW TEMPLATE
-    if(newXmlObject){
-      for(var key in newXmlObject){
-        if(key === 'ul'){
-          //TODO - should we keep this in just as a refernce?
-          $(newSlideXml).find('BulletPoint').remove();
-          $(newSlideXml).find('BulletPointList').append(newXmlObject.ul);
-        }
-        else if(key === 'ol'){
-        }
-        else {
-          // should we keep this in as a reference
-          $(newSlideXml).find('Text').remove();
-          $(newSlideXml).find('BulletPointList').before(newXmlObject.other);
-        }
-      }
-      // console.log($(newSlideXml).children()[0].outerHTML);
+      newXmlObject = parseOldXml(data.slideType, oldSlideXml);
     }
 
     //// PARSE OLD HTML
-    //get all inner text of html just in case
-    //get specific innerHTML
     if(html){
       oldHtmlTextAll = getAllHtmlText(html); 
       specificHtml   = getSpecificHtmlText(html); 
+      xmlFromHtml = getXmlFromHtml(specificHtml);
+    }
+    
+    //ADD HTML, XML, AND NARRATION TO NEW XML STRING
+    let xmlAndAllText = addAllTextToNewXml(newXmlObject, oldHtmlTextAll, xmlFromHtml, data.narrationText, newSlideXml);
+
+    xmlDoc = null;
+
+    //TODO - do we need to return data.slideId as well???
+    return {
+      xml          : xmlAndAllText.completedNewXml,
+      text         : xmlAndAllText.allText,
+      percentage   : data.slidePercent
+    };
+  }
+
+  //
+  // addAllTextToNewXml
+  //// descr - 
+  //// @params
+  ////   - newXmlObject - 
+  ////   - oldHtmlTextAll - 
+  ////   - xmlFromHtml - 
+  ////   - narration - 
+  ////   - newSlideXml - 
+  //// @return
+  ////   - completedNewXml - 
+  function addAllTextToNewXml(newXmlObject, oldHtmlTextAll, xmlFromHtml, narration, newSlideXml){
+    let newXmlWithNarr = addNarration(narration, newSlideXml);
+    let combinedXmlHtml = combineOldHtmlAndXml(newXmlObject, oldHtmlTextAll, xmlFromHtml);
+    let completedNewXml = addTextFromXmlAndHtml(combinedXmlHtml, newXmlWithNarr);
+    
+    return {completedNewXml : $(completedNewXml)[0].children[0].outerHTML, allText : combinedXmlHtml.allText};
+  }
+
+  function combineOldHtmlAndXml(newXmlObject, oldHtmlTextAll, xmlFromHtml){
+    let headerText = xmlFromHtml.headerText         === undefined ? '' : xmlFromHtml.headerText,
+        bulletText = xmlFromHtml.bulletText         === undefined ? '' : xmlFromHtml.bulletText,
+        other      = newXmlObject.other             === undefined ? '' : newXmlObject.other,
+        ul         = newXmlObject.ul                === undefined ? '' : newXmlObject.ul,
+        all        = newXmlObject.allTextFromOldXml === undefined ? [] : newXmlObject.allTextFromOldXml;
+    
+    let header  = (headerText + other).trim();
+    let bullets = (bulletText + ul).trim();
+    let allText = oldHtmlTextAll.concat(all);
+
+    return {header, bullets, allText};
+  }
+
+  function addTextFromXmlAndHtml(combinedXmlHtml, newWithNarr){
+    let bulletList = $(newWithNarr).find('BulletPointList');
+    if(combinedXmlHtml.bullets){
+      bulletList
+        .empty()
+        .append(combinedXmlHtml.bullets);
     }
 
-    //TODO - ADD HTML STRINGS INTO NEW TEMPLATE
-    
-    // - code goes here
-    //------------------------------------------
+    let text = $(newWithNarr).find('Text');
+    if(combinedXmlHtml.header){
+      text.remove();
+      bulletList.before(combinedXmlHtml.header);
+    }
 
+    return newWithNarr;
+  }
+
+  function addNarration(narration, newSlideXml){
     //// ADD NARRATION TO NEW SLIDE
-    if(data.narrationText){
+    if(narration){
       let instructions = $(newSlideXml).find('Instructions');
-      let narrationText = data.narrationText;
+      let narrationText = narration;
 
-      //TODO - somehow figure outhow to let the bms guys know that they shouldn't copy in the title of the tag
+      //TODO - somehow figure out how to let the bms guys know that they shouldn't copy in the title of the tag
       //We could get rid of it by using this .split(/<br\/><br\/>.+?<br\/>/g)
       if(narrationText.match(/<br\/><br\/>/g)){
         narrationText = narrationText
@@ -214,216 +249,273 @@ module.exports = function() {
       // TODO - figure out how to match the text from the pages with multiple narrations to the corrent narrations
       instructions.empty();
       instructions.append(narrationText);
+      return newSlideXml;
     }
+    return null;
+  }
 
-    xmlDoc = null;
+  //
+  // parseOldXml
+  //// descr - 
+  //// @params
+  ////   - data - data from request
+  ////   - oldSlideXml - parsed xml document
+  //// @return
+  ////   - xmlFromOldXml - object with all the necessary text strings to be loaded into new xml
+  function parseOldXml(slideType, oldSlideXml){
+    //// PARSE OLD XML
+    // get all text just in case
+    // return the nodes that need to be searched for in the old xml document
+    // get all nodes that fit specification in old xml
+    // set finished xml object
+    let searchNodes    = getConversionInfo(slideType);
+    let specifiedNodes = findSpecifiedNodes(searchNodes, oldSlideXml);
+    let newXmlObject       = getTextArray(specifiedNodes); 
+    let oldXmlTextAll      = getAllXmlText(oldSlideXml); 
 
-    //TODO - do we need to return data.slideId as well???
-    return {
-      xml          : $(newSlideXml).children()[0].outerHTML,
-      text         : oldXmlTextAll.concat(oldHtmlTextAll),
-      // slideHtml : specificHtml, //TODO - ADD TO NEWSLIDEXML
-      percentage   : data.slidePercent
+    let xmlFromOldXml = {
+      ul                : newXmlObject.ul,
+      ol                : newXmlObject.ol,
+      other             : newXmlObject.other,
+      allTextFromOldXml : oldXmlTextAll
     };
-
-
-    /////////////////////////////////////////////////////////////////////
-    //// FUNCTIONS
-    /////////////////////////////////////////////////////////////////////
     
-    //
-    // newXmlTemplate
-    // descr - gets the correct template
-    // @params
-    //   - slideType = string that user provides that specifies slide conversion type
-    // @return
-    //   - string version of new slide xml template
-    function newXmlTemplate(slideType){
-      let newSlideXml = slideTemplate[slideType];
-      return parseString(newSlideXml, 'text/xml');
+    return xmlFromOldXml;
+  }
+
+  //
+  // newXmlTemplate
+  // descr - gets the correct template
+  // @params
+  //   - slideType = string that user provides that specifies slide conversion type
+  // @return
+  //   - string version of new slide xml template
+  function newXmlTemplate(slideType){
+    let newSlideXml = slideTemplate[slideType];
+    return parseString(newSlideXml, 'text/xml');
+  }
+
+  
+  //
+  // parseString
+  //// descr - converts string version of a structure and returns a node tree structure
+  //// @params
+  ////   - str - the string to convert
+  ////   - conversion - string denoting the node tree structure to convert to (e.g. 'text/xml')
+  //// @return
+  ////   - Node tree document
+  function parseString(str, conversion){
+    if(str){
+      let parser = new DOMParser();
+      return parser.parseFromString(str, conversion);
+    }
+    else return null;
+  }
+  
+  //
+  // getAllHtmlText
+  //// descr - searches through the root children of the body for text and returns findings in an array
+  //// @params
+  ////   - htmlDoc - document with a node tree (DOM-like structure)
+  //// @return
+  ////   - an array text from the document
+  function getAllHtmlText(htmlDoc){
+    // Grab all child elements of the body
+    return Array.from($(htmlDoc.body)[0].children)
+    // filter out the script and object tags
+      .filter(element  => { return element.tagName !== 'script' && element.tagName !== 'object' ? true : false; })
+    // return arrays of cleansed html text
+      .map(element     => {
+        return element.innerText
+          .replace(/\/\/<!\[CDATA\[/g, '')
+          .replace(/\/\/\]\]>/g, '')
+          .replace(/[\w\d]+\(.*\);?/g, '')
+          .replace(/function\s*{(?:\n|\r|\r\n)*\s*}/g, '')
+          .replace(/[\n\r]+|(?:\r\n)+/g, '---')
+          .replace(/\s{2,}/g, '')
+          .trim()
+          .split(/-{3,}/g)
+          .filter(text => { return text != '' && !text.includes('Play Audiodocument'); })
+          .map(text    => { return text.trim(); });
+      })
+    // remove empty arrays
+      .filter(arr      => { return arr.length ? true : false; })
+    // flatten the final array
+      .reduce((a,b)    => { return a.concat(b); }, []);
+  }
+
+  
+  //
+  // getSpecificHtmlText
+  //// descr - search for text from specified html elements and return object with text in it
+  //// @params
+  ////   - htmlDoc - document with DOM-like structure
+  //// @return
+  ////   - Object - {
+  ////   content      : 'string of the main text from old slide',
+  ////   header       : 'string of text with the header of the main text',
+  ////   headerMargin : "string with text from the header of the main text if the normal header wasn't found"
+  //// }
+  function getSpecificHtmlText(htmlDoc){
+    let html             = $(htmlDoc),
+        contentText      = html.find('.regularcontenttext>ul'),
+        headerText       = html.find('.headertext'),
+        headerTextMargin = html.find('.headertexttopmargin'),
+        content          = null,
+        header           = null,
+        headerMargin     = null;
+
+    if(contentText.length){
+      let lis      = Array.from(contentText[0].querySelectorAll('li'));
+      content      = lis.map(li => { return li.textContent; }); 
+    }
+    if(headerText.length){
+      header       = headerText[0].textContent.trim();
+    }
+    if(headerTextMargin.length){
+      headerMargin = headerTextMargin[0].textContent.trim();
+    }
+    return {content, header, headerMargin};
+  }
+  
+  //
+  // getXmlFromHtml
+  //// descr - take all specific html text and put it in xml tags
+  //// @params
+  ////   - htmlText - {
+  ////   content      : 'array of strings containing main text from old slide',
+  ////   header       : 'string of text with the header of the main text',
+  ////   headerMargin : "string with text from the header of the main text if the normal header wasn't found"
+  //// }
+  ////   - newSlideXml - 'string of new xml template'
+  //// @return
+  ////   - newXml - 'string of the new xml with html added to go to the frontend'
+  function getXmlFromHtml(htmlText){
+    let bulletText = '',
+        headerText = '';
+    //get array of xml text
+    if(htmlText.content){
+      bulletText = htmlText.content
+        .map(text             => { return `<BulletPoint id="bulletId">${text.trim()}</BulletPoint>`; })
+        .reduce((accum, curr) => { return accum + curr; });
     }
 
-    
-    //
-    // parseString
-    //// descr - converts string version of a structure and returns a node tree structure
-    //// @params
-    ////   - str - the string to convert
-    ////   - conversion - string denoting the node tree structure to convert to (e.g. 'text/xml')
-    //// @return
-    ////   - Node tree document
-    function parseString(str, conversion){
-      if(str){
-        let parser = new DOMParser();
-        return parser.parseFromString(str, conversion);
+    //get header in xml text
+    if(htmlText.header)       { headerText = `<Text id="textId">${htmlText.header.trim()}</Text>`; }
+    if(htmlText.headerMargin) { headerText = `<Text id="textId">${htmlText.headerMargin.trim()}</Text>`; }
+
+    return {
+      headerText,
+      bulletText
+    };
+  }
+  
+  //
+  // getOldXml
+  //// descr - gets the old slide xml document
+  //// @params
+  ////   - none
+  //// @return
+  ////   - the xml document or null if their is no xml document
+  function getOldXml(){
+    return xmlDoc ?
+      xmlDoc
+      : null;
+  }
+  
+  //
+  // getAllXmlText
+  //// descr - grabs all text from old slide xml document
+  //// @params
+  ////   - oldXml - DOM-like xml document
+  //// @return
+  ////   - string of text from xml or an empty array
+  function getAllXmlText(oldXml){
+    let xmlText = $(oldXml)[0].childNodes[0].textContent.trim();
+    return xmlText ? [xmlText] : [];
+  }
+  
+  //
+  // getConversionInfo
+  //// descr - gets necessary conversion information based on what conversion the user specified
+  //// @params
+  ////   - slideType - string denoting the slide convesion type for the current old slide
+  //// @return
+  ////   - an array of the nodes that will be searched for in the old xml document
+  function getConversionInfo(slideType){
+    let nodes = [];
+    switch(slideType){
+    case "image":
+      nodes = [
+        'textItem',
+        'question',
+        'answer'
+      ];
+      break;
+    default:
+      break;
+    }
+    return nodes;
+  }
+  
+  //
+  // findSpecifiedNodes
+  //// descr - retrieves specified nodes from old xml document
+  //// @params
+  ////   - nodes - array of strings with the names of the nodes to search for
+  ////   - oldXml - the old slide xml document (DOM-like)
+  //// @return
+  ////   - an array of found nodes
+  function findSpecifiedNodes(nodes, oldXml){
+    //find all specified nodes for slide conversion type
+    return nodes.map(nodeName => {
+      return $(oldXml).find(nodeName);
+    });
+  }
+  
+  //
+  // getTextArray
+  //// descr - gets text from specific xml nodes and saves the text in new slide xml tags
+  //// @params
+  ////   - nodes - jquery array of xml nodes
+  //// @return
+  ////   - Object {
+  ////   ul    : 'string of new slide xml bullet points',
+  ////   ol    : 'string of new slide xml bullet points',
+  ////   other : 'string of text nodes for new slide xml'
+  //// }
+  //TODO - store things in a better way than just ul, ol, and other. Update comments above as you go.
+  function getTextArray(nodes){
+    let ul        = '',
+        ol        = '',
+        other     = '',
+        questions = '',
+        answers   = '';
+
+    nodes[0].get().forEach(node => {
+      if(node.textContent.includes('<ul>')) {
+        // if(node.tagName === 'question'){}
+        // else if(node.tagName === 'answer'){}
+        // if(node.tagName === 'question'){}
+        ul    += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
       }
-      else return null;
-    }
-    
-    //
-    // getAllHtmlText
-    //// descr - searches through the root children of the body for text and returns findings in an array
-    //// @params
-    ////   - htmlDoc - document with a node tree (DOM-like structure)
-    //// @return
-    ////   - an array text from the document
-    function getAllHtmlText(htmlDoc){
-      // Grab all child elements of the body
-      return Array.from($(htmlDoc.body)[0].children)
-        // filter out the script and object tags
-        .filter(element  => { return element.tagName !== 'script' && element.tagName !== 'object' ? true : false; })
-        // return arrays of cleansed html text
-        .map(element     => {
-          return element.innerText
-            .replace(/\/\/<!\[CDATA\[/g, '')
-            .replace(/\/\/\]\]>/g, '')
-            .replace(/[\w\d]+\(.*\);?/g, '')
-            .replace(/function\s*{(?:\n|\r|\r\n)*\s*}/g, '')
-            .replace(/[\n\r]+|(?:\r\n)+/g, '---')
-            .replace(/\s{2,}/g, '')
-            .trim()
-            .split(/-{3,}/g)
-            .filter(text => { return text != '' && !text.includes('Play Audiodocument'); })
-            .map(text    => { return text.trim(); });
-        })
-      // remove empty arrays
-        .filter(arr      => { return arr.length ? true : false; })
-      // flatten the final array
-        .reduce((a,b)    => { return a.concat(b); }, []);
-    }
+      else if(node.textContent.includes('ol')) {
+        ol    += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
+      }
+      else {
+        other += `<Text id="textId">${node.textContent.replace(/<.+?>/g, '')}</Text>`;
+      }
+    });
+    return { ul, ol, other };
+  }
 
-    
-    //
-    // getSpecificHtmlText
-    //// descr - search for text from specified html elements and return object with text in it
-    //// @params
-    ////   - htmlDoc - document with DOM-like structure
-    //// @return
-    ////   - Object - {
-    ////   content      : 'string of the main text from old slide',
-    ////   header       : 'string of text with the header of the main text',
-    ////   headerMargin : "string with text from the header of the main text if the normal header wasn't found"
-    //// }
-    function getSpecificHtmlText(htmlDoc){
-      let html             = $(htmlDoc),
-          contentText      = html.find('.regularcontenttext>ul'),
-          headerText       = html.find('.headertext'),
-          headerTextMargin = html.find('.headertexttopmargin'),
-          content          = null,
-          header           = null,
-          headerMargin     = null;
-
-      if(contentText.length){
-        let lis      = Array.from(contentText[0].querySelectorAll('li'));
-        content      = lis.map(li => { return li.textContent; }); 
-      }
-      if(headerText.length){
-        header       = headerText[0].textContent.trim();
-      }
-      if(headerTextMargin.length){
-        headerMargin = headerTextMargin[0].textContent.trim();
-      }
-      return {content, header, headerMargin};
-    }
-    
-    //
-    // getOldXml
-    //// descr - gets the old slide xml document
-    //// @params
-    ////   - none
-    //// @return
-    ////   - the xml document or null if their is no xml document
-    function getOldXml(){
-      return xmlDoc ?
-        xmlDoc
-        : null;
-    }
-    
-    //
-    // getAllXmlText
-    //// descr - grabs all text from old slide xml document
-    //// @params
-    ////   - oldXml - DOM-like xml document
-    //// @return
-    ////   - string of text from xml or an empty array
-    function getAllXmlText(oldXml){
-      let xmlText = $(oldXml)[0].childNodes[0].textContent.trim();
-      return xmlText ? xmlText : [];
-    }
-    
-    //
-    // getConversionInfo
-    //// descr - gets necessary conversion information based on what conversion the user specified
-    //// @params
-    ////   - slideType - string denoting the slide convesion type for the current old slide
-    //// @return
-    ////   - an array of the nodes that will be searched for in the old xml document
-    function getConversionInfo(slideType){
-      let nodes = [];
-      switch(slideType){
-      case "image":
-        nodes = [
-          'textItem',
-          'question',
-          'answer'
-        ];
-        break;
-      default:
-        break;
-      }
-      return nodes;
-    }
-    
-    //
-    // findSpecifiedNodes
-    //// descr - retrieves specified nodes from old xml document
-    //// @params
-    ////   - nodes - array of strings with the names of the nodes to search for
-    ////   - oldXml - the old slide xml document (DOM-like)
-    //// @return
-    ////   - an array of found nodes
-    function findSpecifiedNodes(nodes, oldXml){
-      //find all specified nodes for slide conversion type
-      return nodes.map(nodeName => {
-        return $(oldXml).find(nodeName);
-      });
-    }
-    
-    //
-    // getTextArray
-    //// descr - gets text from specific xml nodes and saves the text in new slide xml tags
-    //// @params
-    ////   - nodes - jquery array of xml nodes
-    //// @return
-    ////   - Object {
-    ////   ul    : 'string of new slide xml bullet points',
-    ////   ol    : 'string of new slide xml bullet points',
-    ////   other : 'string of text nodes for new slide xml'
-    //// }
-    //TODO - store things in a better way than just ul, ol, and other. Update comments above as you go.
-    function getTextArray(nodes){
-      let ul        = '',
-          ol        = '',
-          other     = '',
-          questions = '',
-          answers   = '';
-
-      nodes[0].get().forEach(node => {
-        if(node.textContent.includes('<ul>')) {
-          // if(node.tagName === 'question'){}
-          // else if(node.tagName === 'answer'){}
-          // if(node.tagName === 'question'){}
-          ul    += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
-        }
-        else if(node.textContent.includes('ol')) {
-          ol    += `<BulletPoint id="bulletId">${node.textContent.replace(/<.+?>/g, '')}</BulletPoint>`;
-        }
-        else {
-          other += `<Text id="textId">${node.textContent.replace(/<.+?>/g, '')}</Text>`;
-        }
-      });
-      return { ul, ol, other };
-    }
+  function getNewXmlTextStrings(){
+    return {
+      bulletBegin : '<BulletPoint id="bulletId">',
+      bulletEnd   : '</BulletPoint>',
+      textBegin   : '<Text id="textId">',
+      textEnd     : '</Text>'
+    };
   }
 };
 
