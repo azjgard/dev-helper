@@ -1,4 +1,4 @@
-let templates = require('./templates/promptForms.js');
+let templates = require('./templates/promptTemplate.js');
 let prompt    = require('./prompt.js');
 
 function getSlideInformation() {
