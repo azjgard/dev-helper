@@ -263,10 +263,13 @@ function sendRequest(pageInformation) {
 
   promptSlideInfo()
     .then(data => {
-
-      request.data.slideMeta = data;
-
-      chrome.runtime.sendMessage(request);
+      if (data) {
+	request.data.slideMeta = data;
+	chrome.runtime.sendMessage(request);
+      }
+      else {
+	console.log('closed');
+      }
     });
 
   stop_scrape = false;

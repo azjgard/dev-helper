@@ -7,7 +7,8 @@ require('./prompt.css');
 let transitionLength = 750; // milliseconds
 
 // these variables track the prompt position
-// when the user drags it around
+// when the user drags it around, and ensure
+// that it always appears where it is expected to
 let left = '0px';
 let top  = '0px';
 
@@ -43,7 +44,7 @@ function promptUser(innerHtml) {
     $('.custom-prompt select').selectmenu();
     $('.custom-prompt input[type="radio"]').checkboxradio();
 
-    // the timeout puts the show function at the bottom of the queue,
+    // the timeout puts the showPrompt function at the bottom of the queue,
     // ensuring we get the nice fade-in effect
     setTimeout(() => showPrompt(prompt), 20);
 
@@ -111,7 +112,6 @@ function hidePrompt(prompt) {
   left = prompt.style.left;
   top  = prompt.style.top;
 
-  // delete it from the document
   setTimeout(() => prompt.remove(), transitionLength);
 }
 
