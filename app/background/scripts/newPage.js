@@ -53,7 +53,9 @@
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 //
+//
 
+const beautify           = require('js-beautify').html;
 const getDataForFrontend = require('./getData.js');
 
 module.exports = function() {
@@ -102,6 +104,10 @@ module.exports = function() {
         // - add bulletId numbers when inserting bullets
         // - get all text coming through 
         let newData = getDataForFrontend(data); console.log("newData", newData);
+
+        // indent the XML
+        newData.xml = beautify(newData.xml, {});
+
         addSlideToHtmlPage(newData);
       }
     });

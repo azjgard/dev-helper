@@ -48,7 +48,7 @@ function addSlide(xml, words, percentage) {
     let title = editorContainer
 	  .querySelector('h2');
 
-    title.textContent = `Slide - ${percentage}`;
+    title.innerHTML = `Slide - <span class="percentage">${percentage}</span>`;
 
     return true;
   }
@@ -81,8 +81,8 @@ function initializeEditor(blacklist, initialText, words) {
     smartIndent: true,
     showCursorWhenSelecting: true,
     tabIndex: 5,
-    autofocus: true,
-    scrollbarStyle: "null"
+    autofocus: true
+    // scrollbarStyle: "null"
   });
 
   let editorContainer = document
