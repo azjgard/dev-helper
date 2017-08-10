@@ -6,17 +6,21 @@ require('./prompt.css');
 
 let transitionLength = 750; // milliseconds
 
-// these variables track the prompt position
-// when the user drags it around, and ensure
+// these track the prompt position
+// when the user drags it around and ensure
 // that it always appears where it is expected to
-let left = '0px';
-let top  = '0px';
+let left = '643px';
+let top  = '278px';
 
-function promptUser(innerHtml) {
+let callback = () => {};
+
+let addRedoButton = false;
+
+function promptUser(innerHtml, cb) {
+  addRedoButton = false;
+  callback      = cb;
+
   return new Promise((resolve, reject) => {
-
-    console.log('initial left', left);
-    console.log('initial top', top);
 
     let prompt  = document.querySelector('.custom-prompt');
     let exists  = prompt !== null;
@@ -105,9 +109,22 @@ function getPromptData(prompt) {
   return data;
 }
 
-function showPrompt(prompt) { prompt.classList.add('visible'); }
+function showPrompt(prompt) {
+  prompt.classList.add('visible');
+  $('.redo-prompt').remove();
+}
+
 function hidePrompt(prompt) {
   prompt.classList.remove('visible');
+  addRedoButton = true;
+
+  setTimeout(() => {
+    if (addRedoButton) {
+      $('body').append('<button class="redo-prompt">Regenerate Slide</button>');
+      $('.redo-prompt').on('click', callback);
+      addRedoButton = false;
+    }
+  }, 1000);
 
   left = prompt.style.left;
   top  = prompt.style.top;

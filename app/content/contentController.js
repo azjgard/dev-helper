@@ -267,9 +267,6 @@ function sendRequest(pageInformation) {
 	request.data.slideMeta = data;
 	chrome.runtime.sendMessage(request);
       }
-      else {
-	console.log('closed');
-      }
     });
 
   stop_scrape = false;
