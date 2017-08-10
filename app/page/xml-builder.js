@@ -5,14 +5,8 @@ let data   = {
   used_IDs : []
 };
 
-addSlide(
-  "<head>\n\tthis is some filler text\n</head>",
-  ["word1", "word2", "word3", "word4"],
-  10
-);
-
 document
-  .getElementsByTagName('button')[0]
+  .getElementById('test')
   .addEventListener('click', event => {
     addSlide(
       "<head>\n\tthis is some filler text\n</head>",
@@ -54,7 +48,7 @@ function addSlide(xml, words, percentage) {
     let title = editorContainer
 	  .querySelector('h2');
 
-    title.textContent = `Slide - ${percentage}%`;
+    title.textContent = `Slide - ${percentage}`;
 
     return true;
   }
@@ -81,7 +75,14 @@ function initializeEditor(blacklist, initialText, words) {
   let editor     = CodeMirror.fromTextArea(textArea, {
     mode          : "text/xml",
     lineNumbers   : true,
-    matchBrackets : true
+    matchBrackets : true,
+    theme: 'dracula',
+    indentUnit: 4,
+    smartIndent: true,
+    showCursorWhenSelecting: true,
+    tabIndex: 5,
+    autofocus: true,
+    scrollbarStyle: "null"
   });
 
   let editorContainer = document

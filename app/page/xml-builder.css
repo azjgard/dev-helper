@@ -2,6 +2,10 @@
     font-family: Helvetica;
 }
 
+.editor-container {
+    margin: 0 10%;
+}
+
 #menu,
 .word {
     -webkit-transition: all .4s;
@@ -12,10 +16,21 @@
 .word {
     padding: 5px;
     border: 1px solid #ccc;
+    background-color: #fff;
 }
 .word.in-xml {
     background-color: #0086D2;
     color: #fff;
+}
+
+.words-container {
+    background-color: #fff;
+    border: 2px solid #282a36;
+}
+.words-container h2 {
+    text-align: center;
+    font-size: 22px;
+    padding-top: 20px;
 }
 
 #show-menu {
@@ -82,4 +97,9 @@ button:hover,
     position: absolute;
     right: 5px;
     top: 5px;
+}
+
+.CodeMirror-scroll {
+    max-height: 400px !important;
+    font-size: 17px;
 }
