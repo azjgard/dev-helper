@@ -1,0 +1,98 @@
+
+// TODO - xmlDoc is always null because it is grabbing the inition value from background.js
+// figure out how to change this
+var   xmlDoc              = require('./background.js');
+const parseOldXml         = require('./parseXml.js');
+const slideTemplate       = require('../slideTemplates.js');
+const getXmlFromHtml      = require('./parseHtml.js').getXmlFromHtml;
+const getAllHtmlText      = require('./parseHtml.js').getAllHtmlText;
+const addAllTextToNewXml  = require('./createNewXml.js');
+const getSpecificHtmlText = require('./parseHtml.js').getSpecificHtmlText;
+"<CatapultDM title="Component Auto" desc="" DMVersion="" XMLFormatVersion="1.0" Template_Id=""><settings title="Functionality Settings" desc="" id="functionalitySettings"><setting id="clearResults" allowed_values="true|false" value="true" title="Clear Results After Show Me Is Clicked"/><setting id="graphic_pause" allowed_values="true|false" value="false" title="Pause For Graphic Animation"/><setting id="nextdisabled" allowed_values="true|false" value="true" title="Disable Next Button"/><setting id="question_feedback" allowed_values="true|false" value="false" title="Show Feedback Per Question"/><setting id="randomizeanswers" allowed_values="true|false" value="true" title="Randomize Answers"/><setting id="randomizequestions" allowed_values="true|false" value="true" title="Randomize Questions"/><setting id="retryAfterShowMe" allowed_values="0|1|2|3" value="0" title="Retry Attempts After Show Me is Clicked"/><setting id="retrymax" allowed_values="0|1|2|3" value="1" title="Retry Attempts"/><setting id="single_select" allowed_values="true|false" value="true" title="Single Select (Radio Buttons)"/><setting id="tryagainAudio" allowed_values="true|false" value="false" title="Play Audio on Try Again"/></settings><settings title="Look and Feel Settings" desc="" id="lookandfeelSettings"><setting id="content_spacing" allowed_values="" value="10" title="Content Image Border Spacing"/><setting id="content_x" allowed_values="" value="0" title="Content Image X"/><setting id="content_y" allowed_values="" value="300" title="Content Image Y"/><setting id="image_spacing" allowed_values="" value="10" title="Progress Image Border Spacing"/><setting id="image_x" allowed_values="" value="680" title="Progess Image X"/><setting id="image_y" allowed_values="" value="145" title="Progress Image Y"/><setting id="item_spacing" allowed_values="" value="10" title="Checkbox Spacing"/><setting id="item_start_x" allowed_values="" value="100" title="Checkbox Start X"/><setting id="item_start_y" allowed_values="" value="" title="Checkbox Start Y"/><setting id="item_width" allowed_values="" value="600" title="Checkbox Width"/></settings><text title="mainText" desc="" id="mainText"><textItem title="Instructions" desc="" id="instructions"><![CDATA[<b>Click to select the correct answer. When finished, click Check Answers.</b>]]></textItem><textItem title="Optional Title / Description Text" desc="" id="title"><![CDATA[ ]]></textItem><textItem title="Correct Response" desc="" id="correct"><![CDATA[ <b>Correct! Click Next to continue.</b> ]]></textItem><textItem title="First Incorrect Response" desc="" id="incorrect1"><![CDATA[<b>You did not select the correct answer. Click Try Again to retry the exercise.</b>]]></textItem><textItem title="Final Incorrect Response" desc="" id="incorrect2"><![CDATA[<b>You did not select the correct answer. Click Show Me to view the correct answer.</b>]]></textItem><textItem title="Incorrect Response and Retry" desc="" id="incorrect3"><![CDATA[<b>Note the correct answers. Click the Try Again button to retry the exercise.</b>]]></textItem><textItem title="Correct Response with Image" desc="" id="correct_image"><![CDATA[Congratulations, the ____ is 100% ____! Click Next to continue.]]></textItem><textItem title="First Incorrect Response with Image" desc="" id="incorrect1_image"><![CDATA[Good try. The ____ is @@@@% ____. Click the Try Again button for another attempt to ____ the ____ 100%.]]></textItem><textItem title="Final Instructions with Image" desc="" id="incorrect2_image"><![CDATA[Good try. The ____ is @@@@% ____. Click the Show Me button to view all of the correct answers.]]></textItem><textItem title="Incorrect Response and Retry with Image" desc="" id="incorrect3_image"><![CDATA[<b>Note the correct answers. Click the Try Again button for another attempt to ____ the ____ 100%.</b>]]></textItem><textItem title="Check Answers Button Text" desc="" id="clickNext"><![CDATA[<b>Note the correct answer. When finished, click Next to continue.</b>]]></textItem><textItem title="Image Progress Text" desc="" id="progress_text"><![CDATA[ @@@@% ____ ]]></textItem><textItem title="your_answer" desc="" id="your_answer"><![CDATA[ Your Answer ]]></textItem><textItem title="correct_answer" desc="" id="correct_answer"><![CDATA[ Correct Answer ]]></textItem><textItem title="reason" desc="" id="reason"><![CDATA[ Reason ]]></textItem><textItem title="Submit Button Text" desc="" id="submit"><![CDATA[ Submit ]]></textItem><textItem title="Try Again Button Text" desc="" id="tryagain"><![CDATA[ Try Again ]]></textItem><textItem title="Check Answers Button Text" desc="" id="check"><![CDATA[ Check Answers ]]></textItem><textItem title="Show Me Button Text" desc="" id="showme"><![CDATA[ Show Me ]]></textItem><textItem title="Next Question Button Text" desc="" id="next"><![CDATA[ Next Question ]]></textItem><textItem title="Answer 1 Feedback" desc="" id="feedback1"><![CDATA[ Answer 1 Feedback Text ]]></textItem><textItem title="Answer 2 Feedback" desc="" id="feedback2"><![CDATA[ Answer 2 Feedback Text ]]></textItem><textItem title="Answer 3 Feedback" desc="" id="feedback3"><![CDATA[ Answer 3 Feedback Text ]]></textItem><textItem title="Answer 4 Feedback" desc="" id="feedback4"><![CDATA[ Answer 4 Feedback Text ]]></textItem><textItem title="Answer 5 Feedback" desc="" id="feedback5"><![CDATA[ Answer 5 Feedback Text ]]></textItem><textItem title="Answer 6 Feedback" desc="" id="feedback6"><![CDATA[ Answer 6 Feedback Text ]]></textItem><textItem title="Answer 7 Feedback" desc="" id="feedback7"><![CDATA[ Answer 7 Feedback Text ]]></textItem><textItem title="Answer 8 Feedback" desc="" id="feedback8"><![CDATA[ Answer 8 Feedback Text ]]></textItem><textItem title="clickNext2" desc="" id="clickNext2"><![CDATA[<b>You did not select all of the correct answers. Note the correct answers. When you are finished click Next to continue.</b>]]></textItem></text><question_array title="Questions / Definitions / Targets" desc="" id="question_array"><question title="Question Text 1" desc="" correct="1" id="1" answers="1,2,3,4"><![CDATA[ Which statement is true of the photo? ]]></question></question_array><answer_array title="Answers" desc="" id="answer_array"><answer title="Answer Text 1" desc="" id="1"><![CDATA[ Fluid is not good, flush and replace if necessary. ]]></answer><answer title="Answer Text 2" desc="" id="2"><![CDATA[Fluid is a mixture of petroleum- and synthetic-based fluid, no action required.]]></answer><answer title="Answer Text 3" desc="" id="3"><![CDATA[Fluid is in good condition; check again at regularly scheduled interval.]]></answer><answer title="Answer Text 4" desc="" id="4"><![CDATA[ Represents general appearance of synthetic fluid. ]]></answer></answer_array><files title="main files" desc="" id="mainfiles"><file src="../../../../../../media/swf/hml786j/v9nohr64/2o/0ec9rpvu/a4c1fra0249_content.swf" title="Question Content Graphic" desc="" id="contentGraphic"/><file src="" title="Progress SWF" desc="" id="progressSWF"/><file src="../../../../../../media/xml/rbjko3o/15nohe03/i8/0f0ni6rt/a4a5_style.xml" title="Style Guide" desc="" id="style"/><file src="" title="Default Audio" desc="" id="audio_default"/><file src="../../../../../../media/jpg/n3mdoh8/v9nohre4/2o/0ec9rpvu/a4a5_templatea_bg.jpg" title="Background" desc="" id="backgroundImage"/></files></CatapultDM>"
+//
+// getDataForFrontend
+//
+// descr - takes html data from old slide tab, parses html and xml, and creates new xml string to send to front end
+// @params
+//   - data = {
+//   slideId       : slideID,
+//   slidePercent  : slidePercent,
+//   narrationText : narrationText
+//   htmlText      : htmlText
+// }
+function getDataForFrontend(data){
+  //// VARIABLES
+  let oldSlideXml    = xmlDoc,
+      html           = parseString(data.htmlText, 'text/html'), 
+      newSlideXml    = newXmlTemplate(data.slideMeta.slideType), 
+      oldXmlTextAll  = [],
+      oldHtmlTextAll = [],
+      newXmlObject   = '',
+      specificHtml   = '',
+      xmlFromHtml    = '';
+
+  /// PARSE OLD XML
+  console.log('--- oldSlideXml ---');
+  console.log(oldSlideXml);
+  if(oldSlideXml){
+    newXmlObject = parseOldXml(data.slideMeta.slideType, oldSlideXml);
+  }
+
+  //// PARSE OLD HTML
+  if(html){
+    oldHtmlTextAll = getAllHtmlText(html); 
+    specificHtml   = getSpecificHtmlText(html); 
+    xmlFromHtml = getXmlFromHtml(specificHtml);
+  }
+  
+  //ADD HTML, XML, AND NARRATION TO NEW XML STRING
+  let xmlAndAllText = addAllTextToNewXml(newXmlObject, oldHtmlTextAll, xmlFromHtml, data.narrationText, newSlideXml);
+
+  xmlDoc = null;
+
+  //TODO - do we need to return data.slideId as well???
+  return {
+    xml          : xmlAndAllText.completedNewXml,
+    text         : xmlAndAllText.allText,
+    percentage   : data.slidePercent
+  };
+}
+
+//
+// newXmlTemplate
+// descr - gets the correct template
+// @params
+//   - slideType = string that user provides that specifies slide conversion type
+// @return
+//   - string version of new slide xml template
+function newXmlTemplate(slideType){
+  let newSlideXml = slideTemplate[slideType.toLowerCase()];
+  return parseString(newSlideXml, 'text/xml');
+}
+
+//
+// parseString
+//// descr - converts string version of a structure and returns a node tree structure
+//// @params
+////   - str - the string to convert
+////   - conversion - string denoting the node tree structure to convert to (e.g. 'text/xml')
+//// @return
+////   - Node tree document
+function parseString(str, conversion){
+  if(str){
+    let parser = new DOMParser();
+    return parser.parseFromString(str, conversion);
+  }
+  else return null;
+}
+
+// function getNewXmlTextStrings(){
+//   return {
+//     bulletBegin : '<BulletPoint id="bulletId">',
+//     bulletEnd   : '</BulletPoint>',
+//     textBegin   : '<Text id="textId">',
+//     textEnd     : '</Text>'
+//   };
+// }
+
+module.exports = getDataForFrontend;

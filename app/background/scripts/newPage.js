@@ -15,13 +15,12 @@
 // to character long blanks for certain questions __________
 
 const getDataForFrontend = require('./getData.js');
+const $ = require('jquery');
 
 module.exports = function() {
   const htmlPageURL = chrome.runtime.getURL('page/xml-builder.html');
 
-  /////////////////////////////////////////////////////////////////////
   //// promisified chrome.tabs.query
-  /////////////////////////////////////////////////////////////////////
   const queryTabs = options => new Promise((resolve, reject) => chrome.tabs.query(options, resolve));
   const getTabByUrlPattern = (tabs, url) => new Promise((resolve, reject) => resolve(tabs.filter(tab => tab.url.includes(url))));
   const createXmlPage = xmlPageIsOpen => new Promise((resolve, reject) => {
@@ -40,9 +39,7 @@ module.exports = function() {
     }
   });
 
-  /////////////////////////////////////////////////////////////////////
   //// Listener for messages
-  /////////////////////////////////////////////////////////////////////
   chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
 
@@ -50,7 +47,28 @@ module.exports = function() {
       let data = request.data;
 
       if (msg == 'new-html-page') {
-        // requeste.data : {
+
+        /////////////////////////////////////////////////////////////////////
+        //// send request to node red to run getDataforFrontEnd
+        /////////////////////////////////////////////////////////////////////
+        request.data.xmlString = xmlDoc;
+        let url = 'http://localhost:1880/request',
+            success,
+            dataType = 'json';
+
+        $.ajax({
+          type: "POST",
+          url: url,
+          data: request,
+          success: success,
+          dataType: dataType
+        });
+        /////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////
+
+        
+
+        // request.data : {
         //   slideId       : slideID,
         //   slidePercent  : slidePercent,
         //   narrationText : narrationText
@@ -61,10 +79,10 @@ module.exports = function() {
         //TODO - allow sub-bullets to be added (AD-103, steering overview http://avondale-iol/AD-103/AD-103-1-Web03/sco3/lmsinit.htm?ShowCDMenu=1)
         // - add bulletId numbers when inserting bullets
         // - get all text coming through 
-        let newData = getDataForFrontend(data);
-        console.log('--- newData ---');
-        console.log(newData);
-        addSlideToHtmlPage(newData);
+        // let newData = getDataForFrontend(data);
+        // console.log('--- newData ---');
+        // console.log(newData);
+        // addSlideToHtmlPage(newData);
       }
     });
 
@@ -75,4 +93,101 @@ module.exports = function() {
       .then(createXmlPage) // try and create it if necessary
       .then(Tab      => setTimeout(() => chrome.tabs.sendMessage(Tab.id, { message: 'add-slide', data : slideObject }), 500));
   }
+
+  
+
+
+  // background.js
+  //////////////////
+
+  const xmlPreviewURL = chrome.runtime.getURL('/page/index.html');
+  var globalBlacklist = [];
+  var xmlDoc = null;
+
+  // analyze XML that comes in and look for pattern
+  chrome.webRequest.onCompleted.addListener(analyzeXML, { urls : ["*://avondale-iol/*"]});
+
+  // check to reset blacklist whenever tabs are removed
+  chrome.tabs.onRemoved.addListener(resetGlobalBlacklist);
+
+  function analyzeXML(details) {
+    var resourceURL = details.url;
+    var blacklist   = ['style', 'menu', 'graphic'];
+
+    if (resourceURL.match(/\.xml$/i) &&
+        !isBlacklisted(resourceURL, blacklist) &&
+        !isBlacklisted(resourceURL, globalBlacklist)) {
+
+      // add xml resource to blacklist
+      globalBlacklist.push(resourceURL);
+
+      // XML gets saved
+      xmlDoc = storeXML(resourceURL);
+    }
+  }
+
+  // empty the global blacklist array if an avondale-iol tab isn't open
+  function resetGlobalBlacklist() {
+    chrome.tabs.query({}, tabs => {
+      let slideUrlFound = false;
+      for (var i = 0; i < tabs.length; i++) {
+        if (tabs[i].url === xmlPreviewURL) {
+          slideUrlFound = true;
+        }
+      }
+      if (!slideUrlFound) globalBlacklist = [];
+    });
+  }
+
+  function isBlacklisted(url, blacklist) {
+    for (var i = 0; i < blacklist.length; i++) {
+      if (url.includes(blacklist[i])) return true;
+    }
+    return false;
+  }
+
+  function getDocument(url) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, false);
+    xhr.send();
+    return xhr.responseText;
+  }
+
+  function getContext(which_tab) {
+    let loc              = '';
+    let pattern_oldSlide = /lmsinit\.htm/i;
+
+    if (which_tab) { loc = which_tab;            }
+    else           { loc = window.location.href; }
+
+    if (loc.includes('avondale-iol') && loc.match(pattern_oldSlide)) {
+      return 'old-slide'; 
+    }
+    else {
+      return 'misc';
+    }
+  };
+
+  function sendToTab(which_tab, request){
+    chrome.tabs.query({}, function(tabs) {
+      for (let i = 0; i < tabs.length; i++) {
+        let context = getContext(tabs[i].url);
+
+        if (context === which_tab) {
+          chrome.tabs.sendMessage(tabs[i].id, request);
+        }   
+      }
+    });
+  }
+
+  function storeXML(resourceURL){
+    let responseText = getDocument(resourceURL);
+    return responseText;
+    // let parser       = new DOMParser();
+    // return parser.parseFromString(responseText, "text/xml");
+  }
+
+  module.exports = xmlDoc;
+
+
 };
