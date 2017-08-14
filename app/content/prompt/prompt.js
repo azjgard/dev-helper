@@ -12,14 +12,7 @@ let transitionLength = 750; // milliseconds
 let left = '643px';
 let top  = '278px';
 
-let callback = () => {};
-
-let addRedoButton = false;
-
-function promptUser(innerHtml, cb) {
-  addRedoButton = false;
-  callback      = cb;
-
+function promptUser(innerHtml) {
   return new Promise((resolve, reject) => {
 
     let prompt  = document.querySelector('.custom-prompt');
@@ -79,14 +72,12 @@ function getPromptData(prompt) {
   let fieldsets = prompt.querySelectorAll('fieldset');
   let data      = {};
 
-  // selectbox data
   for (let i = 0; i < selects.length; i++) {
     let select = selects[i];
     let key    = select.name;
     data[key]  = $(select).val();
   }
 
-  // input field data
   for (let i = 0; i < fieldsets.length; i++) {
     let fieldset = fieldsets[i];
     let children = fieldset.children;
@@ -111,25 +102,20 @@ function getPromptData(prompt) {
 
 function showPrompt(prompt) {
   prompt.classList.add('visible');
-  $('.redo-prompt').remove();
 }
 
 function hidePrompt(prompt) {
   prompt.classList.remove('visible');
-  addRedoButton = true;
-
-  setTimeout(() => {
-    if (addRedoButton) {
-      $('body').append('<button class="redo-prompt">Regenerate Slide</button>');
-      $('.redo-prompt').on('click', callback);
-      addRedoButton = false;
-    }
-  }, 1000);
 
   left = prompt.style.left;
   top  = prompt.style.top;
 
-  setTimeout(() => prompt.remove(), transitionLength);
+  setTimeout(() => clear(prompt), transitionLength);
+}
+
+function clear(prompt) {
+  prompt.remove();
+  $('.ui-selectmenu-menu').remove();
 }
 
 module.exports = promptUser;

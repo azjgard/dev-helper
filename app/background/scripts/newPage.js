@@ -91,8 +91,16 @@ module.exports = function() {
           type: "POST",
           url: url,
           data: request,
-          success: sendToAddPage,
-          dataType: dataType
+          dataType: dataType,
+          // success: sendToAddPage,
+          success: function(response) {
+	    console.log('success');
+	    console.log(response);
+	  },
+          error: function(response) {
+	    console.log('error');
+	    console.log(response);
+	  }
         });
         /////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////

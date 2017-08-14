@@ -22,7 +22,8 @@ function analyzeXML(details, callback) {
     globalBlacklist.push(resourceURL);
 
     xmlDoc = storeXML(resourceURL);
-    callback(xmlDoc);
+
+    callback(getDocument(resourceURL));
   }
 }
 

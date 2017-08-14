@@ -52,3 +52,12 @@
     box-shadow: 1px 1px 15px #ccc;
     cursor: pointer;
 }
+.redo-prompt.executing {
+    background-color: #eee;
+    font-weight: bold;
+    cursor: wait;
+
+    -webkit-transition: background-color .75s;
+    -moz-transition: background-color .75s;
+    transition: background-color .75s;
+}

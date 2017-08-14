@@ -12,14 +12,12 @@
 
     "content_scripts":[
         {
-            "matches": [
-                "*://avondale-iol/*"
-            ],
-            "js" : ["output/content.js"], 
+            "matches": ["*://avondale-iol/*"],
+            "js"     : ["output/content.js" ],   
             "run_at" : "document_idle"
         }
     ],
-    "background" : { "scripts" : ["output/background.js"]},
+    "background" : { "scripts" : ["output/background.js"] },
     "permissions" : [
         "tabs",
         "<all_urls>",
