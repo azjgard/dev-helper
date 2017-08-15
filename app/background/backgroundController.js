@@ -18,8 +18,10 @@ const receiveXml  = (xml)  => { global.xml  = xml;                 };
 const receiveMeta = (meta) => { global.meta = meta; createSlide(); };
 
 // These two are used at the end of the createSlide function
-const middleware = require('../templates/common/include_template.js');
+const middleware = require('../templates/common/dependencies.js');
 const sendToPage = require('./scripts/pageHandler.js');
+
+console.log(middleware);
 
 // These two blocks work in conjunction with one another.
 // The first passes receiveXml as a callback to a function
@@ -87,17 +89,18 @@ function createSlide() {
     }
   }
 
+  for (let key in info.XML) {
+    if (info.XML[key].length === 0) info.XML[key] = undefined;
+  }
+  info.XML = JSON.parse(JSON.stringify(info.XML));
+
   // This is where the aggregated slide information gets passed
   // to the function which will populate the new XML with our
   // text and metadata, and then sent to the views page for editing
   // and exporting. The module.exports of the middleware file
-  // needs to have a property that matches any lowercase slideType
-  try { var newXML = middleware[type](info); }
-  catch (e) {
-    console.log('That type has not yet been defined!');
-    throw new Error(e);
-    return;
-  }
+  // needs to have a property that matches any lowercase slideType.
+  // IMPORTANT: error handling will be left to the individual middleware files.
+  var newXML = middleware[type](info);
 
   let viewObject = {
     xml        : newXML,

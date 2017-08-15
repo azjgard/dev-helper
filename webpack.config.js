@@ -1,6 +1,8 @@
 const path    = require('path');
 const appPath = (p) => path.resolve(__dirname, 'app', p);
 
+const generateMiddlewareExports = require('./generateMiddlewareExports.js');
+
 const entry = {
   background : appPath('background/backgroundController.js'),
   content    : appPath('content/contentController.js')
@@ -40,6 +42,9 @@ const modules = {
 module.exports = {
   entry  ,
   output ,
-  module : modules
+  module : modules,
+  plugins : [
+    new generateMiddlewareExports({ options: '' })
+  ]
 };
 
