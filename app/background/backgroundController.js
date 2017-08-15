@@ -21,8 +21,6 @@ const receiveMeta = (meta) => { global.meta = meta; createSlide(); };
 const middleware = require('../templates/common/dependencies.js');
 const sendToPage = require('./scripts/pageHandler.js');
 
-console.log(middleware);
-
 // These two blocks work in conjunction with one another.
 // The first passes receiveXml as a callback to a function
 // in another file that is watching the resources being loaded on the page.
@@ -100,15 +98,16 @@ function createSlide() {
   // and exporting. The module.exports of the middleware file
   // needs to have a property that matches any lowercase slideType.
   // IMPORTANT: error handling will be left to the individual middleware files.
-  var newXML = middleware[type](info);
+  require('../templates/common/middlewareRouter.js')(info)
+    .then(newXML => {
+      let viewObject = {
+	xml        : newXML,
+	text       : ['these', 'are', 'some', 'words'],
+	percentage : info.SlidePercent
+      };
 
-  let viewObject = {
-    xml        : newXML,
-    text       : ['these', 'are', 'some', 'words'],
-    percentage : info.SlidePercent
-  };
-
-  sendToPage(viewObject);
+      sendToPage(viewObject);
+    });
 }
 
 function extractElementFromDocument($xmlDoc, selector, regexp, attribute) {

@@ -1,0 +1,13 @@
+module.exports = function($template, meta) {
+
+  $template.runCode(function($, $xmlDoc) {
+    // we can run custom jquery code here too
+  });
+
+  $template.createBulletList(meta.numBulletPoints);
+
+  $template.setTxt ('Header'     , 'Some Header Text');
+  $template.setAttr('ImageLayout', 'position', meta.imageLayout);
+
+  $template.finish();
+};

@@ -45,6 +45,11 @@ module.exports = {
   module : modules,
   plugins : [
     new generateMiddlewareExports({ options: '' })
-  ]
+  ],
+  resolve: {
+    alias: {
+      Templates: path.resolve(__dirname, 'app/templates')
+    }
+  }
 };
 
