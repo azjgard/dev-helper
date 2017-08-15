@@ -16,7 +16,7 @@ class Template {
     let $CueList         = this.$template.find('CueList')[0];
     let $BulletPointList = this.$template.find('BulletPointList')[0];
 
-    $BulletPointList.empty();
+    this.$($BulletPointList).empty();
 
     for (var i = 0; i < numBulletPoints; i++) {
       let id          = `bullet${(i+1)}`;
