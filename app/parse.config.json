@@ -27,6 +27,16 @@
 	"regex": "feedback",
 	"attribute": "title"
     }, 
+    "objectives": {
+	"tag": "textItem",
+	"regex": "objective",
+	"attribute": "title"
+    },
+    "tabTitles": {
+	"tag": "textItem",
+	"regex": "objective",
+	"attribute": "title"
+    },
     "questions": {
 	"tag": "question",
 	"regex": "question\\stext",
@@ -47,15 +57,19 @@
 	"regex": "scene\\stext",
 	"attribute": "title"
     },
-    "objectives": {
-	"tag": "textItem",
-	"regex": "objective",
+    "sceneTabText": {
+	"tag": "text",
+	"regex": "Scene\\s\\d+\\s-\\sTab\\s\\d+\\s-\\sText",
 	"attribute": "title"
     },
-    "tabTitles": {
-	"tag": "textItem",
-	"regex": "objective",
+    "sceneTabTitle": {
+	"tag": "title",
+	"regex": "Scene\\s\\d+\\s-\\sTab\\s\\d+\\s-\\sTitle",
+	"attribute": "title"
+    },
+    "sceneTitle": {
+	"tag": "title",
+	"regex": "Scene\\s\\d+\\s-\\sTitle|scene\\stitle",
 	"attribute": "title"
     }
 }
-

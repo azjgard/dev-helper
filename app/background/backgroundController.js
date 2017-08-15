@@ -40,7 +40,7 @@ function createSlide() {
 
   // This is built-in jQuery stuff to turn our raw XML string
   // into an actual jQuery object that is parseable like the  DOM
-  // of an HTML pagke.
+  // of an HTML page.
   let xmlDoc = $.parseXML(xml);
   let $xml   = $(xmlDoc);
 
@@ -94,7 +94,7 @@ function createSlide() {
 
   // This is where the aggregated slide information gets passed
   // to the function which will populate the new XML with our
-  // text and metadata, and then sent to the views page for editing
+  // text and metadata, and then send to the views page for editing
   // and exporting. The module.exports of the middleware file
   // needs to have a property that matches any lowercase slideType.
   // IMPORTANT: error handling will be left to the individual middleware files.
