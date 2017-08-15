@@ -1,0 +1,61 @@
+{
+    "textItems": {
+	"tag": "textItem"
+    }, 
+    "callouts": {
+	"tag": "textItem",
+	"regex": "^callout",
+	"attribute": "title"
+    },
+    "descriptions": {
+	"tag": "textItem",
+	"regex": "^description",
+	"attribute": "title"
+    }, 
+    "instructions": {
+	"tag": "textItem",
+	"regex": "instructions",
+	"attribute": "title"
+    }, 
+    "s": {
+	"tag": "textItem",
+	"regex": "s\\d{1,}_\\d{1,}",
+	"attribute": "title"
+    }, 
+    "feedback": {
+	"tag": "textItem",
+	"regex": "feedback",
+	"attribute": "title"
+    }, 
+    "questions": {
+	"tag": "question",
+	"regex": "question\\stext",
+	"attribute": "title"
+    }, 
+    "answers": {
+	"tag": "answer",
+	"regex": "answer\\stext",
+	"attribute": "title"
+    }, 
+    "buttonText": {
+	"tag": "text",
+	"regex": "for\\sbutton",
+	"attribute": "title"
+    },
+    "sceneText": {
+	"tag": "text",
+	"regex": "scene\\stext",
+	"attribute": "title"
+    },
+    "objectives": {
+	"tag": "textItem",
+	"regex": "objective",
+	"attribute": "title"
+    },
+    "tabTitles": {
+	"tag": "textItem",
+	"regex": "objective",
+	"attribute": "title"
+    }
+}
+

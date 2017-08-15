@@ -4,6 +4,12 @@ const global = {
   meta : null
 };
 
+// For parsing the old XML, everything is defined in "parse.config.json"
+// in the 'app' folder. By adding to that JSON file, you can
+// parse custom tags or increase the specifity of the attributes that are
+// currently being parsed.
+let parseConfig = require('../parse.config.json');
+
 // The XML will always be received before the HTML.
 // We always want to trigger the createSlide function when HTML is received,
 // and we always want to use latest the XML that was received by the listener
@@ -32,6 +38,9 @@ function createSlide() {
   let xml    = global.xml;
   let meta   = global.meta;
 
+  // This is built-in jQuery stuff to turn our raw XML string
+  // into an actual jQuery object that is parseable like the  DOM
+  // of an HTML pagke.
   let xmlDoc = $.parseXML(xml);
   let $xml   = $(xmlDoc);
 
@@ -57,20 +66,7 @@ function createSlide() {
   // one parsable object, in addition to extracting the XML from the
   // document that the backend gave us
   let info = {
-    XML: {
-      'textItems'     : extract('textItem'),
-      'callouts'      : extract('textItem', /^callout/i      , 'title'),
-      'descriptions'  : extract('textItem', /^description/i  , 'title'),
-      'instructions'  : extract('textItem', /instructions/i  , 'title'),
-      's'	      : extract('textItem', /s\d{1,}_\d{1,}/ , 'title'), 
-      'feedback'      : extract('textItem', /feedback/i      , 'title'),
-      'questions'     : extract('question', /question\stext/i, 'title'),
-      'answers'       : extract('answer'  , /answer\stext/i  , 'title'),
-      'buttonText'    : extract('text'    , /for\sbutton/i   , 'title'),
-      'sceneText'     : extract('textItem', /scene\stext/i   , 'title'),
-      'objectives'    : extract('textItem', /objective/i     , 'title'),
-      'tabTitles'     : extract('textItem', /tab\stitle/i    , 'title')
-    },
+    XML                 : {},
     HTML		: meta.htmlText,
     Narration		: meta.narrationText,
     SlideID		: meta.slideId,
@@ -78,17 +74,18 @@ function createSlide() {
     SlidePercent	: meta.slidePercent
   };
 
-  // This is to remove any elements of the XML object
-  // that come back with a length of 0 (meaning the extract
-  // function didn't find any XML nodes that matched what we told
-  // it to look for)
-  for (let key in info.XML) {
-    if (info.XML[key].length === 0) { info.XML[key] = undefined; }
-  }
-  info = JSON.parse(JSON.stringify(info));
+  for (let key in parseConfig) {
+    let tag       = parseConfig[key].tag;
+    let regex     = new RegExp(parseConfig[key].regex, "ig");
+    let attribute = parseConfig[key].attribute;
 
-  console.log('XML Text '+ info.SlidePercent + ':', info.XML);
-  console.log('---------');
+    if (regex && attribute) {
+      info.XML[key] = extract(tag, regex, attribute);
+    }
+    else {
+      info.XML[key] = extract(tag); 
+    }
+  }
 
   // This is where the aggregated slide information gets passed
   // to the function which will populate the new XML with our
