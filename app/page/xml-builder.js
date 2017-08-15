@@ -162,8 +162,19 @@ function createEditor(blacklist, initialText, wordsArray) {
   let editorArea = document.createElement('textarea');
   editorArea.id  = generateID(blacklist);
 
-  if (initialText) editorArea.innerHTML = initialText;
-  if (wordsArray) addSlideWords(wordsContainer, wordsArray);
+  // Here, we're putting the initial text inside of the editorArea,
+  // and then we're pulling the text BACK OUT of the editor to format
+  // with js-beautify. It's important to note that this is necessary because
+  // if html_beautify is run on initialText itself, it will strip out all of the newlines
+  // before putting it into the editor, resulting in bad formatting.
+  if (initialText) {
+    editorArea.innerHTML = initialText; 
+    editorArea.innerHTML = html_beautify(editorArea.textContent, { type: 'html', indent_size: 2 });
+  }
+
+  if (wordsArray) {
+    addSlideWords(wordsContainer, wordsArray);
+  }
 
   editorContainer.appendChild(editorArea);
   document.body.appendChild(editorContainer);
@@ -173,7 +184,7 @@ function createEditor(blacklist, initialText, wordsArray) {
 
 function addSlideWords(container, wordsArray) {
   for (let i = 0; i < wordsArray.length; i++) {
-    let word           = document.createElement('span');
+    let word       = document.createElement('span');
     word.className = 'word';
     word.innerHTML = wordsArray[i];
 

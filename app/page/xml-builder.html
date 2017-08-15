@@ -1,11 +1,15 @@
 <html>
   <head>
     <title>New XML Preview Page</title>
+
+    <script src="beautify.min.js"></script>
+
+    <!-- Code Mirror -->
     <script src="/lib/codemirror/lib/codemirror.js"></script>
     <script src="/lib/codemirror/mode/xml/xml.js"></script>
-
     <link rel="stylesheet" href="/lib/codemirror/lib/codemirror.css" />
     <link rel="stylesheet" href="/lib/codemirror/theme/dracula.css" />
+
     <link rel="stylesheet" href="/page/xml-builder.css" />
 
     <style>
@@ -60,7 +64,7 @@
 
 	<div>
 	  <button id="export">Export Content</button>
-    <button id="test">Generate Test Module</button>
+	  <button id="test">Generate Test Module</button>
 	</div>
       </div>
     </div>
