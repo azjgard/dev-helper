@@ -1,0 +1,84 @@
+{
+    // textItem
+    "textItems": {
+	"tag": "textItem"
+    }, 
+    "callouts": {
+	"tag": "textItem",
+	"regex": "^callout",
+	"attribute": "title"
+    },
+    "descriptions": {
+	"tag": "textItem",
+	"regex": "^description",
+	"attribute": "title"
+    }, 
+    "instructions": {
+	"tag": "textItem",
+	"regex": "instructions",
+	"attribute": "title"
+    }, 
+    "s": {
+	"tag": "textItem",
+	"regex": "s\\d{1,}_\\d{1,}",
+	"attribute": "title"
+    }, 
+    "feedback": {
+	"tag": "textItem",
+	"regex": "feedback",
+	"attribute": "title"
+    }, 
+    "objectives": {
+	"tag": "textItem",
+	"regex": "objective",
+	"attribute": "title"
+    },
+    "tabTitles": {
+	"tag": "textItem",
+	"regex": "objective",
+	"attribute": "title"
+    },
+
+    // question
+    "questions": {
+	"tag": "question",
+	"regex": "question\\stext",
+	"attribute": "title"
+    }, 
+
+    // answer
+    "answers": {
+	"tag": "answer",
+	"regex": "answer\\stext",
+	"attribute": "title"
+    }, 
+
+    // text
+    "buttonText": {
+	"tag": "text",
+	"regex": "for\\sbutton",
+	"attribute": "title"
+    },
+    "sceneText": {
+	"tag": "text",
+	"regex": "scene\\stext",
+	"attribute": "title"
+    },
+    "sceneTabText": {
+	"tag": "text",
+	"regex": "Scene\\s\\d+\\s-\\sTab\\s\\d+\\s-\\sText",
+	"attribute": "title"
+    },
+
+    // title
+    "sceneTabTitle": {
+	"tag": "title",
+	"regex": "Scene\\s\\d+\\s-\\sTab\\s\\d+\\s-\\sTitle",
+	"attribute": "title"
+    },
+    "sceneTitle": {
+	"tag": "title",
+	"regex": "Scene\\s\\d+\\s-\\sTitle|scene\\stitle",
+	"attribute": "title"
+    }
+}

@@ -1,7 +1,6 @@
 
 const xmlPreviewURL = chrome.runtime.getURL('/page/index.html');
 var globalBlacklist = [];
-var xmlDoc          = null;
 let globalCallback  = null;
 
 function addXmlListeners(callback) {
@@ -20,8 +19,6 @@ function analyzeXML(details, callback) {
       !isBlacklisted(resourceURL, globalBlacklist)) {
 
     globalBlacklist.push(resourceURL);
-
-    xmlDoc = storeXML(resourceURL);
 
     callback(getDocument(resourceURL));
   }

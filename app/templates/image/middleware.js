@@ -20,6 +20,11 @@ function image(slideInfo) {
   let $BulletPointList = $template.find('BulletPointList')[0];
   let numBulletPoints  = slideInfo.SlideMeta.numBulletPoints;
 
+  if(numBulletPoints > 0){
+    // remove the sample bullet point
+    $BulletPointList.empty();
+  }
+
   for (var i = 0; i < numBulletPoints; i++) {
     let id          = `bullet${(i+1)}`;
     let duration    = 0.5;
@@ -35,7 +40,7 @@ function image(slideInfo) {
        </Cue>\n`);
   }
 
-  $template.find('Header').text(header);
+  $template.find('Header').text(header).attr('id', 'header1');
 
   $template
     .find('ImageLayout')
