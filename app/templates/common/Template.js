@@ -31,28 +31,76 @@ class Template {
       $BulletPointList.append(`<BulletPoint id="${id}">${text}</BulletPoint>\n`);
 
       $CueList.append(
-	`<Cue>
-	 <Trigger triggerType="Timed" triggerTime="${triggerTime}" />
-	 <Effect effectType="Visibility" displayMode="Show" target="${id}" effect="fade" duration="${duration}" />
+        `<Cue>
+         <Trigger triggerType="Timed" triggerTime="${triggerTime}" />
+         <Effect effectType="Visibility" displayMode="Show" target="${id}" effect="fade" duration="${duration}" />
        </Cue>\n`);
     }
   }
 
   fillBullets(numBulletPoints){
-    let html = this.parseDoc(this.html);
-    console.log(html);
+    let html = parser(this.html, 'text/html');
+    let htmlText = getText(this.$, html);
     let $BulletPoints = this.$template.find('BulletPoint');
+
+    console.log(this.xml);
+    console.log(htmlText);
     for(let i = 0; i < $BulletPoints.length; i++){
-      if(this.xml.keys !== undefined && this.html)
-      if(this.xml.keys !== undefined){
-        $BulletPoints[i].text(this.slideInfo.XML);
+      // xml and html
+      if(Object.keys(this.xml).length > 0 && htmlText.content){
+        // the only xml present here should be callout text,
+        // which won't go inside BulletPoints
+        if($BulletPoints.length + 1 === htmlText.content.length){
+          $BulletPoints[i].textContent = htmlText.content[i].trim();
+        }
       }
+      // only xml
+      else if(Object.keys(this.xml).length > 0){
+        if($BulletPoints.length + 1 === this.xml.textItems.length){
+          $BulletPoints[i].textContent = this.xml.textItems[i+1].text.replace(/<.+?>/g, '').trim();
+        }
+      }
+      // only html
+      else if(htmlText.content){
+        if($BulletPoints.length === htmlText.content.length){
+          $BulletPoints[i].textContent = htmlText.content[i].trim();
+        }
+      }
+      // no text
+      else {
+        console.log('no text at all!!!');
+        // throw new Error("There was no text at all!");
+      }
+    }
+
+    function parser(str, conversion){
+      let parser = new DOMParser();
+      return parser.parseFromString(str, conversion);
+    }
+
+    function getText($, doc){
+      let body             = $(doc.body),
+          contentText      = body.find('.regularcontenttext>ul'),
+          headerText       = body.find('.headertext'),
+          headerTextMargin = body.find('.headertexttopmargin'),
+          content          = null,
+          header           = null,
+          headerMargin     = null;
+      
+      if(contentText.length){
+        let lis      = Array.from(contentText[0].querySelectorAll('li'));
+        content      = lis.map(li => { return li.textContent; }); 
+      }
+      if(headerText.length){
+        header       = headerText[0].textContent.trim();
+      }
+      if(headerTextMargin.length){
+        headerMargin = headerTextMargin[0].textContent.trim();
+      }
+      return {content, header, headerMargin};
     }
   }
 
-  parseDoc(){
-    return this.$.parseHTML(this.html);
-  }
 
   getHtmlText(){
   }

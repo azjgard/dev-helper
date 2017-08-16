@@ -171,7 +171,7 @@ function getMainText(elements) {
 	setTimeout(() => {
 	  elements.mainTextContainer = eval(elements.mainTextContainer);
 	  resolve(elements.displayDocument.contentDocument.body.outerHTML);
-	}, 500);
+	}, 800);
       }
       else {
 	setTimeout(() => recurse(resolve), 100);
@@ -276,7 +276,6 @@ function sendRequest(pageInformation) {
   let narrationText = pageInformation[1];
   let slideID       = pageInformation[2];
   let slidePercent  = pageInformation[3];
-  console.log(htmlText);
 
   let request = {
     message : 'new-html-page',
