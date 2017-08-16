@@ -7,11 +7,14 @@ class Template {
     let template  = require(`Templates/${templateName}/template.xml`);
 
     this.$ = $;
-
     this.resolve   = resolution;
+
     this.slideInfo = slideInfo;
-    this.html = slideInfo.HTML;
-    this.xml = slideInfo.XML;
+    this.narration = slideInfo.Narration.replace(/<.+?>/g, '');
+    this.html      = slideInfo.HTML;
+    this.xml       = slideInfo.XML;
+
+    this.htmlText;
     this.$template = $(this.$.parseXML(template));
     this.setCC();
   }
@@ -41,11 +44,10 @@ class Template {
   fillBullets(numBulletPoints){
     let html = parser(this.html, 'text/html');
     let htmlText = getText(this.$, html);
+    this.htmlText = htmlText;
     let $BulletPoints = this.$template.find('BulletPoint');
     let $Header = this.$template.find('Header');
 
-    console.log(this.xml);
-    console.log(htmlText);
     for(let i = 0; i < $BulletPoints.length; i++){
       // xml and html
       if(Object.keys(this.xml).length > 0 && htmlText.content){
@@ -120,14 +122,50 @@ class Template {
   }
 
   setCC() {
-    this.setTxt('Instructions', this.slideInfo.Narration);
+    this.setTxt('Instructions', this.narration);
+  }
+
+  // slideInfo is an object with the HTML, XML, Narration, SlideID,
+  // and SlideMeta (e.g. imageLayout, numBulletPoints, slideType)
+  textArray(){
+    let textArray = [];
+
+    if(this.narration){
+      textArray.push(this.narration);
+    } 
+
+    if(this.htmlText){
+      for(let key in this.htmlText){
+        if(typeof this.htmlText[key] === 'string'){
+          textArray.push(this.htmlText[key]);
+        }
+        else {
+          console.log("concat!");
+          textArray = textArray.concat(this.htmlText[key]);
+          console.log("textArray2", textArray);
+        }
+      }
+    } 
+
+    if(Object.keys(this.slideInfo.XML).length > 0){
+      for(let key in this.slideInfo.XML){
+        for(let i = 0; i < this.slideInfo.XML[key].length; i++){
+          textArray.push(this.slideInfo.XML[key][i].text.replace(/<.+?>/g, ''));
+        }
+      }
+    } 
+
+    return textArray;
   }
 
   export() {
-    return this
-      .$template
-      .find('Slide')[0]
-      .outerHTML;
+    return {
+      xml : this
+        .$template
+        .find('Slide')[0]
+        .outerHTML,
+      text   : this.textArray()
+    };
   }
 
   finish() {

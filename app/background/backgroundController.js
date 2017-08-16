@@ -101,8 +101,8 @@ function createSlide() {
   require('../templates/common/middlewareRouter.js')(info)
     .then(newXML => {
       let viewObject = {
-	xml        : newXML,
-	text       : ['these', 'are', 'some', 'words'],
+	xml        : newXML.xml,
+	text       : newXML.text,
 	percentage : info.SlidePercent
       };
 
