@@ -171,7 +171,7 @@ function getMainText(elements) {
 	setTimeout(() => {
 	  elements.mainTextContainer = eval(elements.mainTextContainer);
 	  resolve(elements.displayDocument.contentDocument.body.outerHTML);
-	}, 800);
+	}, 500);
       }
       else {
 	setTimeout(() => recurse(resolve), 100);

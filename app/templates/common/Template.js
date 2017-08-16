@@ -42,6 +42,7 @@ class Template {
     let html = parser(this.html, 'text/html');
     let htmlText = getText(this.$, html);
     let $BulletPoints = this.$template.find('BulletPoint');
+    let $Header = this.$template.find('Header');
 
     console.log(this.xml);
     console.log(htmlText);
@@ -50,6 +51,7 @@ class Template {
       if(Object.keys(this.xml).length > 0 && htmlText.content){
         // the only xml present here should be callout text,
         // which won't go inside BulletPoints
+        $Header.textContent = htmlText.content[i].trim();
         if($BulletPoints.length + 1 === htmlText.content.length){
           $BulletPoints[i].textContent = htmlText.content[i].trim();
         }
