@@ -6,8 +6,8 @@ module.exports = function($template, meta) {
   });
 
   $template.createBulletList(meta.numBulletPoints);
-
-  $template.setTxt ('Your'     , 'Some Header Text');
+  $template.fillBullets(meta.numBulletPoints);
+  $template.setTxt ('Header', 'Chris is Awesome');
 
   $template.finish();
 };

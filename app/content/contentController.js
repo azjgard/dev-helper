@@ -276,6 +276,7 @@ function sendRequest(pageInformation) {
   let narrationText = pageInformation[1];
   let slideID       = pageInformation[2];
   let slidePercent  = pageInformation[3];
+  console.log(htmlText);
 
   let request = {
     message : 'new-html-page',

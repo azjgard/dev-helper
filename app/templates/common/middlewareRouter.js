@@ -8,6 +8,7 @@ module.exports = function(slideInfo) {
     let fn           = route[slideType].fn;
 
     let template = createTemplate(slideInfo, resolve, templateName);
+    console.log(slideInfo);
 
     fn(template, slideInfo.SlideMeta);
   });

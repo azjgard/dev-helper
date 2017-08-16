@@ -78,10 +78,10 @@ function sendToTab(which_tab, request){
   });
 }
 
-function storeXML(resourceURL){
-  let responseText = getDocument(resourceURL);
-  let parser       = new DOMParser();
-  return parser.parseFromString(responseText, "text/xml");
-}
+// function storeXML(resourceURL){
+//   let responseText = getDocument(resourceURL);
+//   let parser       = new DOMParser();
+//   return parser.parseFromString(responseText, "text/xml");
+// }
 
 module.exports = addXmlListeners;

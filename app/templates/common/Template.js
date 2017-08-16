@@ -1,5 +1,7 @@
 class Template {
 
+  // slideInfo is an object with the HTML, XML, Narration, SlideID,
+  // and SlideMeta (e.g. imageLayout, numBulletPoints, slideType)
   constructor(slideInfo, resolution, templateName) {
     let $         = require('jquery');
     let template  = require(`Templates/${templateName}/template.xml`);
@@ -8,15 +10,17 @@ class Template {
 
     this.resolve   = resolution;
     this.slideInfo = slideInfo;
+    this.html = slideInfo.HTML;
+    this.xml = slideInfo.XML;
     this.$template = $(this.$.parseXML(template));
     this.setCC();
   }
 
   createBulletList(numBulletPoints) {
-    let $CueList         = this.$template.find('CueList')[0];
-    let $BulletPointList = this.$template.find('BulletPointList')[0];
+    let $CueList         = this.$(this.$template.find('CueList')[0]);
+    let $BulletPointList = this.$(this.$template.find('BulletPointList')[0]);
 
-    this.$($BulletPointList).empty();
+    $BulletPointList.empty();
 
     for (var i = 0; i < numBulletPoints; i++) {
       let id          = `bullet${(i+1)}`;
@@ -32,6 +36,25 @@ class Template {
 	 <Effect effectType="Visibility" displayMode="Show" target="${id}" effect="fade" duration="${duration}" />
        </Cue>\n`);
     }
+  }
+
+  fillBullets(numBulletPoints){
+    let html = this.parseDoc(this.html);
+    console.log(html);
+    let $BulletPoints = this.$template.find('BulletPoint');
+    for(let i = 0; i < $BulletPoints.length; i++){
+      if(this.xml.keys !== undefined && this.html)
+      if(this.xml.keys !== undefined){
+        $BulletPoints[i].text(this.slideInfo.XML);
+      }
+    }
+  }
+
+  parseDoc(){
+    return this.$.parseHTML(this.html);
+  }
+
+  getHtmlText(){
   }
 
   runCode(fn) {
