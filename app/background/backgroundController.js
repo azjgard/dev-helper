@@ -71,6 +71,7 @@ function createSlide() {
     Narration		: meta.narrationText,
     SlideID		: meta.slideId,
     SlideMeta		: meta.slideMeta,
+    SlideAudio          : meta.slideAudio,
     SlidePercent	: meta.slidePercent
   };
 

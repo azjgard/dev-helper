@@ -117,7 +117,7 @@ function getPageInformation(elements) {
     let actions = [
       getMainText(elements),
       getNarration(),
-      getSlideID(elements),
+      getSlideID(elements)
     ];
 
     Promise.all(actions).then(pageInformation => {
@@ -143,7 +143,7 @@ function getPageInformation(elements) {
       getSlidePercentage(elements)
 	.then(percentage => {
 	  pageInformation.push(percentage);
-	  resolve(pageInformation);
+	  resolve({pageInformation, elements});
 	});
     });
   });
@@ -239,6 +239,25 @@ function storeNarrationTextInElement() {
   }
 }
 
+function getSlideAudio(elements){
+  return new Promise((resolve, reject) => {
+    let expr   = 'elements.bottomDocument.contentDocument.getElementById("FrameNumber")';
+    let config = {
+      currentTimeout : 0,
+      maxTimeout     : 30000,
+      elements       : elements
+    };
+
+    getElByExpr(expr, config)
+      .then(frameNum => {
+        // my computer is too slow to get the correct slide audio number
+        // so I added a timeout
+	setTimeout(() => { getElByExpr(expr, config).then(frame => resolve(frame.textContent.toLowerCase())); }, 1000);
+	
+      });
+  });
+}
+
 function getSlideID(elements) {
   return new Promise((resolve, reject) => {
     let expr   = 'elements.displayDocument.contentDocument.getElementsByTagName("embed")';
@@ -271,39 +290,38 @@ function getSlidePercentage(elements) {
   });
 }
 
-function sendRequest(pageInformation) {
-  let htmlText      = pageInformation[0];
-  let narrationText = pageInformation[1];
-  let slideID       = pageInformation[2];
-  let slidePercent  = pageInformation[3];
+function sendRequest({pageInformation:[htmlText, narrationText, slideID, slidePercent], elements}) {
+  getSlideAudio(elements).then(audio => {
+    let request = {
+      message : 'new-html-page',
+      data    : {
+        slideId       : slideID,
+        slidePercent  : slidePercent,
+        slideAudio    : audio,
+        narrationText : narrationText,
+        slideMeta     : ''
+      }
+    };
+    console.log(request.data);
 
-  let request = {
-    message : 'new-html-page',
-    data    : {
-      slideId       : slideID,
-      slidePercent  : slidePercent,
-      narrationText : narrationText,
-      slideMeta     : ''
+    if (htmlText === null) {
+      request.data.htmlText = null;
     }
-  };
+    else {
+      request.data.htmlText = htmlText;
+    }
 
-  if (htmlText === null) {
-    request.data.htmlText = null;
-  }
-  else {
-    request.data.htmlText = htmlText;
-  }
+    promptSlideInfo()
+      .then(data => {
+        request.data.slideMeta = data;
+        chrome.runtime.sendMessage(request);
 
-  promptSlideInfo()
-    .then(data => {
-      request.data.slideMeta = data;
-      chrome.runtime.sendMessage(request);
+        functionExecuting = false;
+        updateManualButtonState();
+      });
 
-      functionExecuting = false;
-      updateManualButtonState();
-    });
-
-  stop_scrape = false;
+    stop_scrape = false;
+  });
 }
 
 //
