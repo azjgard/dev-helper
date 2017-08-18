@@ -37,16 +37,31 @@
 	"regex": "objective",
 	"attribute": "title"
     },
+
+
     "questions": {
+	"tag": "question"
+    }, 
+    "questionsText": {
 	"tag": "question",
 	"regex": "question\\stext",
 	"attribute": "title"
     }, 
+
+
     "answers": {
+	"tag": "answer"
+    }, 
+    "answersText": {
 	"tag": "answer",
 	"regex": "answer\\stext",
 	"attribute": "title"
     }, 
+
+
+    "text": {
+	"tag": "text"
+    },
     "buttonText": {
 	"tag": "text",
 	"regex": "for\\sbutton",
@@ -61,6 +76,11 @@
 	"tag": "text",
 	"regex": "Scene\\s\\d+\\s-\\sTab\\s\\d+\\s-\\sText",
 	"attribute": "title"
+    },
+
+
+    "title": {
+	"tag": "title"
     },
     "sceneTabTitle": {
 	"tag": "title",

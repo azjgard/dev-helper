@@ -1,4 +1,8 @@
 <Slide type="Image">
+<!-- distinguish between landing page audio and the rest of the audio -->
+<!-- <Instructions> are for landing page, <Captions> are for successive slides -->
+<!-- fill in header, text, and bulletpoints within <Introduction> node -->
+<!-- dynamically figure out how many image content sections there are (id="content#") -->
 <Audio>a6c1fra0177_LandingPage</Audio>
 <Instructions>
 Closed_Captions
@@ -39,3 +43,4 @@ Closed_Captions
 </ImageContent>
 </ImageContentList>
 </Slide>
+

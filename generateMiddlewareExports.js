@@ -10,6 +10,7 @@ const path_dependencies = path.join(commonPath, 'dependencies.js');
 function generateMiddlewareExports(options) {} 
 
 generateMiddlewareExports.prototype.apply = function(compiler) {
+  //after plugins are done, but before code compiles
   compiler.plugin("after-plugins", params => {
     getDirectories(templatePath)
       .then(buildExportString)

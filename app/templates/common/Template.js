@@ -15,6 +15,7 @@ class Template {
     this.htmlText   = this.getText(this.$, this.parser(HTML, 'text/html'));
     this.slideId    = SlideID;
     this.slideMeta  = SlideMeta;
+    this.typeOfText = this.getType(),
 
     // COMMON FUNCTIONS
     this.setAudio();
@@ -26,7 +27,34 @@ class Template {
     // }
   }
 
-  addXmlStubs(numBulletPoints) {
+  setHeader() {
+    this.setTxt('Header', getHeader(this.typeOfText, this.htmlText, this.xmlText));
+
+    function getHeader(type, {htmlHeader, htmlHeaderMargin}, xmlText){
+      if(type === 'both'){
+        return htmlHeader
+          ? htmlHeader.trim()
+          : htmlHeaderMargin.trim();
+      }
+      else if(type === 'xml'){
+        return xmlText
+          .textItems[0].text
+          .replace(/<.+?>/g, '');
+      }
+      else if(type === 'html'){
+        return htmlHeader
+          ? htmlHeader.trim()
+          : htmlHeaderMargin.trim();
+      }
+      return "Sample_Header_Text";
+    }
+  }
+
+  removeUnusedNodes(nodeArray){
+    nodeArray.forEach(node => this.$template.find(node).remove());
+  }
+
+  setBullets(numBulletPoints) {
     // if(this.slideMeta.slideType.toLowerCase() === 'image'){
     //   // check the narration to see if things need to be split up
     //   if(this.narration.match(/<br\/><br\/>/)){
@@ -41,20 +69,9 @@ class Template {
     // }
 
     numBulletPoints      = parseInt(numBulletPoints, 10);
-    let $Header          = this.$template.find('Header'),
-        $Text            = this.$template.find('Text'),
-        $BulletPointList = this.$template.find('BulletPointList'),
+    let $BulletPointList = this.$template.find('BulletPointList'),
         $CueList         = this.$template.find('CueList'),
-        typeOfText       = this.getType(),
         headerText;
-
-    // add header text
-    $Header.text(this.getHeader($Header, typeOfText));
-
-    // remove <Text> node if not being used
-    $Text.text().includes('Sub_header_Body_Text')
-      ? $Text.remove()
-      : null;
 
     // clear sample bullet and cuelist
     $BulletPointList.empty();
@@ -62,7 +79,7 @@ class Template {
 
     // add bullets and cuelists
     for (var i = 0; i < numBulletPoints; i++) {
-      let bulletText  = this.getBulletText(i, this.htmlText, typeOfText, numBulletPoints),
+      let bulletText  = getBulletText(i, this.htmlText, this.xmlText, this.typeOfText, numBulletPoints),
           id          = `bullet${(i+1)}`,
           text        = bulletText ? bulletText : `Example_Text_${(i+1)}`,
           duration    = 0.5,
@@ -74,25 +91,27 @@ class Template {
          <Effect effectType="Visibility" displayMode="Show" target="${id}" effect="fade" duration="${duration}" />
        </Cue>\n`);
     }
-  }
 
-  getHeader(header, type){
-    if(type === 'both'){
-      return this.htmlText.header
-        ? this.htmlText.header.trim()
-        : this.htmlText.headerMargin.trim();
+    function getBulletText(i, {content}, xmlText, type, numBulletPoints){
+      if(type === 'both'){
+        // the only xml present here should be callout text,
+        // which won't go inside BulletPoints
+        return numBulletPoints === content.length
+          ? content[i].trim()
+          : null;
+      }
+      else if(type === 'xml'){
+        return numBulletPoints + 1 === xmlText.textItems.length
+          ? xmlText.textItems[i+1].text.replace(/<.+?>/g, '').trim()
+          : null;
+      }
+      else if(type === 'html'){
+        return numBulletPoints === content.length
+          ? content[i].trim()
+          : null;
+      }
+      else return null;
     }
-    else if(type === 'xml'){
-      return this.xmlText
-        .textItems[0].text
-        .replace(/<.+?>/g, '');
-    }
-    else if(type === 'html'){
-      return this.htmlText.header
-        ? this.htmlText.header.trim()
-        : this.htmlText.headerMargin.trim();
-    }
-    return "Sample_Header_Text";
   }
 
   getType(){
@@ -133,27 +152,6 @@ class Template {
     return {content, header, headerMargin};
   }
 
-  getBulletText(i, {content}, type, numBulletPoints){
-    if(type === 'both'){
-      // the only xml present here should be callout text,
-      // which won't go inside BulletPoints
-      return numBulletPoints === this.htmlText.content.length
-        ? this.htmlText.content[i].trim()
-        : null;
-    }
-    else if(type === 'xml'){
-      return numBulletPoints + 1 === this.xmlText.textItems.length
-        ? this.xmlText.textItems[i+1].text.replace(/<.+?>/g, '').trim()
-        : null;
-    }
-    else if(type === 'html'){
-      return numBulletPoints === this.htmlText.content.length
-        ? this.htmlText.content[i].trim()
-        : null;
-    }
-    else return null;
-  }
-
   runCode(fn) {
     fn(this.$, this.$template);
   }
@@ -162,6 +160,7 @@ class Template {
     this.$template.find(selector).attr(att, value);
   }
 
+  // replaces sample ids with the correct ids at start
   setIds(template) {
     return template
       .replace(/(id="\w+)Id(")/g, '$11$2')
@@ -169,11 +168,11 @@ class Template {
   }
 
   setTxt(selector, text) {
-    this.$template.find(selector).text(`\n${text}\n`);
+    this.$template.find(selector).text(text);
   }
 
   setCC() {
-    this.setTxt('Instructions', this.narration);
+    this.setTxt('Instructions', `\n${this.narration}\n`);
   }
 
   setAudio() {
@@ -183,7 +182,7 @@ class Template {
   setTitle(){
   }
 
-  textArray(){
+  getTextArray(){
     let textArray = [];
 
     if(this.htmlText){
@@ -205,9 +204,9 @@ class Template {
       }
     } 
 
-    if(this.narration){
-      textArray.push(this.narration);
-    } 
+    // if(this.narration){
+    //   textArray.push(this.narration);
+    // } 
 
     return textArray;
   }
@@ -218,7 +217,7 @@ class Template {
         .$template
         .find('Slide')[0]
         .outerHTML,
-      text   : this.textArray()
+      text   : this.getTextArray()
     };
   }
 

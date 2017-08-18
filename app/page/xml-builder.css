@@ -1,114 +1,115 @@
 * {
-    font-family: Helvetica;
+    font-family        : Helvetica;
 }
 
 .editor-container {
-    margin: 30px 5%;
+    margin             : 30px 5%;
 }
 
 #menu,
 .word {
-    -webkit-transition: all .4s;
-    -moz-transition: all .4s;
-    transition: all .4s;
+    -webkit-transition : all .4s;
+    -moz-transition    : all .4s;
+    transition         : all .4s;
 }
 
 .word {
-    padding: 5px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    display: block;
-    max-width: 200px;
+    padding            : 5px;
+    border             : 1px solid #ccc;
+    background-color   : #fff;
+    display            : block;
+    max-width          : 200px;
 }
 .word.in-xml {
-    background-color: #0086D2;
-    color: #fff;
+    background-color   : #0086D2;
+    color              : #fff;
 }
 
 .words-container {
-    background-color: #282a36;
-    float: left;
-    height: 400px;
-    border-right: 8px solid #fff;
-    width: 200px;
+    background-color   : #282a36;
+    float              : left;
+    height             : 400px;
+    border-right       : 8px solid #fff;
+    width              : 200px;
+    overflow           : auto
 }
 .words-container h2 {
-    text-align: center;
-    font-size: 22px;
-    color: #fff;
+    text-align         : center;
+    font-size          : 22px;
+    color              : #fff;
 }
 
 #show-menu {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    font-size: 15px;
-    font-weight: bold;
-    height: 60px;
-    width: 60px;
-    text-align: center;
+    position           : fixed;
+    top                : 10px;
+    right              : 10px;
+    font-size          : 15px;
+    font-weight        : bold;
+    height             : 60px;
+    width              : 60px;
+    text-align         : center;
 
-    z-index: 99999;
+    z-index            : 99999;
 }
 
-button:hover,
-#show-menu:hover,
-.word:hover {
-    cursor: pointer;
-    background-color: #eee;
+button                 :hover,
+#show-menu             :hover,
+.word                  :hover {
+    cursor             : pointer;
+    background-color   : #eee;
 }
 
 #menu {
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: rgba(0,0,0,.3);
+    position           : fixed;
+    display            : flex;
+    flex-direction     : column;
+    justify-content    : center;
+    top                : 0;
+    right              : 0;
+    bottom             : 0;
+    left               : 0;
+    width              : 100%;
+    background-color   : rgba(0,0,0,.3);
 
-    z-index: 9999999;
-    opacity: 0;
-    pointer-events: none;
+    z-index            : 9999999;
+    opacity            : 0;
+    pointer-events     : none;
 }
 
 #menu.visible {
-    opacity: 1;
-    pointer-events: auto;
+    opacity            : 1;
+    pointer-events     : auto;
 }
 
 #menu button {
-    display: block;
+    display            : block;
 }
 
 #menu > div {
-    position: relative;
-    width: 80%;
-    max-width: 600px;
-    margin: auto;
-    background-color: #fff;
-    padding: 20px;
+    position           : relative;
+    width              : 80%;
+    max-width          : 600px;
+    margin             : auto;
+    background-color   : #fff;
+    padding            : 20px;
 }
 
 #menu > div > div {
-    display: flex;
-    justify-content: center;
+    display            : flex;
+    justify-content    : center;
 }
 
 #menu #close {
-    position: absolute;
-    right: 5px;
-    top: 5px;
+    position           : absolute;
+    right              : 5px;
+    top                : 5px;
 }
 
 .CodeMirror-scroll {
-    max-height: 400px !important;
-    font-size: 17px;
+    max-height         : 400px !important;
+    font-size          : 17px;
 }
 
 .percentage {
-    color: #00f1ff;
+    color              : #00f1ff;
 }

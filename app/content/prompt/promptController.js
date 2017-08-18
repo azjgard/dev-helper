@@ -9,19 +9,19 @@ function getSlideInformation() {
 
 	if (!slideType) return Promise.resolve(false);
 	else {
-	  if (slideType.match(/quiz/i)) {
-	    return prompt(templates.slides.quiz);
-	  }
-	  else if (slideType.match(/image/i)) {
-	    return prompt(templates.slides.image);
-	  }
-	  else if (slideType.match(/exam/i)) {
-	    return prompt(templates.slides.exam);
+          slideType = firstLetterLow(slideType);
+	  if (templates.slides.hasOwnProperty(slideType)) {
+	    return prompt(templates.slides[slideType]);
 	  }
 	  else {
+            console.error(`You don't have a slide type named ${slideType}`);
 	    return Promise.resolve(false);
 	  }
 	}
+
+        function firstLetterLow(string){
+          return string.charAt(0).toLowerCase() + string.slice(1);
+        }
       })
       .then(resolve);
   });
