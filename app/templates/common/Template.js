@@ -27,61 +27,72 @@ class Template {
   }
 
   addXmlStubs(numBulletPoints) {
+    // if(this.slideMeta.slideType.toLowerCase() === 'image'){
+    //   // check the narration to see if things need to be split up
+    //   if(this.narration.match(/<br\/><br\/>/)){
+    //     let narr = this.narration.split(/<br\/><br\/>/);
+    //     let arr = [];
+    //     for(let i = 0; i < narr.length; i++){
+    //       arr.push(`<Instructions>\n${narr[i]}\n</Instructions`);
+    //       //make narr.length image slides
+    //       //send them to html page
+    //     }
+    //   }
+    // }
+
     numBulletPoints      = parseInt(numBulletPoints, 10);
-    let $CueList         = this.$template.find('CueList'),
-        $Header          = this.$template.find('Header'),
+    let $Header          = this.$template.find('Header'),
+        $Text            = this.$template.find('Text'),
         $BulletPointList = this.$template.find('BulletPointList'),
+        $CueList         = this.$template.find('CueList'),
         typeOfText       = this.getType(),
         headerText;
+
+    // add header text
+    $Header.text(this.getHeader($Header, typeOfText));
+
+    // remove <Text> node if not being used
+    $Text.text().includes('Sub_header_Body_Text')
+      ? $Text.remove()
+      : null;
 
     // clear sample bullet and cuelist
     $BulletPointList.empty();
     $CueList.find('Cue>Effect[target="bullet1"]').parent().remove();
 
+    // add bullets and cuelists
     for (var i = 0; i < numBulletPoints; i++) {
       let bulletText  = this.getBulletText(i, this.htmlText, typeOfText, numBulletPoints),
           id          = `bullet${(i+1)}`,
-          duration    = 0.5,
           text        = bulletText ? bulletText : `Example_Text_${(i+1)}`,
+          duration    = 0.5,
           triggerTime = 1.0 + (.25 * i); 
-
       $BulletPointList.append(`<BulletPoint id="${id}">${text}</BulletPoint>\n`);
-
       $CueList.append(
         `<Cue>
          <Trigger triggerType="Timed" triggerTime="${triggerTime}" />
          <Effect effectType="Visibility" displayMode="Show" target="${id}" effect="fade" duration="${duration}" />
        </Cue>\n`);
     }
-
-    // add header text
-    $Header.text(this.getHeader($Header, typeOfText));
-
-    // remove Text node if not being used
-    let $Text = this.$template.find('Text');
-    $Text.text().includes('Sub_header_Body_Text')
-      ? $Text.remove()
-      : null;
   }
 
   getHeader(header, type){
     if(type === 'both'){
-      let txt = this.htmlText.header
-            ? this.htmlText.header.trim()
-            : this.htmlText.headerMargin.trim();
-      return txt;
+      return this.htmlText.header
+        ? this.htmlText.header.trim()
+        : this.htmlText.headerMargin.trim();
     }
     else if(type === 'xml'){
-      let txt = this.xmlText.textItems[0].text;
-      return txt.replace(/<.+?>/g, '');
+      return this.xmlText
+        .textItems[0].text
+        .replace(/<.+?>/g, '');
     }
     else if(type === 'html'){
-      let txt = this.htmlText.header
-            ? this.htmlText.header.trim()
-            : this.htmlText.headerMargin.trim();
-      return txt;
+      return this.htmlText.header
+        ? this.htmlText.header.trim()
+        : this.htmlText.headerMargin.trim();
     }
-    return null;
+    return "Sample_Header_Text";
   }
 
   getType(){
@@ -143,9 +154,6 @@ class Template {
     else return null;
   }
 
-  getHtmlText(){
-  }
-
   runCode(fn) {
     fn(this.$, this.$template);
   }
@@ -161,7 +169,7 @@ class Template {
   }
 
   setTxt(selector, text) {
-    this.$template.find(selector).text(text);
+    this.$template.find(selector).text(`\n${text}\n`);
   }
 
   setCC() {
@@ -175,8 +183,6 @@ class Template {
   setTitle(){
   }
 
-  // slideInfo is an object with the HTML, XML, Narration, SlideID,
-  // and SlideMeta (e.g. imageLayout, numBulletPoints, slideType)
   textArray(){
     let textArray = [];
 
