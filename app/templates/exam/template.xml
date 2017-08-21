@@ -1,35 +1,38 @@
-<Slide type="Image">
-<Audio>Audio_File_Name</Audio>				
-<Instructions>
-Closed_Captions
-</Instructions>
-<ImageLayout position="Lower" showBorder="false" showBackground="true" contentPercentage="75" />
-<ImageContentList>
-<ImageContent>
-<Image id="imageId">Image_File_Name_png</Image>				
-<Header id="headerId">Header_Text</Header>
-<Text id="textId">Sub_header_Body_Text</Text>
-<BulletPointList>
-<BulletPoint id="bulletId">Bullet_Text</BulletPoint>
-</BulletPointList>
-</ImageContent>
-</ImageContentList>
-<CueList>
-<Cue>
-<Trigger triggerType="Timed" triggerTime="0.0"/>
-<Effect effectType="Visibility" displayMode="Show" target="headerId" effect="fade" duration="1.0"/>
-</Cue>
-<Cue>
-<Trigger triggerType="Timed" triggerTime="0.0"/>
-<Effect effectType="Visibility" displayMode="Show" target="imageId" effect="fade" duration="1.0"/>
-</Cue>
-<Cue>
-<Trigger triggerType="Timed" triggerTime="0.25"/>
-<Effect effectType="Visibility" displayMode="Show" target="textId" effect="fade" duration="0.5"/>
-</Cue>
-<Cue>
-<Trigger triggerType="Timed" triggerTime="0.5"/>
-<Effect effectType="Visibility" displayMode="Show" target="bulletId" effect="fade" duration="0.5"/>
-</Cue>
-</CueList>
+<Slide type="Exam" lockNavigation="true" allowAnswerChange="false" confirmSubmission="false" reviewResults="true">
+  <Introduction>
+    <p>
+    This Test Drive covers the content presented in this lesson and consists of [NUM_QUESTIONS] assessment activities on [CHAPTER_NAME].
+</p>
+  <p>
+  You must score [PASSING_SCORE]% or higher to pass this Test Drive.
+</p>
+  <p>
+  Click 'Next' to begin.
+</p>
+  ]]/>
+</Introduction>
+  <Summary>
+  <Passed>
+  <Header>
+  You MUST click 'Next' in order to complete your attempt of this course and receive a grade.
+</Header>
+  <Body/>
+</Passed>
+  <Failed>
+  <Header>
+  Click on 'Review Question' for any answers missed. You MUST click 'Next' in order to complete your attempt of this course and receive a grade.
+</Header>
+  <Body/>
+</Failed>
+</Summary>
+  <ConfirmationWindow>
+  <Title>Submit Test Drive Answers?</Title>
+  <Body>Are you sure you want to submit your answers for grading? If you wish to continue, select Submit; otherwise, select Cancel to review your answers.</Body>
+  <Cancel>Cancel</Cancel>
+  <Submit>Submit</Submit>
+</ConfirmationWindow>
+  <QuestionList>
+  <!-- Questions -->
+  <!-- See the question type templates -->
+</QuestionList>
 </Slide>

@@ -30,11 +30,11 @@ class Template {
   setHeader() {
     this.setTxt('Header', getHeader(this.typeOfText, this.htmlText, this.xmlText));
 
-    function getHeader(type, {htmlHeader, htmlHeaderMargin}, xmlText){
+    function getHeader(type, {header, headerMargin}, xmlText){
       if(type === 'both'){
-        return htmlHeader
-          ? htmlHeader.trim()
-          : htmlHeaderMargin.trim();
+        return header
+          ? header.trim()
+          : headerMargin.trim();
       }
       else if(type === 'xml'){
         return xmlText
@@ -42,16 +42,23 @@ class Template {
           .replace(/<.+?>/g, '');
       }
       else if(type === 'html'){
-        return htmlHeader
-          ? htmlHeader.trim()
-          : htmlHeaderMargin.trim();
+        return header
+          ? header.trim()
+          : headerMargin.trim();
       }
       return "Sample_Header_Text";
     }
   }
 
   removeUnusedNodes(nodeArray){
-    nodeArray.forEach(node => this.$template.find(node).remove());
+    nodeArray.forEach(node => {
+      let $tag = this.$template.find(node);
+      let tagId = $tag.attr('id');
+      // remove tag
+      $tag.remove();
+      // remove cuelist for tag
+      this.$template.find(`Effect[target='${tagId}']`).parent().remove();
+    });
   }
 
   setBullets(numBulletPoints) {

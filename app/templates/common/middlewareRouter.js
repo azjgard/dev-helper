@@ -8,8 +8,8 @@ module.exports = function(slideInfo) {
     let fn           = route[slideType].fn;
 
     let template = createTemplate(slideInfo, resolve, templateName);
-    console.log(slideInfo);
 
+    //call the function in the middleware.js file for the specified slideType (e.g. image)
     fn(template, slideInfo.SlideMeta);
   });
 };

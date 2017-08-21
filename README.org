@@ -13,11 +13,44 @@
    #+BEGIN_SRC sh
      npm run build
    #+END_SRC
-5. [[https://superuser.com/questions/247651/how-does-one-install-an-extension-for-chrome-browser-from-the-local-file-system#answer-247654][Upload]] the 'app' folder as a Chrome Extension 
+5. Upload the 'app' folder as a Chrome Extension 
+   - navigate to chrome://extensions
+   - click the "Developer mode" check box at the top of the page
+   - click the "Load unpacked extension" button that shows up
+   - navigate to the app folder of the repository you cloned
+   - click "OK"
 6. Navigate to [[http://avondale-iol/][the old course site]] and open a slide to see the tool work automatically
 * Development
-  The following command is used for development:
+1. Run the following command in the command line to begin development. This will cause a rebuild of the project to occur every time a file is changed and saved.
   #+BEGIN_SRC sh
     npm run watch
   #+END_SRC
-  This will cause a rebuild to occur every time a file is changed.
+2. The local chrome extension will have to be reloaded whenever the project is rebuilt. This can be done by going to chrome://extensions and clicking "Reload" under the title of the chrome extension.
+* Updating the extension on the Chrome Web Store
+** Creating the zip file
+1. After saving all changes to your code, increment the version number in the app/manifest.json file
+2. Zip up the app folder
+3. Place the zip file inside the web-requests/releases folder and rename the file to an appropriate name
+  
+** Uploading the zip file
+1. Navigate to the [[https://chrome.google.com/webstore/developer/dashboard][Chrome Web Store Developer Dashboard]] and sign in with your username and password
+2. Click the edit button on the Dev Helper Prototype extension
+3. Click "Upload Updated Package" near the top of the screen
+4. Click "Choose File" and navigate to the web-requests/releases folder
+5. Choose the new zip file, click Open, and click Upload
+6. Update any other information you want to
+7. Scroll to the bottom and click publish changes
+
+** Waiting for the update
+- The update could take up to 60 minutes, but it usually takes no more than 10. You can see if the new extension has been published by going to your Developer Dashboard and looking at the "Status" column.
+- Once the chrome extension is fully published/updated, all users with this chrome extension will have their extension updated.
+  
+* Where is the code and documentation? (Github?)
+  - You can pull down the code and documentation from https://github.com/azjgard/dev-helper. You can store a copy in the J: drive for convenience.
+
+* Bugs
+  - choosing zero bullet points on the old slide page for image slides deletes the ending tag of the <BulletPointList> tag as well
+  - runs commands before it has all the needed information for the introduction slide if computer is too slow
+  - sometimes the narration is the same for two slides in a row
+* Not Quite Finished
+  - save to drive somewhere (need a server script) - there is a chrome api that can send it to the computer's downloads folder.

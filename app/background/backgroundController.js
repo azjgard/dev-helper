@@ -18,7 +18,7 @@ const receiveXml  = (xml)  => { global.xml  = xml;                 };
 const receiveMeta = (meta) => { global.meta = meta; createSlide(); };
 
 // These two are used at the end of the createSlide function
-const middleware = require('../templates/common/dependencies.js');
+// const middleware = require('../templates/common/dependencies.js');
 const sendToPage = require('./scripts/pageHandler.js');
 
 // These two blocks work in conjunction with one another.
@@ -75,6 +75,7 @@ function createSlide() {
     SlidePercent	: meta.slidePercent
   };
 
+  //parse through xml
   for (let key in parseConfig) {
     let tag       = parseConfig[key].tag;
     let regex     = new RegExp(parseConfig[key].regex, "ig");

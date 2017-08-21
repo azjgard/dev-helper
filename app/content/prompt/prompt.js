@@ -97,6 +97,7 @@ function getPromptData(prompt) {
       }
     }
   }
+  console.log(data);
   return data;
 }
 

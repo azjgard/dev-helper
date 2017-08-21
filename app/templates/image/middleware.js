@@ -9,7 +9,8 @@ module.exports = function($template, meta) {
   // add/remove appropriate cues 
   $template.setHeader(); 
   $template.setBullets(meta.numBulletPoints); 
-  $template.removeUnusedNodes(['Text']); 
+  // $template.removeUnusedNodes(['Text']); 
+  $template.createNode('Header', 'Text', 'This text');
 
   /////////////////////////////////////////////////////////////////////
 
@@ -21,7 +22,7 @@ module.exports = function($template, meta) {
 
   // $template.setTxt('Header', 'Chris is Awesome');
 
-  $template.setAttr('Instructions', 'Yeah', 'awesomeSauce!');
+  $template.setAttr('Instructions', 'Yeah', '!!Bob Yeah Bob!!');
 
   $template.runCode(function($, $xmlDoc) {
     // we can run custom jquery code here too
@@ -40,6 +41,9 @@ module.exports = function($template, meta) {
 
   /////////////////////////////////////////////////////////////////////
 };
+
+
+
 
 //Below are notes on what things to search for in different xml slides.
 //Done:
