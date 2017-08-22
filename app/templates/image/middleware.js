@@ -3,14 +3,28 @@ module.exports = function($template, meta) {
   /////////////////////////////////////////////////////////////////////
   //// RUN MAIN CODE
 
-  // fill in header with text and correct ids 
-  // fill in bullets with text and correct ids 
-  // remove unnecessary nodes 
-  // add/remove appropriate cues 
   $template.setHeader(); 
   $template.setBullets(meta.numBulletPoints); 
-  // $template.removeUnusedNodes(['Text']); 
-  $template.createNode('Header', 'Text', 'This text');
+
+  // CREATE (provide config)
+  // let obj = {
+  //   referenceNode : 'Header',
+  //   newNode       : 'Text',
+  //   text          : 'This is text',
+  //   attr          : [
+  //     { name  : 'Cool', value : 'strange' },
+  //     { name  : 'food', value : 'I love apple pies sooooo much!!! :D' }
+  //   ],
+  //   type          : 'prepend' //append, after, before
+  // };
+  // $template.createNode(obj);
+
+  // DELETE (after, before, child)
+  // $template.removeNode('Text', 'after', 'Header');
+
+  // EDIT
+  // $template.setTxt("Instructions", "I love changing this stuff around");
+  // $template.setAttr("Header", "do-you-like-cheese", "I do...I really think I do...");
 
   /////////////////////////////////////////////////////////////////////
 

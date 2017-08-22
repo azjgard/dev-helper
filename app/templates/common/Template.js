@@ -50,16 +50,44 @@ class Template {
     }
   }
 
-  removeUnusedNodes(nodeArray){
-    nodeArray.forEach(node => {
-      let $tag = this.$template.find(node);
-      let tagId = $tag.attr('id');
-      // remove tag
-      $tag.remove();
-      // remove cuelist for tag
-      this.$template.find(`Effect[target='${tagId}']`).parent().remove();
-    });
+  removeNode(node, position, reference){
+    if(node !== undefined && position !== undefined && reference !== undefined){
+      let $ref = this.$template.find(reference);
+      let pos = position === 'before'
+            ? 'prev'
+            : position    === 'after'
+            ? 'next'
+            : position    === 'child'
+            ? 'children'
+            : null;
+      if(!pos) throw new Error("You must provide the position of the node you are looking for");
+
+      let $selected = $ref[pos]();
+      if($selected.length > 0 && $selected[0].tagName === node){
+        // remove node
+        let $tag = this.$($selected[0]);
+        let tagId = $tag.attr('id');
+        // remove tag
+        $tag.remove();
+        // remove cuelist for tag
+        this.$template.find(`Effect[target='${tagId}']`).parent().remove();
+      }
+    }
+    else {
+      throw new Error("You must provide a node to remove, the position of that node, and a reference node");
+    }
   }
+
+  // removeUnusedNodes(nodeArray){
+  //   nodeArray.forEach(node => {
+  //     let $tag = this.$template.find(node);
+  //     let tagId = $tag.attr('id');
+  //     // remove tag
+  //     $tag.remove();
+  //     // remove cuelist for tag
+  //     this.$template.find(`Effect[target='${tagId}']`).parent().remove();
+  //   });
+  // }
 
   setBullets(numBulletPoints) {
     // if(this.slideMeta.slideType.toLowerCase() === 'image'){
@@ -187,6 +215,44 @@ class Template {
   }
 
   setTitle(){
+  }
+
+  createNode({referenceNode, newNode, text, attr, type}){
+    if(referenceNode !== undefined && newNode !== undefined){
+      let str = `<${newNode}`;
+      let $reference = this.$template.find(referenceNode);
+
+      // create node
+      if(attr !== undefined){
+        str = addAttrAndText(attr, str);
+      }
+      else {
+        str = addTextOnly(str);
+      }
+
+      // add node to document
+      if     (type === 'after')   { $reference.after(str); }
+      else if(type === 'before')  { $reference.before(str); }
+      else if(type === 'append')  { $reference.append(str); }
+      else if(type === 'prepend') { $reference.prepend(str); }
+      else {
+        throw new Error("You must provide the type of action you want to perform (append, prepend, after, before)");
+      }
+    }
+    else {
+      throw new Error("You must provide a referenceNode and a newNode property to the object you pass in to $template.createNode");
+    }
+
+    function addTextOnly(string){
+      return string += `>${text !== undefined ? text : 'Filler_Text'}</${newNode}>`;
+    }
+
+    function addAttrAndText(at, string){
+      at.forEach(a => {
+        string += ` ${a.name}="${a.value}"`;
+      });
+      return addTextOnly(string);
+    }
   }
 
   getTextArray(){

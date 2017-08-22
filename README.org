@@ -54,3 +54,62 @@
   - sometimes the narration is the same for two slides in a row
 * Not Quite Finished
   - save to drive somewhere (need a server script) - there is a chrome api that can send it to the computer's downloads folder.
+* Functions from Template class (used in middleware.js files)
+Legend
+- (r) means required
+- (o) means optional
+** $template.createNode(obj)
+1. Description - creates a new node
+2. Parameters 
+   - obj
+     - newNode       : (r) node to create (string)
+     - referenceNode : (r) node related to the newNode (see 'type' key below)(string),
+     - type          : (r) where you want the newNode to go relative to the referenceNode (prepend, append, after, before)(string)
+     - text          : (o) text to be placed in node (string)
+     - attr          : (o) an array of objects that have a "name" and "value" property (array)
+3. Example
+#+BEGIN_SRC js
+let obj = {
+    newNode       : 'Text',
+    referenceNode : 'Header',
+    type          : 'after'
+    text          : 'This is text',
+    attr          : [
+      { name  : 'Cool', value : 'strange' },
+      { name  : 'food', value : 'I love apple pies sooooo much!!! :D' }
+    ]
+};
+$template.createNode(obj);
+#+END_SRC
+
+** $template.removeNode(nodeToRemove, position, referenceNode)
+1. Description - removes a node
+2. Parameters 
+   - nodeToRemove - (r)(string)
+   - position - (r)where the node is relative to the referenceNode (after, before, child)(string)
+   - referenceNode - (r)node used to clarify which node to remove (string)
+3. Example
+#+BEGIN_SRC js
+  $template.removeNode('Text', 'after', 'Header');
+#+END_SRC
+
+** $template.setTxt(node, text)
+1. Description - set the inner text of a node
+2. Parameters 
+   - node - (r)node to edit (string)
+   - text - (r)text to insert (string)
+3. Example
+#+BEGIN_SRC js
+  $template.setTxt("Instructions", "I love changing this stuff around");
+#+END_SRC
+
+** $template.setAttr(node, name, value)
+1. Description - edit an existing attribute of a node
+2. Parameters 
+   - node - (r)node to edit (string)
+   - name - (r)attribute to edit (string)
+   - value - (r)new value of the attribute (string)
+3. Example
+#+BEGIN_SRC js
+  $template.setAttr("Header", "do-you-like-cheese", "I do...I really think I do...");
+#+END_SRC
