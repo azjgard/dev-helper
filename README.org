@@ -67,7 +67,6 @@ Legend
      - type          : (r) where you want the newNode to go relative to the referenceNode (prepend, append, after, before)(string)
      - text          : (o) text to be placed in node (string)
      - attr          : (o) an array of objects that have a "name" and "value" property (array)
-3. Example
 #+BEGIN_SRC js
 let obj = {
     newNode       : 'Text',
@@ -88,7 +87,6 @@ $template.createNode(obj);
    - nodeToRemove - (r)(string)
    - position - (r)where the node is relative to the referenceNode (after, before, child)(string)
    - referenceNode - (r)node used to clarify which node to remove (string)
-3. Example
 #+BEGIN_SRC js
   $template.removeNode('Text', 'after', 'Header');
 #+END_SRC
@@ -98,7 +96,6 @@ $template.createNode(obj);
 2. Parameters 
    - node - (r)node to edit (string)
    - text - (r)text to insert (string)
-3. Example
 #+BEGIN_SRC js
   $template.setTxt("Instructions", "I love changing this stuff around");
 #+END_SRC
@@ -109,7 +106,48 @@ $template.createNode(obj);
    - node - (r)node to edit (string)
    - name - (r)attribute to edit (string)
    - value - (r)new value of the attribute (string)
-3. Example
 #+BEGIN_SRC js
   $template.setAttr("Header", "do-you-like-cheese", "I do...I really think I do...");
 #+END_SRC
+
+** $template.finish()
+1. Description - send finished xml template to the front end
+#+BEGIN_SRC js
+  $template.finish();
+#+END_SRC
+
+# * Notes
+# Below are notes on what things to search for in different xml slides.
+# Done:
+# AD105 - Analog Circuits, Digital Circuits, Wire Harnesses
+# -----------------------------------------------------------------
+
+# click on circles
+# initial instructions (title) or instructions (id)
+# textitem with id=calloutText#
+# callout# (id) for callouts (might be titles in new slide)
+
+# click on blocks on left
+# Initial scene text (title) or instructionstext (id)
+# <Text> with id=text1 goes with operation0 and so on
+
+# click on tabs at bottom
+# initial scene text (title) or operationText0 (id)
+# all id's are operationText1 and operationStep1 (etc.)
+
+# click on parts of car shaded by yellow
+# initial instructions (title) or instructions (id)
+# desc1,2,3,etc. for descriptions (id)
+# id=callout# gets the title as well...no definite way to grab the correct one
+
+# click on pictures at left that have tabs in them
+# <textItem title="Instructions" desc="" id="instructions"
+# <title title="Initial Scene Title" desc="" id="title">
+
+# <title title="Scene 1 - Title" desc="" id="title">
+# <title title="Scene 1 - Tab 1 - Title" desc="" id="title">
+# <text title="Scene 1 - Tab 1 - Text" desc="" id="text">
+# <title title="Scene 1 - Tab 2 - Title" desc="" id="title">
+# <text title="Scene 1 - Tab 2 - Text" desc="" id="text">
+
+

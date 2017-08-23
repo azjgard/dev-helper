@@ -1,21 +1,24 @@
 class Template {
 
   // first param is slideInfo object
-  constructor({HTML, XML, Narration, SlideID, SlideAudio, SlideMeta}, resolution, templateName) {
-    let $           = require('jquery');
-    let template    = this.setIds(require(`Templates/${templateName}/template.xml`));
-    this.$          = $,
-    this.resolve    = resolution;
+  constructor({HTML, XML, XMLtext, Narration, SlideID, SlideAudio, SlideMeta}, resolution, templateName) {
+    let $        = require('jquery');
+    let template = this.setIds(require(`Templates/${templateName}/template.xml`));
+    this.$       = $,
+    this.resolve = resolution;
+
 
     // DATA
-    this.$template  = $(this.$.parseXML(template));
-    this.audio      = SlideAudio;
-    this.narration  = Narration.replace(/<.+?>/g, '');
-    this.xmlText    = Object.keys(XML).length > 0 ? XML : null;
-    this.htmlText   = this.getText(this.$, this.parser(HTML, 'text/html'));
-    this.slideId    = SlideID;
-    this.slideMeta  = SlideMeta;
-    this.typeOfText = this.getType(),
+    this.multipleSlides = this.checkNarration();
+    this.$template      = $(this.$.parseXML(template));
+    this.audio          = SlideAudio;
+    this.narration      = Narration;
+    this.xmlText        = Object.keys(XML).length > 0 ? XML : null;
+    this.xmlTextAll     = XMLtext;
+    this.htmlText       = this.getText(this.$, this.parser(HTML, 'text/html'));
+    this.slideId        = SlideID;
+    this.slideMeta      = SlideMeta;
+    this.typeOfText     = this.getType(),
 
     // COMMON FUNCTIONS
     this.setAudio();
@@ -37,9 +40,9 @@ class Template {
           : headerMargin.trim();
       }
       else if(type === 'xml'){
-        return xmlText
-          .textItems[0].text
-          .replace(/<.+?>/g, '');
+        return xmlText.textItems !== undefined
+          ? xmlText.textItems[0].text.replace(/<.+?>/g, '')
+          : 'Sample_Header_Text';
       }
       else if(type === 'html'){
         return header
@@ -90,19 +93,6 @@ class Template {
   // }
 
   setBullets(numBulletPoints) {
-    // if(this.slideMeta.slideType.toLowerCase() === 'image'){
-    //   // check the narration to see if things need to be split up
-    //   if(this.narration.match(/<br\/><br\/>/)){
-    //     let narr = this.narration.split(/<br\/><br\/>/);
-    //     let arr = [];
-    //     for(let i = 0; i < narr.length; i++){
-    //       arr.push(`<Instructions>\n${narr[i]}\n</Instructions`);
-    //       //make narr.length image slides
-    //       //send them to html page
-    //     }
-    //   }
-    // }
-
     numBulletPoints      = parseInt(numBulletPoints, 10);
     let $BulletPointList = this.$template.find('BulletPointList'),
         $CueList         = this.$template.find('CueList'),
@@ -136,9 +126,12 @@ class Template {
           : null;
       }
       else if(type === 'xml'){
-        return numBulletPoints + 1 === xmlText.textItems.length
-          ? xmlText.textItems[i+1].text.replace(/<.+?>/g, '').trim()
-          : null;
+        if(xmlText.textItems !== undefined){
+          return numBulletPoints + 1 === xmlText.textItems.length
+            ? xmlText.textItems[i+1].text.replace(/<.+?>/g, '').trim()
+            : null;
+        }
+        else return null;
       }
       else if(type === 'html'){
         return numBulletPoints === content.length
@@ -207,7 +200,7 @@ class Template {
   }
 
   setCC() {
-    this.setTxt('Instructions', `\n${this.narration}\n`);
+    this.setTxt('Instructions', `\n${this.narration.replace(/<.+?>/g, '')}\n`);
   }
 
   setAudio() {
@@ -215,6 +208,17 @@ class Template {
   }
 
   setTitle(){
+  }
+
+  checkNarration(){
+    let narration = this.narration;
+    if(narration.match(/<br\/><br\/>/)){
+      this.narration = narration.split(/<br\/><br\/>/g);
+      return true; 
+    }
+    else {
+      return false;
+    }
   }
 
   createNode({referenceNode, newNode, text, attr, type}){
@@ -260,20 +264,20 @@ class Template {
 
     if(this.htmlText){
       for(let key in this.htmlText){
-        if(typeof this.htmlText[key] === 'string'){
-          textArray.push(this.htmlText[key]);
-        }
-        else {
-          textArray = textArray.concat(this.htmlText[key]);
+        if(this.htmlText[key]){
+          if(typeof this.htmlText[key] === 'string'){
+            textArray.push(this.htmlText[key]);
+          }
+          else {
+            textArray = textArray.concat(this.htmlText[key]);
+          }
         }
       }
     } 
 
-    if(this.xmlText){
-      for(let key in this.xmlText){
-        for(let i = 0; i < this.xmlText[key].length; i++){
-          textArray.push(this.xmlText[key][i].text.replace(/<.+?>/g, ''));
-        }
+    if(this.xmlTextAll){
+      for(let i = 0; i < this.xmlTextAll.length; i++){
+        textArray.push(this.xmlTextAll[i]);
       }
     } 
 

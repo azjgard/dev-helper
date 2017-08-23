@@ -242,7 +242,7 @@ function exportXML(e) {
   for (let i in editors) {
     let editor     = editors[i];
     let editorText = editor.getValue();
-    xmlString += editorText;
+    xmlString += `\n${editorText}`;
   }
 
   save(xmlString);

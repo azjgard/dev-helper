@@ -9,7 +9,8 @@ module.exports = function(slideInfo) {
 
     let template = createTemplate(slideInfo, resolve, templateName);
 
-    //call the function in the middleware.js file for the specified slideType (e.g. image)
+    // Call the function in the middleware.js file for the specified slideType (e.g. image).
+    // You can access all the slide info in the middleware.js files if you pass in slideInfo instead of slideInfo.SlideMeta, otherwise all the slide info will only be available in Template.js
     fn(template, slideInfo.SlideMeta);
   });
 };

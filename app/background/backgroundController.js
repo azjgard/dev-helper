@@ -67,9 +67,11 @@ function createSlide() {
   // document that the backend gave us
   let info = {
     XML                 : {},
+    XMLtext             : null,
     HTML		: meta.htmlText,
     Narration		: meta.narrationText,
     SlideID		: meta.slideId,
+    //SlideMeta contains answers from the popup box on the old slides
     SlideMeta		: meta.slideMeta,
     SlideAudio          : meta.slideAudio,
     SlidePercent	: meta.slidePercent
@@ -87,6 +89,14 @@ function createSlide() {
     else {
       info.XML[key] = extract(tag); 
     }
+  }
+
+  // get all text just in case parsing missed something
+  if($xml && $xml[0] !== undefined){
+    info.XMLtext = $xml[0].children[0]
+      .textContent
+      .split(/<.+?>/g)
+      .filter(x => { return x ? true : false; });
   }
 
   for (let key in info.XML) {
