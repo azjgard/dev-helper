@@ -1,6 +1,5 @@
 class Template {
 
-  // first param is slideInfo object
   constructor({HTML, XML, XMLtext, Narration, SlideID, SlideAudio, SlideMeta}, resolution, templateName) {
     let $        = require('jquery');
     let template = this.setIds(require(`Templates/${templateName}/template.xml`));
@@ -82,17 +81,6 @@ class Template {
       throw new Error("You must provide a node to remove, the position of that node, and a reference node");
     }
   }
-
-  // removeUnusedNodes(nodeArray){
-  //   nodeArray.forEach(node => {
-  //     let $tag = this.$template.find(node);
-  //     let tagId = $tag.attr('id');
-  //     // remove tag
-  //     $tag.remove();
-  //     // remove cuelist for tag
-  //     this.$template.find(`Effect[target='${tagId}']`).parent().remove();
-  //   });
-  // }
 
   setBullets(numBulletPoints) {
     numBulletPoints      = parseInt(numBulletPoints, 10);
@@ -209,19 +197,18 @@ class Template {
           xmlDoc    = this.$template,
           narration = this.narration
             .split(/<br\/><br\/>/)
-            .map    (n => { return n.replace(/<.+?>/g, ''); })
-            .filter (n => { return n ? true : false; });
+            .filter (n => { return n.replace(/<.+?>/g, '').trim() ? true : false; });
 
       narration.forEach((slide, index) => {
-        if(index === 1){
+        if(index === 0){
           let $instructions = xmlDoc.find('Instructions');
-          $instructions.text(`\n${slide.replace(/<.+?>/g, ' --- ')}\n`);
+          $instructions.text(`\n${slide.replace(/.+<.+?>(.+)/g, '$1').replace(/<.+?>/g, '').trim()}\n`);
           arr += xmlDoc.find('Slide')[0].outerHTML;
         }
         else {
           let newDoc = $(this.parser(xml, 'text/xml'));
           let $instructions = $(newDoc).find('Instructions');
-          $instructions.text(`\n${slide.replace(/<.+?>/g, ' --- ')}\n`);
+          $instructions.text(`\n${slide.replace(/.+<.+?>(.+)/g, '$1').replace(/<.+?>/g, '').trim()}\n`);
           arr += $(newDoc).find('Slide')[0].outerHTML;
         }
       });

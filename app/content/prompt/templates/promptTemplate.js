@@ -16,6 +16,8 @@ function firstLetterCap(string){
 }
 
 function getSlideString(arr, htmlSlides){
+  console.log('--- arr ---');
+  console.log(arr);
   return [
     `<p>What is the slide type?</p>
      <select name="slideType">

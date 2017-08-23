@@ -10,7 +10,7 @@ var stop_scrape       = false;
 var addedNextListener = false;
 
 addManualButton();
-execSlide();
+// execSlide();
 
 function addManualButton() {
   let btn       = document.createElement('button');
@@ -124,18 +124,22 @@ function getPageInformation(elements) {
       let narrationText = pageInformation[1];
       let textContainer = elements.mainTextContainer;
 
-      if (!addedNextListener){
-	elements.nextButton.addEventListener('click', execSlide);
-	addedNextListener = true;
-      }
+      // Add listeners to the page to auto start the slide scraping.
+      // In its current state, automatically running the slide scraping
+      // is hit or miss depending on the speed of the computer, so it is
+      // left to the user to click the generate slide button.
+      // if (!addedNextListener){
+      //   elements.nextButton.addEventListener('click', execSlide);
+      //   addedNextListener = true;
+      // }
 
-      if (narrationText.includes('Click the next active link')) {
-	for (var i = 0; i < textContainer.length; i++) {
-	  if (textContainer[i].tagName === 'A') {
-	    textContainer[i].addEventListener('click', execSlide);
-	  }
-	}
-      }
+      // if (narrationText.includes('Click the next active link')) {
+      //   for (var i = 0; i < textContainer.length; i++) {
+      //     if (textContainer[i].tagName === 'A') {
+      //       textContainer[i].addEventListener('click', execSlide);
+      //     }
+      //   }
+      // }
 
       // we need to get the slide percentage after
       // we've gotten everything else to ensure that
@@ -252,7 +256,7 @@ function getSlideAudio(elements){
       .then(frameNum => {
         // my computer is too slow to get the correct slide audio number
         // so I added a timeout
-	setTimeout(() => { getElByExpr(expr, config).then(frame => resolve(frame.textContent.toLowerCase())); }, 1000);
+	setTimeout(() => { getElByExpr(expr, config).then(frame => resolve(frame.textContent.toLowerCase())); }, 100);
 	
       });
   });
@@ -269,7 +273,7 @@ function getSlideID(elements) {
 
     getElByExpr(expr, config)
       .then(embed => {
-	setTimeout(() => {stop_scrape = true; resolve(embed[0].src);  }, 2000);
+	setTimeout(() => {stop_scrape = true; resolve(embed[0].src);  }, 1000);
       });
   });
 }
