@@ -9,10 +9,12 @@ class Template {
 
 
     // DATA
+    this.narration      = Narration;
     this.multipleSlides = this.checkNarration();
+    this.$multiTemplate  = null;
+    this.stringTemplate = template;
     this.$template      = $(this.$.parseXML(template));
     this.audio          = SlideAudio;
-    this.narration      = Narration;
     this.xmlText        = Object.keys(XML).length > 0 ? XML : null;
     this.xmlTextAll     = XMLtext;
     this.htmlText       = this.getText(this.$, this.parser(HTML, 'text/html'));
@@ -200,7 +202,34 @@ class Template {
   }
 
   setCC() {
-    this.setTxt('Instructions', `\n${this.narration.replace(/<.+?>/g, '')}\n`);
+    if(this.multipleSlides){
+      let $         = this.$,
+          arr       = '<Section>',
+          xml       = this.stringTemplate,
+          xmlDoc    = this.$template,
+          narration = this.narration
+            .split(/<br\/><br\/>/)
+            .map    (n => { return n.replace(/<.+?>/g, ''); })
+            .filter (n => { return n ? true : false; });
+
+      narration.forEach((slide, index) => {
+        if(index === 1){
+          let $instructions = xmlDoc.find('Instructions');
+          $instructions.text(`\n${slide.replace(/<.+?>/g, ' --- ')}\n`);
+          arr += xmlDoc.find('Slide')[0].outerHTML;
+        }
+        else {
+          let newDoc = $(this.parser(xml, 'text/xml'));
+          let $instructions = $(newDoc).find('Instructions');
+          $instructions.text(`\n${slide.replace(/<.+?>/g, ' --- ')}\n`);
+          arr += $(newDoc).find('Slide')[0].outerHTML;
+        }
+      });
+      this.$multiTemplate = $(this.parser(arr + '</Section>', 'text/xml'));
+    }
+    else {
+      this.setTxt('Instructions', `\n${this.narration.replace(/<.+?>/g, '')}\n`);
+    }
   }
 
   setAudio() {
@@ -212,13 +241,8 @@ class Template {
 
   checkNarration(){
     let narration = this.narration;
-    if(narration.match(/<br\/><br\/>/)){
-      this.narration = narration.split(/<br\/><br\/>/g);
-      return true; 
-    }
-    else {
-      return false;
-    }
+    if(narration.match(/<br\/><br\/>/)) { return true; }
+    else                                { return false; }
   }
 
   createNode({referenceNode, newNode, text, attr, type}){
@@ -289,13 +313,25 @@ class Template {
   }
 
   export() {
-    return {
-      xml : this
-        .$template
-        .find('Slide')[0]
-        .outerHTML,
-      text   : this.getTextArray()
-    };
+    if(this.multipleSlides){
+      return {
+        xml : this
+          .$multiTemplate
+          .find('Section')[0]
+          .outerHTML
+          .replace(/<\/Slide>/g, '</Slide>\n\n'),
+        text   : this.getTextArray()
+      };
+    }
+    else {
+      return {
+        xml : this
+          .$template
+          .find('Slide')[0]
+          .outerHTML,
+        text   : this.getTextArray()
+      };
+    }
   }
 
   finish() {
