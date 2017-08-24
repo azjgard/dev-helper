@@ -2,7 +2,7 @@
 1. Ensure that [[https://nodejs.org][NodeJS]] is installed globally (along with [[https://docs.npmjs.com/getting-started/what-is-npm][NPM]])
 2. Clone and enter this repository
    #+BEGIN_SRC sh
-     git clone https://github.com/azjgard/web-requests
+     git clone https://github.com/azjgard/dev-helper.git
      cd web-requests/
    #+END_SRC
 3. Install the Node dependencies
